@@ -1,5 +1,13 @@
 # Octo Startup Template
 
+## Getting Started
+
+### Running the Application
+
+- Installing packages: `npm install`
+  - Run on initial fetching of this repo
+- Running application: `npm run start`
+
 ## Tech Stack
 
 ### Frontend
