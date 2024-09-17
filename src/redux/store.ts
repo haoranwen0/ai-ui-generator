@@ -3,16 +3,18 @@ import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
 import counterReducer from './features/counter/counterSlice'
+import viewToggleReducer from './features/viewToggle/viewToggleSlice'
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['counter'] // Only 'counter' will be persisted
+  whitelist: ['counter', 'viewToggle'] // Only 'counter' will be persisted
 }
 
 // Combine reducers
 const rootReducer = combineReducers({
-  counter: counterReducer
+  counter: counterReducer,
+  viewToggle: viewToggleReducer
 })
 
 // Create the persisted reducer
