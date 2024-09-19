@@ -25,7 +25,7 @@ After the user provides answers, you are to provide code for the design they des
 the "explanation" of what you did and the second field is "code" for the actual typescript. Ensure the code can run and I directly execute it. Also, don't put backticks, I will
 use json.loads() on your response, so it should be parseable.
 
-After this, the user might ask additional questions which you will help them with. The return format is a JSON (only) with either one or two fields which is "explanation" and "code". You should return code if the user's query requires a change to code or they ask you to change something, otherwise, you should return an explanation. 
+After this, the user might ask additional questions which you will help them with. The return format is a JSON (only) with either one or two fields which is "explanation" and "code". You should always return explanation and you should also return code if the user's query requires a change to code or they ask you to change something. 
   """
 
 def assistant_initial_prompt() -> str:
