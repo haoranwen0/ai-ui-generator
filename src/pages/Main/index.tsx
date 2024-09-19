@@ -114,21 +114,7 @@ function App() {
           /> */}
         </Box>
         <Box w='50%' overflow='auto'>
-          <ErrorBoundary
-            fallback={(error, resetErrorBoundary) => (
-              <ChakraUI.Alert status='error'>
-                <ChakraUI.AlertIcon />
-                <ChakraUI.AlertTitle>Error:</ChakraUI.AlertTitle>
-                <ChakraUI.AlertDescription>
-                  {error.message}
-                </ChakraUI.AlertDescription>
-                <ChakraUI.Button onClick={resetErrorBoundary} ml={3}>
-                  Reset
-                </ChakraUI.Button>
-              </ChakraUI.Alert>
-            )}
-            onError={(error, info) => console.log('Logged error:', error, info)}
-          >
+          <ErrorBoundary>
             <ChakraProvider>
               <LiveProvider code={runningCode} scope={ChakraUI}>
                 <LivePreview />

@@ -1,47 +1,33 @@
-import React, { ErrorInfo, ReactNode } from 'react'
+import React, { ErrorInfo, ReactNode, useEffect, useState } from 'react'
 
 interface ErrorBoundaryProps {
   children: ReactNode
-  fallback: (error: Error, resetErrorBoundary: () => void) => ReactNode
-  onError?: (error: Error, info: ErrorInfo) => void
 }
 
-interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
-}
+const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
+  const [hasError, setHasError] = useState(false)
 
-class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props)
-    this.state = { hasError: false, error: null }
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('Caught an error:', error, info)
-    if (this.props.onError) {
-      this.props.onError(error, info)
-    }
-  }
-
-  resetErrorBoundary = () => {
-    this.setState({ hasError: false, error: null })
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback(this.state.error!, this.resetErrorBoundary)
+  useEffect(() => {
+    const errorHandler = (error: Error, errorInfo: ErrorInfo) => {
+      console.error('ErrorBoundary caught an error: ', error, errorInfo)
+      setHasError(true)
     }
 
-    return this.props.children
+    window.addEventListener('error', errorHandler as unknown as EventListener)
+
+    return () => {
+      window.removeEventListener(
+        'error',
+        errorHandler as unknown as EventListener
+      )
+    }
+  }, [])
+
+  if (hasError) {
+    return <h1>Something went wrong.</h1>
   }
+
+  return <>{children}</>
 }
 
 export default ErrorBoundary
