@@ -1,25 +1,9 @@
-import React, { ReactNode, useState } from 'react'
+import React from 'react'
 
-import {
-  Box,
-  Button,
-  ChakraProvider,
-  Flex,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure
-} from '@chakra-ui/react'
-import * as ChakraUI from '@chakra-ui/react'
-import MonacoEditor from '@monaco-editor/react'
-import { LiveError, LivePreview, LiveProvider } from 'react-live'
+import { Box, Button, Flex, Input } from '@chakra-ui/react'
 
-import { ButtonCounterExample, ThemeToggle, ViewToggle } from '../../components'
-import ErrorBoundary from '../../components/ErrorBoundary'
+import { ThemeToggle, ViewToggle } from '../../components'
+import ViewDisplay from '../../components/Main/ViewDisplay'
 
 interface Message {
   id: number
@@ -38,134 +22,73 @@ const initialMessages: Message[] = [
 ]
 
 const Main: React.FC = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const [code, setCode] = useState(`
-function App() {
-  return (
-    <Box p={4}>
-      <Heading mb={4}>Hello, Chakra UI!</Heading>
-      <Text mb={2}>This is a sample component using Chakra UI.</Text>
-      <Stack spacing={3}>
-        <Input placeholder="Enter your name" />
-        <Button colorScheme="blue">
-          Click me
-        </Button>
-      </Stack>
-    </Box>
-  );
-}
-`)
-  const [runningCode, setRunningCode] = useState(code)
-  const [error, setError] = useState(null)
-
-  const handleRunCode = () => {
-    setError(null)
-    setRunningCode(code)
-  }
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-      event.preventDefault()
-      onOpen()
-    }
-  }
-
-  React.useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
-
   return (
     <>
-      <ThemeToggle />
-      <Box mb={4}>
+      <Box pos='absolute' top={4} right={4} zIndex={100}>
+        <ThemeToggle />
         <ViewToggle />
       </Box>
-      <Button colorScheme='green' onClick={handleRunCode}>
-        Run Code
-      </Button>
-      <Flex h='100vh'>
-        <Box w='50%' overflow='auto'>
-          <MonacoEditor
-            height='100%'
-            language='typescript'
-            theme='vs-dark'
-            value={code}
-            onChange={(value) => setCode(value || '')}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              // Disable error highlighting
-              renderValidationDecorations: 'off'
-            }}
-            beforeMount={(monaco) => {
-              // Disable all markers (error squiggles)
-              // monaco.editor.setModelMarkers = () => {}
-            }}
+      <ViewDisplay />
+      <Flex
+        position='fixed'
+        bottom='0'
+        left='0'
+        right='0'
+        flexDir='column'
+        justifyContent='flex-end'
+        alignItems='center'
+        p={4}
+      >
+        <Box
+          flex='1'
+          overflowY='auto'
+          p={4}
+          mb={4}
+          width='100%'
+          maxWidth='600px'
+          opacity={0}
+          transition='opacity 0.3s'
+          position='absolute'
+          bottom='100%'
+          left='50%'
+          transform='translateX(-50%)'
+        >
+          {initialMessages.map((message) => (
+            <Box
+              key={message.id}
+              bg={message.sender === 'bot' ? 'blue.100' : 'green.100'}
+              color='black'
+              p={2}
+              borderRadius='md'
+              mb={2}
+              maxWidth='70%'
+              alignSelf={message.sender === 'bot' ? 'flex-start' : 'flex-end'}
+            >
+              {message.text}
+            </Box>
+          ))}
+        </Box>
+        <Flex
+          width='100%'
+          maxWidth='600px'
+          bg='rgba(255, 255, 255, 0.1)'
+          borderRadius='md'
+          p={2}
+          alignItems='center'
+          role='group'
+          _hover={{
+            '& + div': { opacity: 1 }
+          }}
+        >
+          <Input
+            placeholder='Type your message...'
+            mr={2}
+            bg='white'
+            color='black'
           />
-          {/* <Textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            height='200px'
-            fontFamily='monospace'
-          /> */}
-        </Box>
-        <Box w='50%' overflow='auto'>
-          <ErrorBoundary>
-            <ChakraProvider>
-              <LiveProvider code={runningCode} scope={ChakraUI}>
-                <LivePreview />
-              </LiveProvider>
-            </ChakraProvider>
-          </ErrorBoundary>
-        </Box>
+          <Button colorScheme='blue'>Send</Button>
+        </Flex>
       </Flex>
-      <ButtonCounterExample />
-      <Button onClick={onOpen}>Open Modal</Button>
-      <Modal isOpen={isOpen} onClose={onClose} size='xl'>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Chat Interface</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Flex direction='column' height='400px'>
-              <Box flex='1' overflowY='auto' mb={4}>
-                {initialMessages.map((message) => (
-                  <Flex
-                    key={message.id}
-                    justifyContent={
-                      message.sender === 'user' ? 'flex-end' : 'flex-start'
-                    }
-                    mb={2}
-                  >
-                    <Box
-                      bg={message.sender === 'user' ? 'blue.100' : 'gray.100'}
-                      color={
-                        message.sender === 'user' ? 'blue.800' : 'gray.800'
-                      }
-                      borderRadius='lg'
-                      px={3}
-                      py={2}
-                      maxWidth='70%'
-                    >
-                      {message.text}
-                    </Box>
-                  </Flex>
-                ))}
-              </Box>
-              <Flex as='form' onSubmit={(e) => e.preventDefault()}>
-                <Input placeholder='Type a message...' mr={2} />
-                <Button colorScheme='blue' type='submit'>
-                  Send
-                </Button>
-              </Flex>
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
     </>
   )
 }

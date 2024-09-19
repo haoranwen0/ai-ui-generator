@@ -12,7 +12,7 @@ interface ViewToggleState {
 
 // Define the initial state using that type
 const initialState: ViewToggleState = {
-  view: 'Code'
+  view: 'Preview'
 }
 
 export const viewToggleSlice = createSlice({
