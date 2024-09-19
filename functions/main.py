@@ -6,9 +6,15 @@ import re
 from functools import wraps
 from typing import Dict
 
+from prompt import user_initial_prompt, assistant_initial_prompt
 import firebase_admin
 from firebase_admin import auth, credentials, firestore, initialize_app
 from firebase_functions import https_fn
+from dotenv import load_dotenv
+import anthropic
+import os
+load_dotenv()
+anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 
 # Initialize Firebase Admin SDK
 cred = credentials.ApplicationDefault()
@@ -78,6 +84,7 @@ def list_projects(req):
 def create_project(req: https_fn.Request) -> https_fn.Response:
   uid = get_uid(req.headers)
   project = req.json
+  # project['chat_history'] = [{'role': 'user', 'content': user_initial_prompt()}, {'role': 'assistant', 'content': assistant_initial_prompt()}]
   _, doc_ref = db.collection("users").document(uid).collection('projects').add(project)
   return {'message': 'Project created', 'id': doc_ref.id}
 
@@ -121,3 +128,17 @@ def get_uid(header: Dict[str, str]) -> str:
     return decoded_token['uid']
   except auth.InvalidIdTokenError:
     raise https_fn.HttpsError(https_fn.FunctionsErrorCode.UNAUTHENTICATED, 'Unauthorized')
+
+
+client = anthropic.Anthropic(api_key=anthropic_api_key)
+@https_fn.on_request()
+def chat(req: https_fn.Request) -> https_fn.Response:
+  chat_history = req.json['chat_history']
+  chat_history.insert(0, {'role': 'user', 'content': user_initial_prompt()})
+  chat_history.insert(1, {'role': 'assistant', 'content': assistant_initial_prompt()})
+  completion = client.messages.create(
+    model="claude-3-5-sonnet-20240620",
+    messages=chat_history,
+    max_tokens=8192
+  )
+  return completion.content
