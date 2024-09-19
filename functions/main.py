@@ -84,7 +84,6 @@ def list_projects(req):
 def create_project(req: https_fn.Request) -> https_fn.Response:
   uid = get_uid(req.headers)
   project = req.json
-  # project['chat_history'] = [{'role': 'user', 'content': user_initial_prompt()}, {'role': 'assistant', 'content': assistant_initial_prompt()}]
   _, doc_ref = db.collection("users").document(uid).collection('projects').add(project)
   return {'message': 'Project created', 'id': doc_ref.id}
 
@@ -133,6 +132,7 @@ def get_uid(header: Dict[str, str]) -> str:
 client = anthropic.Anthropic(api_key=anthropic_api_key)
 @https_fn.on_request()
 def chat(req: https_fn.Request) -> https_fn.Response:
+  uid = get_uid(req.headers)
   chat_history = req.json['chat_history']
   chat_history.insert(0, {'role': 'user', 'content': user_initial_prompt()})
   chat_history.insert(1, {'role': 'assistant', 'content': assistant_initial_prompt()})

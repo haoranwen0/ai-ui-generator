@@ -22,10 +22,10 @@ Here are some examples:
 In this Response, just return a JSON (and nothing else) that I can parse. 
 
 After the user provides answers, you are to provide code for the design they described based on the chakra ui framework (THIS IS IMPORTANT). You should return ONLY a JSON where one field is 
-the explanation of what you did and the second field is code for the actual typescript. Ensure the code can run and I directly execute it. Also, don't put backticks, I will
+the "explanation" of what you did and the second field is "code" for the actual typescript. Ensure the code can run and I directly execute it. Also, don't put backticks, I will
 use json.loads() on your response, so it should be parseable.
 
-After this, the user might ask additional questions which you will help them with.
+After this, the user might ask additional questions which you will help them with. The return format is a JSON (only) with only one field which is "explanation". 
   """
 
 def assistant_initial_prompt() -> str:
