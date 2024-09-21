@@ -2,17 +2,22 @@
 # To get started, simply uncomment the below code or create your own.
 # Deploy with `firebase deploy`
 
+import json
+import os
 import re
+import requests
 from functools import wraps
 from typing import Dict
 
-from prompt import user_initial_prompt, assistant_initial_prompt
-import firebase_admin
+import anthropic
+from dotenv import load_dotenv
+from jsonschema import validate
 from firebase_admin import auth, credentials, firestore, initialize_app
 from firebase_functions import https_fn
-from dotenv import load_dotenv
-import anthropic
-import os
+
+from prompt import user_initial_prompt, assistant_initial_prompt
+
+
 load_dotenv()
 anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 
@@ -22,6 +27,14 @@ initialize_app(cred)
 
 db = firestore.client()
 
+
+project_structure = {
+  "type": "object",
+  "properties": {
+    "name": {"type": "string"},
+    "code": {"type": "string"}
+  }
+}
 
 # def requires_auth(f):
 #   @wraps(f)
@@ -33,86 +46,127 @@ db = firestore.client()
 #   return decorated_function
 
 def router(request):
-  # Get the path from the request
   path = request.path
+  method = request.method
 
-  # Define your routes with regex patterns
+  # Define your routes with dynamic segments
   routes = [
-    (r'^/projects$', projects),
-    (r'^/project/(?P<projectid>[^/]+)$', project)
+    {
+      "pattern": r"^/projects$",
+      "methods": {
+        "GET": list_projects,
+        "POST": create_project
+      }
+    },
+    {
+      "pattern": r"^/project/(?P<projectid>[^/]+)$",
+      "methods": {
+        "GET": get_project,
+        # "PUT": update_project,
+        # "DELETE": delete_project
+      }
+    },
+    {
+      "pattern": r"^/chat$",
+      "methods": {
+        "POST": chat
+      }
+    }
+    # {
+    #   "pattern": r"^/api/products/(?P<product_id>\w+)$",
+    #   "methods": {
+    #     "GET": get_product,
+    #     "PUT": update_product,
+    #     "DELETE": delete_product
+    #   }
+    # }
   ]
 
-  # Check if the path matches any of our routes
-  for pattern, handler in routes:
-    match = re.match(pattern, path)
+  # Find matching route
+  for route in routes:
+    match = re.match(route["pattern"], path)
     if match:
-      # Call the corresponding function with captured groups as kwargs
-      return handler(request, **match.groupdict())
-
-  # Return a 404 if no route matches
-  return https_fn.HttpResponse('Not Found', status=404)
+      if method in route["methods"]:
+        # Extract parameters from the URL
+        params = match.groupdict()
+        # Call the appropriate function with parameters
+        return route["methods"][method](request, **params)
+      else:
+        return https_fn.Response("Method not allowed", status=405)
+  
+  return https_fn.Response("Not found", status=404)
 
 @https_fn.on_request()
-def main(req: https_fn.Request) -> https_fn.HttpResponse:
+def main(req: https_fn.Request) -> https_fn.Response:
   return router(req)
 
-def add_message(req: https_fn.Request) -> https_fn.Response:
-  # Get the message from the request
-  original = req.args.get('text', '')
+# def add_message(req: https_fn.Request) -> https_fn.Response:
+#   # Get the message from the request
+#   original = req.args.get('text', '')
 
-  # Add the message to Firestore
-  doc_ref = db.collection('messages').document()
-  doc_ref.set({
-    'original': original
-  })
+#   # Add the message to Firestore
+#   doc_ref = db.collection('messages').document()
+#   doc_ref.set({
+#     'original': original
+#   })
 
-  return https_fn.Response(f"Message added with ID: {doc_ref.id}")
-
-def projects(req: https_fn.Request) -> https_fn.Response:
-  if req.method == "GET":
-    return list_projects(req)
-  elif req.method == "POST":
-    return create_project(req)
+#   return https_fn.Response(f"Message added with ID: {doc_ref.id}")
 
 def list_projects(req):
   uid = get_uid(req.headers)
   docs = db.collection("users").document(uid).collection('projects')
+  project_list = []
   for doc in docs:
-    print(f"{doc.id} => {doc.to_dict()}")
-  return https_fn.Response(f"Message added with ID: {doc_ref.id}")
+    project_list.append(doc.to_dict())
+    # print(f"{doc.id} => {doc.to_dict()}")
+  return https_fn.Response(
+    json.dumps(project_list),
+    status=200,
+    headers={"Content-Type": "application/json"}
+  )
 
 def create_project(req: https_fn.Request) -> https_fn.Response:
   uid = get_uid(req.headers)
   project = req.json
+  try:
+    validate(project)
+  except:
+    return https_fn.Response('Invalid project structure', status=405)
   _, doc_ref = db.collection("users").document(uid).collection('projects').add(project)
-  return {'message': 'Project created', 'id': doc_ref.id}
-
-def project(req: https_fn.Request, projectid: str) -> https_fn.Response:
-  if req.method == "GET":
-    return get_project(req, projectid)
-  else: 
-    return https_fn.Response('Method not allowed', status=405)
+  return https_fn.Response(
+    json.dumps({'message': 'Project created', 'projectid': doc_ref.id}),
+    status=200,
+    headers={"Content-Type": "application/json"}
+  )
 
 def get_project(req: https_fn.Request, project_id: str) -> https_fn.Response: 
   uid = get_uid(req.headers)
   project = db.collection("users").document(uid).collection('projects').document(project_id).get()
   if not project.exists:
     return https_fn.Response('Project not found', status=404)
-  if project.to_dict()['userId'] != uid: 
-    return https_fn.Response('Unauthorized', status=401)
-  return project.to_dict()
+  return https_fn.Response(
+    json.dumps(project.to_dict()),
+    status=200,
+    headers={"Content-Type": "application/json"}
+  )
 
-def create_project(req: https_fn.Request) -> https_fn.Response:
-  # Get the message from the request
-  original = req.args.get('text', '')
-
-  # Add the message to Firestore
-  doc_ref = db.collection('messages').document()
-  doc_ref.set({
-    'original': original
-  })
-
-  return https_fn.Response(f"Message added with ID: {doc_ref.id}")
+def update_project(req: https_fn.Request, project_id: str) -> https_fn.Response: 
+  uid = get_uid(req.headers)
+  project_ref = db.collection("users").document(uid).collection("projects").document(project_id)
+  old_project = project_ref.get()
+  if not old_project.exists:
+    return https_fn.Response('Project not found', status=404)
+  new_project = req.json
+  try:
+    validate(new_project)
+  except:
+    return https_fn.Response('Invalid project structure', status=405)
+  project_ref.update(req.json)
+  return https_fn.Response(
+    json.dumps({'message': 'Project updated'}),
+    status=200,
+    headers={"Content-Type": "application/json"}
+  )
 
 def get_uid(header: Dict[str, str]) -> str:
   """
@@ -130,7 +184,6 @@ def get_uid(header: Dict[str, str]) -> str:
 
 
 client = anthropic.Anthropic(api_key=anthropic_api_key)
-@https_fn.on_request()
 def chat(req: https_fn.Request) -> https_fn.Response:
   uid = get_uid(req.headers)
   chat_history = req.json['chat_history']
@@ -142,3 +195,32 @@ def chat(req: https_fn.Request) -> https_fn.Response:
     max_tokens=8192
   )
   return completion.content
+
+def get_id_token():
+  def create_custom_token(uid):
+    try:
+      return auth.create_custom_token(uid)
+    except Exception as e:
+      print(f"Error creating custom token: {e}")
+      return None
+
+  # Generate a custom token
+  custom_token = create_custom_token("Rv2hcep1ulARPmJTqsft3797mOBP")
+
+
+  def exchange_custom_token_for_id_token(custom_token):
+    url = f"http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=fake-api-key"
+    data = {
+      "token": custom_token,
+      "returnSecureToken": True
+    }
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+      return response.json()["idToken"]
+    else:
+      print(f"Error exchanging custom token: {response.text}")
+      return None
+
+  # Exchange the custom token for an ID token
+  id_token = exchange_custom_token_for_id_token(custom_token)
+  return id_token
