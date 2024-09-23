@@ -3,9 +3,9 @@
 # import firebase_admin
 # from firebase_admin import auth, credentials
 
-from main import get_id_token
+# from main import get_id_token
 
-print(get_id_token("Rv2hcep1ulARPmJTqsft3797mOBP"))
+# print(get_id_token("Rv2hcep1ulARPmJTqsft3797mOBP"))
 
 # def create_test_user(email, password):
 #     try:
@@ -50,3 +50,18 @@ print(get_id_token("Rv2hcep1ulARPmJTqsft3797mOBP"))
 #     # Exchange the custom token for an ID token
 #     id_token = exchange_custom_token_for_id_token(custom_token)
 #     print(id_token)
+
+from jsonschema import validate
+
+project_schema = {
+  "type": "object",
+  "properties": {
+    "name": {"type": "string"},
+    "code": {"type": "string"}
+  }
+}
+
+print(validate({
+  "name": "hello",
+  "code": "hello"
+  }, project_schema))

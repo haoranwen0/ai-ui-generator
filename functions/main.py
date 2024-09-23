@@ -6,7 +6,6 @@ import json
 import os
 import re
 import requests
-from functools import wraps
 from typing import Dict
 
 import anthropic
@@ -19,16 +18,17 @@ from prompt import user_initial_prompt, assistant_initial_prompt
 
 
 load_dotenv()
-anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
+anthropic_api_key = os.environ.get('ANTHROPIC_API_KEY')
 
 # Initialize Firebase Admin SDK
-cred = credentials.ApplicationDefault()
+# cred = credentials.ApplicationDefault()
+cred = credentials.Certificate("secrets/ai-ui-generator-firebase-adminsdk-3vcyq-02d8742a7f.json")
 initialize_app(cred)
 
 db = firestore.client()
 
 
-project_structure = {
+project_schema = {
   "type": "object",
   "properties": {
     "name": {"type": "string"},
@@ -70,6 +70,12 @@ def router(request):
       "pattern": r"^/chat$",
       "methods": {
         "POST": chat
+      }
+    },
+    {
+      "pattern": r"^/test$",
+      "methods": {
+        "GET": get_test_user
       }
     }
     # {
@@ -114,7 +120,7 @@ def main(req: https_fn.Request) -> https_fn.Response:
 
 def list_projects(req):
   uid = get_uid(req.headers)
-  docs = db.collection("users").document(uid).collection('projects')
+  docs = db.collection("users").document(uid).collection('projects').stream()
   project_list = []
   for doc in docs:
     project_list.append(doc.to_dict())
@@ -128,8 +134,10 @@ def list_projects(req):
 def create_project(req: https_fn.Request) -> https_fn.Response:
   uid = get_uid(req.headers)
   project = req.json
+  print(project)
+  print(type(project))
   try:
-    validate(project)
+    validate(project, project_schema)
   except:
     return https_fn.Response('Invalid project structure', status=405)
   _, doc_ref = db.collection("users").document(uid).collection('projects').add(project)
@@ -139,9 +147,9 @@ def create_project(req: https_fn.Request) -> https_fn.Response:
     headers={"Content-Type": "application/json"}
   )
 
-def get_project(req: https_fn.Request, project_id: str) -> https_fn.Response: 
+def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response: 
   uid = get_uid(req.headers)
-  project = db.collection("users").document(uid).collection('projects').document(project_id).get()
+  project = db.collection("users").document(uid).collection('projects').document(projectid).get()
   if not project.exists:
     return https_fn.Response('Project not found', status=404)
   return https_fn.Response(
@@ -150,15 +158,16 @@ def get_project(req: https_fn.Request, project_id: str) -> https_fn.Response:
     headers={"Content-Type": "application/json"}
   )
 
-def update_project(req: https_fn.Request, project_id: str) -> https_fn.Response: 
+# TODO: Change so that project can't be renamed
+def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response: 
   uid = get_uid(req.headers)
-  project_ref = db.collection("users").document(uid).collection("projects").document(project_id)
+  project_ref = db.collection("users").document(uid).collection("projects").document(projectid)
   old_project = project_ref.get()
   if not old_project.exists:
     return https_fn.Response('Project not found', status=404)
   new_project = req.json
   try:
-    validate(new_project)
+    validate(new_project, project_schema)
   except:
     return https_fn.Response('Invalid project structure', status=405)
   project_ref.update(req.json)
@@ -167,6 +176,20 @@ def update_project(req: https_fn.Request, project_id: str) -> https_fn.Response:
     status=200,
     headers={"Content-Type": "application/json"}
   )
+
+client = anthropic.Anthropic(api_key=anthropic_api_key)
+def chat(req: https_fn.Request) -> https_fn.Response:
+  uid = get_uid(req.headers)
+  chat_history = req.json['chat_history']
+  chat_history.insert(0, {'role': 'user', 'content': user_initial_prompt()})
+  chat_history.insert(1, {'role': 'assistant', 'content': assistant_initial_prompt()})
+  completion = client.messages.create(
+    model="claude-3-5-sonnet-20240620",
+    messages=chat_history,
+    max_tokens=8192
+  )
+  return completion.content
+
 
 def get_uid(header: Dict[str, str]) -> str:
   """
@@ -183,18 +206,8 @@ def get_uid(header: Dict[str, str]) -> str:
     raise https_fn.HttpsError(https_fn.FunctionsErrorCode.UNAUTHENTICATED, 'Unauthorized')
 
 
-client = anthropic.Anthropic(api_key=anthropic_api_key)
-def chat(req: https_fn.Request) -> https_fn.Response:
-  uid = get_uid(req.headers)
-  chat_history = req.json['chat_history']
-  chat_history.insert(0, {'role': 'user', 'content': user_initial_prompt()})
-  chat_history.insert(1, {'role': 'assistant', 'content': assistant_initial_prompt()})
-  completion = client.messages.create(
-    model="claude-3-5-sonnet-20240620",
-    messages=chat_history,
-    max_tokens=8192
-  )
-  return completion.content
+def get_test_user(req: https_fn.Request) -> https_fn.Response: 
+    return https_fn.Response(get_id_token())
 
 def get_id_token():
   def create_custom_token(uid):
@@ -205,7 +218,7 @@ def get_id_token():
       return None
 
   # Generate a custom token
-  custom_token = create_custom_token("Rv2hcep1ulARPmJTqsft3797mOBP")
+  custom_token = create_custom_token("Rv2hcep1ulARPmJTqsft3797mOBP").decode("utf-8")
 
 
   def exchange_custom_token_for_id_token(custom_token):
