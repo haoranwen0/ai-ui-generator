@@ -120,6 +120,11 @@ const AuthPage: React.FC = () => {
         email,
         password
       )
+      userCredential.user.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+        console.log(idToken);
+      }).catch(function(error) {
+        console.error("Failed to get ID token");
+      });
       console.log('User signed in:', userCredential.user)
       toast({
         title: 'Success',
