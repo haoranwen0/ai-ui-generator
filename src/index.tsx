@@ -14,6 +14,8 @@ import firebaseConfig from './firebaseConfig'
 import App from './App'
 import { persistor, store } from './redux/store'
 
+import './index.css'
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 const analytics = getAnalytics(app)

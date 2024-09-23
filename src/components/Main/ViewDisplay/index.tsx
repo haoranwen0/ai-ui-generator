@@ -11,6 +11,8 @@ import { useAppSelector } from '../../../redux/hooks'
 const ViewDisplay = () => {
   const view = useAppSelector((state) => state.viewToggle.view)
 
+  console.log(view)
+
   const [code, setCode] = useState(`
 function App() {
   return (

@@ -1,5 +1,19 @@
 import ButtonCounterExample from './ButtonCounterExample'
-import { ViewToggle } from './Main'
+import {
+  ViewToggle,
+  ViewDisplay,
+  HoverChatComponent,
+  IconControls,
+  QuestionsContainer
+} from './Main'
 import ThemeToggle from './ThemeToggle'
 
-export { ButtonCounterExample, ThemeToggle, ViewToggle }
+export {
+  ButtonCounterExample,
+  QuestionsContainer,
+  IconControls,
+  ThemeToggle,
+  ViewToggle,
+  ViewDisplay,
+  HoverChatComponent
+}
