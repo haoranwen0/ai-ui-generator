@@ -11,6 +11,7 @@ import {
   keyframes
 } from '@chakra-ui/react'
 import { FiCode, FiZap } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 
 // Animation keyframes
 const float = keyframes`
@@ -19,16 +20,9 @@ const float = keyframes`
   100% { transform: translateY(0px); }
 `
 
-// TypeScript interfaces
-interface HeaderProps {
-  onWaitlistClick: () => void
-}
+const Header = () => {
+  const navigate = useNavigate()
 
-interface HeroProps {
-  onGetEarlyAccess: () => void
-}
-
-const Header: React.FC<HeaderProps> = ({ onWaitlistClick }) => {
   return (
     <Flex
       as='header'
@@ -38,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ onWaitlistClick }) => {
       padding='1.5rem'
       bg={useColorModeValue('white', 'gray.800')}
       color={useColorModeValue('gray.600', 'white')}
-      position='fixed'
+      // position='fixed'
       top={0}
       left={0}
       right={0}
@@ -52,7 +46,9 @@ const Header: React.FC<HeaderProps> = ({ onWaitlistClick }) => {
 
       <Box>
         <Button
-          onClick={onWaitlistClick}
+          onClick={() => {
+            navigate('/auth')
+          }}
           fontSize='sm'
           fontWeight={600}
           color={'white'}
@@ -61,21 +57,23 @@ const Header: React.FC<HeaderProps> = ({ onWaitlistClick }) => {
             bg: 'purple.300'
           }}
         >
-          Join Waitlist
+          Get Started
         </Button>
       </Box>
     </Flex>
   )
 }
 
-const Hero: React.FC<HeroProps> = ({ onGetEarlyAccess }) => {
+const Hero = () => {
   const floatAnimation = `${float} 3s ease-in-out infinite`
 
   return (
-    <Box
+    <Flex
+      dir='column'
+      justifyContent='center'
+      alignItems='center'
       minHeight='100vh'
       bg={useColorModeValue('gray.50', 'gray.900')}
-      pt='calc(80px)' // Add padding top to account for fixed header
     >
       <Container maxW='container.xl' height='100%'>
         <Flex
@@ -104,7 +102,9 @@ const Hero: React.FC<HeroProps> = ({ onGetEarlyAccess }) => {
             </Text>
             <Button
               rightIcon={<FiZap />}
-              onClick={onGetEarlyAccess}
+              onClick={() => {
+                console.log('Get early access!')
+              }}
               size='lg'
               fontSize='md'
               rounded='full'
@@ -144,25 +144,15 @@ const Hero: React.FC<HeroProps> = ({ onGetEarlyAccess }) => {
           />
         </Flex>
       </Container>
-    </Box>
+    </Flex>
   )
 }
 
 const Landing: React.FC = () => {
-  const handleWaitlistClick = () => {
-    // Implement waitlist logic here
-    console.log('Joining waitlist')
-  }
-
-  const handleGetEarlyAccess = () => {
-    // Implement early access logic here
-    console.log('Getting early access')
-  }
-
   return (
     <Box>
-      <Header onWaitlistClick={handleWaitlistClick} />
-      <Hero onGetEarlyAccess={handleGetEarlyAccess} />
+      <Header />
+      <Hero />
     </Box>
   )
 }

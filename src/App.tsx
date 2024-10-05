@@ -8,12 +8,19 @@ import {
 } from 'react-router-dom'
 
 import useAuth from './hooks/useAuth'
-import { Authentication, Landing, Main, NotFound } from './pages'
+import {
+  Authentication,
+  Landing,
+  Main,
+  NotFound,
+  NotAuthenticated
+} from './pages'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/'>
       <Route path='*' element={<NotFound />} />
+      <Route path='not-authenticated' element={<NotAuthenticated />} />
       <Route index element={<Landing />} />
       <Route path='auth' element={<Authentication />} />
       {/* Change the path name to whatever is fitting. For example, /chat */}
