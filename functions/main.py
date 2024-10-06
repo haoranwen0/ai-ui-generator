@@ -45,6 +45,15 @@ project_schema = {
 #     return f(*args, **kwargs)
 #   return decorated_function
 
+def get_headers(): 
+  headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '3600'
+    }
+  return headers
+
 def router(request):
   path = request.path
   method = request.method
@@ -179,6 +188,10 @@ def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
 
 client = anthropic.Anthropic(api_key=anthropic_api_key)
 def chat(req: https_fn.Request) -> https_fn.Response:
+  if req.method == 'OPTIONS':
+    return https_fn.Response('', status=204, headers=get_headers())
+  
+  headers = get_headers()
   uid = get_uid(req.headers)
   chat_history = req.json['chat_history']
   chat_history.insert(0, {'role': 'user', 'content': user_initial_prompt()})
@@ -201,7 +214,7 @@ def chat(req: https_fn.Request) -> https_fn.Response:
   return https_fn.Response(
     json.dumps(parsed_content),  # This will now be a properly formatted JSON
     status=200,
-    headers={"Content-Type": "application/json"}
+    headers=headers
   )
 
 def get_uid(header: Dict[str, str]) -> str:
