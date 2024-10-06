@@ -183,13 +183,26 @@ def chat(req: https_fn.Request) -> https_fn.Response:
   chat_history = req.json['chat_history']
   chat_history.insert(0, {'role': 'user', 'content': user_initial_prompt()})
   chat_history.insert(1, {'role': 'assistant', 'content': assistant_initial_prompt()})
+  print("CHAT HISTORY", chat_history)
   completion = client.messages.create(
     model="claude-3-5-sonnet-20240620",
     messages=chat_history,
     max_tokens=8192
   )
-  return completion.content
-
+  print(chat_history)
+  print(completion.content)
+  
+  # Extract the text content from the completion
+  response_content = completion.content[0].text if completion.content else ""
+  
+  # Parse the JSON string into a Python dictionary
+  parsed_content = json.loads(response_content)
+  
+  return https_fn.Response(
+    json.dumps(parsed_content),  # This will now be a properly formatted JSON
+    status=200,
+    headers={"Content-Type": "application/json"}
+  )
 
 def get_uid(header: Dict[str, str]) -> str:
   """
@@ -218,7 +231,7 @@ def get_id_token():
       return None
 
   # Generate a custom token
-  custom_token = create_custom_token("Rv2hcep1ulARPmJTqsft3797mOBP").decode("utf-8")
+  custom_token = create_custom_token("0FKH7u0M6RMVI6adp45VRBHdo2NE").decode("utf-8")
 
 
   def exchange_custom_token_for_id_token(custom_token):
