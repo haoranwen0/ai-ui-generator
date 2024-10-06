@@ -14,6 +14,9 @@ import { FaPaperPlane } from 'react-icons/fa'
 import QuestionsContainer, { Question } from '../Questions'
 import axios from 'axios'
 import { useAppSelector } from '../../../redux/hooks'
+import { addMessage } from '../../../redux/features/chat/chatSlice'
+import { useDispatch } from 'react-redux'
+import { callAIUIGenerator } from '../../../functions/utils'
 
 const questions: Question[] = [
   {
@@ -90,7 +93,7 @@ const questions: Question[] = [
   }
 ]
 
-interface Message {
+export interface Message {
   content: string
   role: 'user' | 'assistant'
 }
@@ -114,8 +117,9 @@ const AssistantResponse: React.FC<{ content: string }> = ({ content }) => {
 }
 
 const FadeInChatComponent: React.FC = () => {
+  const messages = useAppSelector((store) => store.chat.value)
+  const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -162,7 +166,7 @@ const FadeInChatComponent: React.FC = () => {
         content: inputValue,
         role: 'user'
       }
-      setMessages([...messages, newMessage])
+      dispatch(addMessage(newMessage))
       setInputValue('')
       // Simulate bot response
       // setTimeout(() => {
@@ -176,26 +180,14 @@ const FadeInChatComponent: React.FC = () => {
       console.log(await user.getIdToken())
 
       try {
-        const response = await axios.post(
-          'http://127.0.0.1:5001/ai-ui-generator/us-central1/main/chat',
-          {
-            chat_history: [...messages, newMessage]
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${await user.getIdToken()}`
-            }
-          }
+        const data = await callAIUIGenerator(
+          [...messages, newMessage],
+          await user.getIdToken()
         )
 
-        const data = response.data
-
-        console.log(data)
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { content: JSON.stringify(data), role: 'assistant' }
-        ])
+        dispatch(
+          addMessage({ content: JSON.stringify(data), role: 'assistant' })
+        )
       } catch (error) {
         console.log('Error submitting message', error)
       }
@@ -236,13 +228,11 @@ const FadeInChatComponent: React.FC = () => {
             alignItems='stretch'
           >
             {messages.map((message, index) => {
-              console.log(message)
-
               return (
                 <Flex
                   flexDir='column'
                   key={index}
-                  justifyContent={
+                  alignItems={
                     message.role === 'user' ? 'flex-end' : 'flex-start'
                   }
                 >

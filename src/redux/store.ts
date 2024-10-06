@@ -5,7 +5,7 @@ import storage from 'redux-persist/lib/storage'
 import counterReducer from './features/counter/counterSlice'
 import viewToggleReducer from './features/viewToggle/viewToggleSlice'
 import userReducer from './features/user/userSlice'
-
+import chatReducer from './features/chat/chatSlice'
 const persistConfig = {
   key: 'root',
   storage,
@@ -16,7 +16,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   counter: counterReducer,
   viewToggle: viewToggleReducer,
-  user: userReducer
+  user: userReducer,
+  chat: chatReducer
 })
 
 // Create the persisted reducer
