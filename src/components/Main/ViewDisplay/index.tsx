@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Flex } from '@chakra-ui/react'
 import {
   SandpackProvider,
   SandpackLayout,
   SandpackPreview,
   SandpackCodeEditor,
+  useActiveCode,
 } from '@codesandbox/sandpack-react'
 import { useAppSelector } from '../../../redux/hooks'
 
 const ViewDisplay = () => {
   const view = useAppSelector((state) => state.viewToggle.view)
-
   const [code, setCode] = useState(`
 import { ChakraProvider, Box, Heading, Text, Stack, Input, Button } from '@chakra-ui/react'
 
@@ -61,11 +61,25 @@ export default App;
         }}
       >
         <SandpackLayout>
-          {view === 'Code' ? <SandpackCodeEditor /> : <SandpackPreview />}
+          {view === 'Code' ? (
+            <CodeEditor setCode={setCode} />
+          ) : (
+            <SandpackPreview />
+          )}
         </SandpackLayout>
       </SandpackProvider>
     </Flex>
   )
+}
+
+const CodeEditor = ({ setCode }: { setCode: (code: string) => void }) => {
+  const { code } = useActiveCode()
+
+  useEffect(() => {
+    setCode(code)
+  }, [code, setCode])
+
+  return <SandpackCodeEditor showInlineErrors={true} />
 }
 
 export default ViewDisplay
