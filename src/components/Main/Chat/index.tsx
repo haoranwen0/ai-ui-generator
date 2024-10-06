@@ -12,6 +12,9 @@ import {
 } from '@chakra-ui/react'
 import { FaPaperPlane } from 'react-icons/fa'
 import QuestionsContainer, { Question } from '../Questions'
+import axios from 'axios'
+import { auth } from '../../..'
+import { useAppSelector } from '../../../redux/hooks'
 
 const questions: Question[] = [
   {
@@ -89,12 +92,13 @@ const questions: Question[] = [
 ]
 
 interface Message {
-  id: number
-  text: string
-  sender: 'user' | 'bot'
+  content: string
+  role: 'user' | 'assistant'
 }
 
 const FadeInChatComponent: React.FC = () => {
+  const user = useAppSelector((state) => state.user.user)
+
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
@@ -129,25 +133,52 @@ const FadeInChatComponent: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (user === null) {
+      return
+    }
+
     if (inputValue.trim()) {
       const newMessage: Message = {
-        id: Date.now(),
-        text: inputValue,
-        sender: 'user'
+        content: inputValue,
+        role: 'user'
       }
       setMessages([...messages, newMessage])
       setInputValue('')
       // Simulate bot response
-      setTimeout(() => {
-        const botResponse: Message = {
-          id: Date.now() + 1,
-          text: `This is a simulated response to: "${inputValue}"`,
-          sender: 'bot'
-        }
-        setMessages((prevMessages) => [...prevMessages, botResponse])
-      }, 1000)
+      // setTimeout(() => {
+      //   const botResponse: Message = {
+      //     content: `This is a simulated response to: "${inputValue}"`,
+      //     role: 'assistant'
+      //   }
+      //   setMessages((prevMessages) => [...prevMessages, botResponse])
+      // }, 1000)
+
+      console.log(await user.getIdToken())
+
+      try {
+        const response = await axios.post(
+          'http://127.0.0.1:5001/ai-ui-generator/us-central1/main/chat',
+          {
+            chat_history: [...messages, newMessage]
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${await user.getIdToken()}`
+            }
+          }
+        )
+
+        const data = response.data
+
+        console.log(data)
+
+        setMessages((prevMessages) => [...prevMessages, data])
+      } catch (error) {
+        console.log('Error submitting message', error)
+      }
     }
   }
 
@@ -184,25 +215,25 @@ const FadeInChatComponent: React.FC = () => {
             p={4}
             alignItems='stretch'
           >
-            {messages.map((message) => (
+            {messages.map((message, index) => (
               <Flex
                 flexDir='column'
-                key={message.id}
+                key={index}
                 justifyContent={
-                  message.sender === 'user' ? 'flex-end' : 'flex-start'
+                  message.role === 'user' ? 'flex-end' : 'flex-start'
                 }
               >
                 <Box
-                  bg={message.sender === 'user' ? userMessageBg : botMessageBg}
-                  color={message.sender === 'user' ? 'white' : textColor}
+                  bg={message.role === 'user' ? userMessageBg : botMessageBg}
+                  color={message.role === 'user' ? 'white' : textColor}
                   borderRadius='md'
                   px={4}
                   py={2}
                   maxWidth='70%'
                 >
-                  <Text fontSize='md'>{message.text}</Text>
+                  <Text fontSize='md'>{message.content}</Text>
                 </Box>
-                {message.sender === 'bot' && (
+                {message.role === 'assistant' && (
                   <QuestionsContainer questions={questions} />
                 )}
               </Flex>

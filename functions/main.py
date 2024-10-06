@@ -45,16 +45,19 @@ project_schema = {
 #     return f(*args, **kwargs)
 #   return decorated_function
 
-def get_headers(): 
+def get_headers():
   headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Max-Age': '3600'
     }
   return headers
 
 def router(request):
+  if request.method == 'OPTIONS':
+    return https_fn.Response('', status=204, headers=get_headers())
+
   path = request.path
   method = request.method
 
@@ -113,6 +116,9 @@ def router(request):
 
 @https_fn.on_request()
 def main(req: https_fn.Request) -> https_fn.Response:
+  if req.method == 'OPTIONS':
+    return https_fn.Response('', status=204, headers=get_headers())
+
   return router(req)
 
 # def add_message(req: https_fn.Request) -> https_fn.Response:
@@ -188,9 +194,6 @@ def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
 
 client = anthropic.Anthropic(api_key=anthropic_api_key)
 def chat(req: https_fn.Request) -> https_fn.Response:
-  if req.method == 'OPTIONS':
-    return https_fn.Response('', status=204, headers=get_headers())
-  
   headers = get_headers()
   uid = get_uid(req.headers)
   chat_history = req.json['chat_history']
@@ -204,13 +207,13 @@ def chat(req: https_fn.Request) -> https_fn.Response:
   )
   print(chat_history)
   print(completion.content)
-  
+
   # Extract the text content from the completion
   response_content = completion.content[0].text if completion.content else ""
-  
+
   # Parse the JSON string into a Python dictionary
   parsed_content = json.loads(response_content)
-  
+
   return https_fn.Response(
     json.dumps(parsed_content),  # This will now be a properly formatted JSON
     status=200,

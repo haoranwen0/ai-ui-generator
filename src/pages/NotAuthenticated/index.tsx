@@ -85,6 +85,7 @@ const NotAuthenticated = () => {
               size='lg'
               width={['full', 'auto']}
               onClick={() => {
+                navigate('/', { replace: true })
                 console.log('Go to home')
               }}
             >

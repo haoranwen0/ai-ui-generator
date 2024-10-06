@@ -15,20 +15,26 @@ import App from './App'
 import { persistor, store } from './redux/store'
 
 import './index.css'
+import { connectAuthEmulator, getAuth } from 'firebase/auth'
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 const analytics = getAnalytics(app)
+const auth = getAuth(app)
+
+if (process.env.NODE_ENV === 'development') {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099')
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ChakraProvider>
-          <App />
-        </ChakraProvider>
-      </PersistGate>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    </PersistGate>
+  </Provider>
 )
+
+export { auth }
