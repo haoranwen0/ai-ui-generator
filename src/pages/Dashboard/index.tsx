@@ -14,7 +14,7 @@ import {
 import { FiPlus } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth';
 
 interface Project {
   id: string;
@@ -67,6 +67,7 @@ const Dashboard: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
+        console.log("hello", currentUser);
         fetchProjects(currentUser);
       } else {
         setIsLoading(false);
@@ -84,7 +85,9 @@ const Dashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const idToken = await currentUser.getIdToken();
+      console.log("trying token", currentUser);
+      const idToken = await getIdToken(currentUser);
+      console.log("token", idToken);
 
       const response = await axios.get<Project[]>('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects', {
         headers: {
