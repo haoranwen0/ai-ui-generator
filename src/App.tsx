@@ -10,6 +10,7 @@ import {
 import useAuth from './hooks/useAuth'
 import {
   Authentication,
+  Dashboard,
   Landing,
   Main,
   NotFound,
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
       <Route path='not-authenticated' element={<NotAuthenticated />} />
       <Route index element={<Landing />} />
       <Route path='auth' element={<Authentication />} />
+      <Route path='dashboard' element={<Dashboard />} />
       {/* Change the path name to whatever is fitting. For example, /chat */}
       <Route path='main-app-page' element={<Main />} />
     </Route>

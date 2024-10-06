@@ -71,7 +71,7 @@ def router(request):
       "pattern": r"^/project/(?P<projectid>[^/]+)$",
       "methods": {
         "GET": get_project,
-        # "PUT": update_project,
+        "PUT": update_project,
         # "DELETE": delete_project
       }
     },
