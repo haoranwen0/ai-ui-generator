@@ -8,10 +8,11 @@ export default function useAuth() {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in
         console.log('User is signed in', user)
+        console.log(await user.getIdToken())
         dispatch(signIn(user))
       } else {
         // User is signed out
