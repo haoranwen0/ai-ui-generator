@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Button,
@@ -22,8 +22,12 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   sendPasswordResetEmail,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  connectAuthEmulator
 } from 'firebase/auth'
+
+import { auth } from '../../index'
+import useHasAccess from '../../hooks/useHasAccess'
 
 type AuthMode = 'signin' | 'signup' | 'forgot'
 
@@ -105,6 +109,10 @@ const AuthForm: React.FC<AuthFormProps> = ({
 }
 
 const AuthPage: React.FC = () => {
+  useHasAccess({
+    validAccessRedirectLink: '/main-app-page'
+  })
+
   const [tabIndex, setTabIndex] = useState(0)
   const [authMode, setAuthMode] = useState<AuthMode>('signin')
   const bgColor = useColorModeValue('purple.50', 'purple.900')
@@ -114,7 +122,6 @@ const AuthPage: React.FC = () => {
 
   const handleSignIn = async (email: string, password: string) => {
     try {
-      const auth = getAuth()
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -143,7 +150,6 @@ const AuthPage: React.FC = () => {
 
   const handleSignUp = async (email: string, password: string) => {
     try {
-      const auth = getAuth()
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -164,7 +170,6 @@ const AuthPage: React.FC = () => {
 
   const handleForgotPassword = async (email: string) => {
     try {
-      const auth = getAuth()
       await sendPasswordResetEmail(auth, email)
       toast({
         title: 'Success',

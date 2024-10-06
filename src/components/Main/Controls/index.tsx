@@ -26,6 +26,8 @@ import {
 
 import { useAppDispatch } from '../../../redux/hooks'
 import { setView } from '../../../redux/features/viewToggle/viewToggleSlice'
+import { signOut } from 'firebase/auth'
+import { auth } from '../../..'
 
 const IconControls = () => {
   const dispatch = useAppDispatch()
@@ -141,7 +143,9 @@ const IconControls = () => {
                 </Box>
                 <Button
                   leftIcon={<FaSignOutAlt />}
-                  // onClick={onSignOut}
+                  onClick={() => {
+                    signOut(auth)
+                  }}
                   colorScheme='purple'
                   size='sm'
                   variant='outline'

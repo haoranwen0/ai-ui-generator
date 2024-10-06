@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { useAppDispatch } from '../redux/hooks'
 import { signIn, signOut } from '../redux/features/user/userSlice'
+import { auth } from '../index'
+
 export default function useAuth() {
-  const auth = getAuth()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
