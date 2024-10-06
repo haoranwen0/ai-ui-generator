@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -8,14 +8,18 @@ import {
   Text,
   VStack,
   useColorModeValue,
+  Spinner,
+  useToast,
 } from '@chakra-ui/react';
 import { FiPlus } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Make sure to install axios: npm install axios
 
 interface Project {
   id: string;
   name: string;
   lastModified: string;
+  // Add any other properties that your project objects contain
 }
 
 const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
@@ -40,7 +44,7 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
           {project.name}
         </Heading>
         <Text fontSize="sm" color="gray.500">
-          Last modified: {project.lastModified}
+          Last modified: {new Date(project.lastModified).toLocaleDateString()}
         </Text>
       </Box>
     </Box>
@@ -50,19 +54,43 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const bgColor = useColorModeValue('gray.50', 'gray.900');
+  const toast = useToast();
 
-  // Mock data for projects
-  const projects: Project[] = [
-    { id: '1', name: 'Project 1', lastModified: '2023-05-01' },
-    { id: '2', name: 'Project 2', lastModified: '2023-05-02' },
-    { id: '3', name: 'Project 3', lastModified: '2023-05-03' },
-    // Add more mock projects as needed
-  ];
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Replace 'YOUR_API_ENDPOINT' with the actual endpoint for fetching projects
+      const response = await axios.get<Project[]>('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects');
+      setProjects(response.data);
+    } catch (err) {
+      setError('Failed to fetch projects. Please try again later.');
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch projects. Please try again later.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCreateProject = () => {
     // Logic to create a new project
     console.log('Creating a new project');
     // Navigate to the project creation page or open a modal
+    // For example:
+    // navigate('/create-project');
   };
 
   return (
@@ -90,14 +118,24 @@ const Dashboard: React.FC = () => {
       </Flex>
 
       <Box maxWidth="1200px" margin="auto" padding={8}>
-        <Grid
-          templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
-          gap={6}
-        >
-          {projects.map((project) => (
-            <ProjectTile key={project.id} project={project} />
-          ))}
-        </Grid>
+        {isLoading ? (
+          <Flex justify="center" align="center" height="50vh">
+            <Spinner size="xl" color="purple.500" />
+          </Flex>
+        ) : error ? (
+          <Text color="red.500" textAlign="center">
+            {error}
+          </Text>
+        ) : (
+          <Grid
+            templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
+            gap={6}
+          >
+            {projects.map((project) => (
+              <ProjectTile key={project.id} project={project} />
+            ))}
+          </Grid>
+        )}
       </Box>
     </Box>
   );
