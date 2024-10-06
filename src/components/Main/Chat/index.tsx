@@ -13,8 +13,10 @@ import {
 import { FaPaperPlane } from 'react-icons/fa'
 import QuestionsContainer, { Question } from '../Questions'
 import axios from 'axios'
-import { auth } from '../../..'
 import { useAppSelector } from '../../../redux/hooks'
+import { addMessage } from '../../../redux/features/chat/chatSlice'
+import { useDispatch } from 'react-redux'
+import { callAIUIGenerator } from '../../../functions/utils'
 
 const questions: Question[] = [
   {
@@ -91,16 +93,33 @@ const questions: Question[] = [
   }
 ]
 
-interface Message {
+export interface Message {
   content: string
   role: 'user' | 'assistant'
 }
 
-const FadeInChatComponent: React.FC = () => {
-  const user = useAppSelector((state) => state.user.user)
+interface AssistantResponse {
+  code?: string
+  explanation?: string
+  questions?: Question[]
+}
 
+const AssistantResponse: React.FC<{ content: string }> = ({ content }) => {
+  const assistantData: AssistantResponse = JSON.parse(content)
+
+  console.log(content, assistantData)
+
+  if (assistantData.questions) {
+    return <QuestionsContainer questions={assistantData.questions} />
+  }
+
+  return <Text fontSize='md'>{assistantData.explanation}</Text>
+}
+
+const FadeInChatComponent: React.FC = () => {
+  const messages = useAppSelector((store) => store.chat.value)
+  const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -111,6 +130,8 @@ const FadeInChatComponent: React.FC = () => {
   const inputBgColor = useColorModeValue('gray.100', 'gray.700')
   const botMessageBg = useColorModeValue('gray.100', 'gray.700')
   const userMessageBg = useColorModeValue('blue.500', 'blue.400')
+
+  const user = useAppSelector((state) => state.user.user)
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -145,7 +166,7 @@ const FadeInChatComponent: React.FC = () => {
         content: inputValue,
         role: 'user'
       }
-      setMessages([...messages, newMessage])
+      dispatch(addMessage(newMessage))
       setInputValue('')
       // Simulate bot response
       // setTimeout(() => {
@@ -159,23 +180,14 @@ const FadeInChatComponent: React.FC = () => {
       console.log(await user.getIdToken())
 
       try {
-        const response = await axios.post(
-          'http://127.0.0.1:5001/ai-ui-generator/us-central1/main/chat',
-          {
-            chat_history: [...messages, newMessage]
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${await user.getIdToken()}`
-            }
-          }
+        const data = await callAIUIGenerator(
+          [...messages, newMessage],
+          await user.getIdToken()
         )
 
-        const data = response.data
-
-        console.log(data)
-
-        setMessages((prevMessages) => [...prevMessages, data])
+        dispatch(
+          addMessage({ content: JSON.stringify(data), role: 'assistant' })
+        )
       } catch (error) {
         console.log('Error submitting message', error)
       }
@@ -215,29 +227,41 @@ const FadeInChatComponent: React.FC = () => {
             p={4}
             alignItems='stretch'
           >
-            {messages.map((message, index) => (
-              <Flex
-                flexDir='column'
-                key={index}
-                justifyContent={
-                  message.role === 'user' ? 'flex-end' : 'flex-start'
-                }
-              >
-                <Box
-                  bg={message.role === 'user' ? userMessageBg : botMessageBg}
-                  color={message.role === 'user' ? 'white' : textColor}
-                  borderRadius='md'
-                  px={4}
-                  py={2}
-                  maxWidth='70%'
+            {messages.map((message, index) => {
+              return (
+                <Flex
+                  flexDir='column'
+                  key={index}
+                  alignItems={
+                    message.role === 'user' ? 'flex-end' : 'flex-start'
+                  }
                 >
-                  <Text fontSize='md'>{message.content}</Text>
-                </Box>
-                {message.role === 'assistant' && (
-                  <QuestionsContainer questions={questions} />
-                )}
-              </Flex>
-            ))}
+                  {message.role === 'user' ? (
+                    <Box
+                      bg={userMessageBg}
+                      color={textColor}
+                      borderRadius='md'
+                      px={4}
+                      py={2}
+                      maxWidth='70%'
+                    >
+                      <Text fontSize='md'>{message.content}</Text>
+                    </Box>
+                  ) : (
+                    <Box
+                      bg={botMessageBg}
+                      color={textColor}
+                      borderRadius='md'
+                      px={4}
+                      py={2}
+                      maxWidth='70%'
+                    >
+                      <AssistantResponse content={message.content} />
+                    </Box>
+                  )}
+                </Flex>
+              )
+            })}
             <div ref={messagesEndRef} />
           </VStack>
           <Box p={4}>

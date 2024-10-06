@@ -10,6 +10,11 @@ import {
   useColorModeValue
 } from '@chakra-ui/react'
 import { FaQuestionCircle } from 'react-icons/fa'
+import { addMessage } from '../../../redux/features/chat/chatSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { callAIUIGenerator } from '../../../functions/utils'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { Message } from '../Chat'
 
 // Define the interfaces
 interface Option {
@@ -101,13 +106,33 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
   questions
 }) => {
   const [answers, setAnswers] = React.useState<Record<number, string>>({})
+  const dispatch = useDispatch()
+  const messages = useAppSelector((store) => store.chat.value)
+  const user = useAppSelector((store) => store.user.user)
 
   const handleAnswer = (id: number, answer: string) => {
     setAnswers((prev) => ({ ...prev, [id]: answer }))
   }
 
-  const handleSubmit = () => {
-    console.log('answers', answers)
+  const handleSubmit = async () => {
+    if (user === null) {
+      return
+    }
+
+    const newMessage: Message = {
+      content: JSON.stringify(answers),
+      role: 'user'
+    }
+    dispatch(addMessage(newMessage))
+    try {
+      const data = await callAIUIGenerator(
+        [...messages, newMessage],
+        await user.getIdToken()
+      )
+      dispatch(addMessage({ content: JSON.stringify(data), role: 'assistant' }))
+    } catch (error) {
+      console.log('Error submitting message', error)
+    }
   }
 
   // Theme-aware colors for the submit button
