@@ -6,10 +6,12 @@ import counterReducer from './features/counter/counterSlice'
 import viewToggleReducer from './features/viewToggle/viewToggleSlice'
 import userReducer from './features/user/userSlice'
 import chatReducer from './features/chat/chatSlice'
+import codeEditorReducer from './features/codeEditor/codeEditorSlice'
+
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['counter', 'viewToggle', 'user'] // Only 'counter' will be persisted
+  whitelist: ['counter', 'viewToggle', 'user', 'codeEditor'] // Only 'counter' will be persisted
 }
 
 // Combine reducers
@@ -17,7 +19,8 @@ const rootReducer = combineReducers({
   counter: counterReducer,
   viewToggle: viewToggleReducer,
   user: userReducer,
-  chat: chatReducer
+  chat: chatReducer,
+  codeEditor: codeEditorReducer
 })
 
 // Create the persisted reducer

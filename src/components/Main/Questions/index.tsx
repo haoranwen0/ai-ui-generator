@@ -10,11 +10,15 @@ import {
   useColorModeValue
 } from '@chakra-ui/react'
 import { FaQuestionCircle } from 'react-icons/fa'
-import { addMessage } from '../../../redux/features/chat/chatSlice'
+import {
+  addMessage,
+  setIsLoading
+} from '../../../redux/features/chat/chatSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { callAIUIGenerator } from '../../../functions/utils'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { Message } from '../Chat'
+import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 
 // Define the interfaces
 interface Option {
@@ -124,14 +128,21 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
       role: 'user'
     }
     dispatch(addMessage(newMessage))
+    dispatch(setIsLoading(true))
     try {
       const data = await callAIUIGenerator(
         [...messages, newMessage],
         await user.getIdToken()
       )
       dispatch(addMessage({ content: JSON.stringify(data), role: 'assistant' }))
+
+      if (data.code) {
+        dispatch(setCode(data.code))
+      }
     } catch (error) {
       console.log('Error submitting message', error)
+    } finally {
+      dispatch(setIsLoading(false))
     }
   }
 

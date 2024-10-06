@@ -8,15 +8,21 @@ import {
   useColorModeValue,
   IconButton,
   Heading,
-  Fade
+  Fade,
+  Spinner
 } from '@chakra-ui/react'
 import { FaPaperPlane } from 'react-icons/fa'
 import QuestionsContainer, { Question } from '../Questions'
 import axios from 'axios'
 import { useAppSelector } from '../../../redux/hooks'
-import { addMessage } from '../../../redux/features/chat/chatSlice'
+import {
+  addMessage,
+  selectIsLoading,
+  setIsLoading
+} from '../../../redux/features/chat/chatSlice'
 import { useDispatch } from 'react-redux'
 import { callAIUIGenerator } from '../../../functions/utils'
+import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 
 const questions: Question[] = [
   {
@@ -132,6 +138,7 @@ const FadeInChatComponent: React.FC = () => {
   const userMessageBg = useColorModeValue('blue.500', 'blue.400')
 
   const user = useAppSelector((state) => state.user.user)
+  const isLoading = useAppSelector(selectIsLoading)
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -168,16 +175,8 @@ const FadeInChatComponent: React.FC = () => {
       }
       dispatch(addMessage(newMessage))
       setInputValue('')
-      // Simulate bot response
-      // setTimeout(() => {
-      //   const botResponse: Message = {
-      //     content: `This is a simulated response to: "${inputValue}"`,
-      //     role: 'assistant'
-      //   }
-      //   setMessages((prevMessages) => [...prevMessages, botResponse])
-      // }, 1000)
 
-      console.log(await user.getIdToken())
+      dispatch(setIsLoading(true))
 
       try {
         const data = await callAIUIGenerator(
@@ -188,8 +187,14 @@ const FadeInChatComponent: React.FC = () => {
         dispatch(
           addMessage({ content: JSON.stringify(data), role: 'assistant' })
         )
+
+        if (data.code) {
+          dispatch(setCode(data.code))
+        }
       } catch (error) {
         console.log('Error submitting message', error)
+      } finally {
+        dispatch(setIsLoading(false))
       }
     }
   }
@@ -262,6 +267,17 @@ const FadeInChatComponent: React.FC = () => {
                 </Flex>
               )
             })}
+            {isLoading && (
+              <Flex justifyContent='center' alignItems='center' width='100%'>
+                <Spinner
+                  thickness='2px'
+                  speed='0.65s'
+                  emptyColor='gray.200'
+                  color='blue.500'
+                  size='sm'
+                />
+              </Flex>
+            )}
             <div ref={messagesEndRef} />
           </VStack>
           <Box p={4}>
