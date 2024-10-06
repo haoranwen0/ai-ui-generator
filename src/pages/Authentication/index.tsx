@@ -120,11 +120,14 @@ const AuthPage: React.FC = () => {
         email,
         password
       )
-      userCredential.user.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-        console.log(idToken);
-      }).catch(function(error) {
-        console.error("Failed to get ID token");
-      });
+      userCredential.user
+        .getIdToken(/* forceRefresh */ true)
+        .then(function (idToken) {
+          console.log(idToken)
+        })
+        .catch(function (error) {
+          console.error('Failed to get ID token')
+        })
       console.log('User signed in:', userCredential.user)
       toast({
         title: 'Success',
@@ -231,10 +234,10 @@ const AuthPage: React.FC = () => {
       >
         <VStack spacing={6} align='stretch'>
           <Heading as='h1' size='xl' textAlign='center' color={textColor}>
-            PurpleAuth
+            [Platform Name]
           </Heading>
           <Text fontSize='md' textAlign='center' color={textColor}>
-            Your Secure Authentication Solution
+            Log in or sign up to get started!
           </Text>
           {authMode !== 'forgot' ? (
             <Tabs
