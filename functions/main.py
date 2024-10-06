@@ -99,7 +99,7 @@ def router(request):
         return route["methods"][method](request, **params)
       else:
         return https_fn.Response("Method not allowed", status=405)
-  
+
   return https_fn.Response("Not found", status=404)
 
 @https_fn.on_request()
@@ -147,7 +147,7 @@ def create_project(req: https_fn.Request) -> https_fn.Response:
     headers={"Content-Type": "application/json"}
   )
 
-def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response: 
+def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
   uid = get_uid(req.headers)
   project = db.collection("users").document(uid).collection('projects').document(projectid).get()
   if not project.exists:
@@ -159,7 +159,7 @@ def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
   )
 
 # TODO: Change so that project can't be renamed
-def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response: 
+def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
   uid = get_uid(req.headers)
   project_ref = db.collection("users").document(uid).collection("projects").document(projectid)
   old_project = project_ref.get()
@@ -210,7 +210,7 @@ def get_uid(header: Dict[str, str]) -> str:
   """
   if 'Authorization' not in header:
     raise https_fn.HttpsError(https_fn.FunctionsErrorCode.INVALID_ARGUMENT, 'No authorization token provided')
-  
+
   token = header['Authorization'].split(' ')[1]
   try:
     decoded_token = auth.verify_id_token(token)
@@ -219,7 +219,7 @@ def get_uid(header: Dict[str, str]) -> str:
     raise https_fn.HttpsError(https_fn.FunctionsErrorCode.UNAUTHENTICATED, 'Unauthorized')
 
 
-def get_test_user(req: https_fn.Request) -> https_fn.Response: 
+def get_test_user(req: https_fn.Request) -> https_fn.Response:
     return https_fn.Response(get_id_token())
 
 def get_id_token():

@@ -63,6 +63,7 @@ const IconControls = () => {
       position='absolute'
       bottom='4'
       left='4'
+      zIndex={1000}
       // onMouseEnter={() => setIsVisible(true)}
       // onMouseLeave={() => setIsVisible(false)}
     >

@@ -1,17 +1,17 @@
 import React, { useState } from 'react'
 
-import { Box, Button, ChakraProvider, Flex } from '@chakra-ui/react'
-import MonacoEditor from '@monaco-editor/react'
-import { LivePreview, LiveProvider } from 'react-live'
-import * as ChakraUI from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
+import {
+  SandpackProvider,
+  SandpackLayout,
+  SandpackPreview,
+  SandpackCodeEditor
+} from '@codesandbox/sandpack-react'
 
-import ErrorBoundary from '../../ErrorBoundary'
 import { useAppSelector } from '../../../redux/hooks'
 
 const ViewDisplay = () => {
   const view = useAppSelector((state) => state.viewToggle.view)
-
-  console.log(view)
 
   const [code, setCode] = useState(`
 function App() {
@@ -29,39 +29,24 @@ function App() {
   );
 }
 `)
-  const [error, setError] = useState(null)
 
   return (
-    <Flex h='100vh'>
-      <Box w='100%' h='100%' overflow='auto'>
-        {view === 'Code' ? (
-          <MonacoEditor
-            height='100%'
-            language='typescript'
-            theme='vs-dark'
-            value={code}
-            onChange={(value) => setCode(value || '')}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              // Disable error highlighting
-              renderValidationDecorations: 'off'
-            }}
-            beforeMount={(monaco) => {
-              // Disable all markers (error squiggles)
-              // monaco.editor.setModelMarkers = () => {}
-            }}
-          />
-        ) : (
-          <ErrorBoundary>
-            <ChakraProvider>
-              <LiveProvider code={code} scope={ChakraUI}>
-                <LivePreview />
-              </LiveProvider>
-            </ChakraProvider>
-          </ErrorBoundary>
-        )}
-      </Box>
+    <Flex h='100vh' w='100%'>
+      <SandpackProvider
+        template='react'
+        theme='auto'
+        options={{
+          classes: {
+            'sp-wrapper': 'custom-wrapper',
+            'sp-layout': 'custom-layout',
+            'sp-tab-button': 'custom-tab'
+          }
+        }}
+      >
+        <SandpackLayout>
+          {view === 'Code' ? <SandpackCodeEditor /> : <SandpackPreview />}
+        </SandpackLayout>
+      </SandpackProvider>
     </Flex>
   )
 }
