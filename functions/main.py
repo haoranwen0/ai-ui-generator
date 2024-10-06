@@ -134,6 +134,7 @@ def main(req: https_fn.Request) -> https_fn.Response:
 #   return https_fn.Response(f"Message added with ID: {doc_ref.id}")
 
 def list_projects(req: https_fn.Request) -> https_fn.Response:
+  headers = get_headers()
   uid = get_uid(req.headers)
   docs = db.collection("users").document(uid).collection('projects').stream()
   project_list = []
@@ -143,10 +144,11 @@ def list_projects(req: https_fn.Request) -> https_fn.Response:
   return https_fn.Response(
     json.dumps(project_list),
     status=200,
-    headers={"Content-Type": "application/json"}
+    headers=headers
   )
 
 def create_project(req: https_fn.Request) -> https_fn.Response:
+  headers = get_headers()
   uid = get_uid(req.headers)
   project = req.json
   print(project)
@@ -159,10 +161,11 @@ def create_project(req: https_fn.Request) -> https_fn.Response:
   return https_fn.Response(
     json.dumps({'message': 'Project created', 'projectid': doc_ref.id}),
     status=200,
-    headers={"Content-Type": "application/json"}
+    headers=headers
   )
 
 def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
+  headers = get_headers()
   uid = get_uid(req.headers)
   project = db.collection("users").document(uid).collection('projects').document(projectid).get()
   if not project.exists:
@@ -170,11 +173,12 @@ def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
   return https_fn.Response(
     json.dumps(project.to_dict()),
     status=200,
-    headers={"Content-Type": "application/json"}
+    headers=headers
   )
 
 # TODO: Change so that project can't be renamed
 def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
+  headers = get_headers()
   uid = get_uid(req.headers)
   project_ref = db.collection("users").document(uid).collection("projects").document(projectid)
   old_project = project_ref.get()
@@ -189,7 +193,7 @@ def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
   return https_fn.Response(
     json.dumps({'message': 'Project updated'}),
     status=200,
-    headers={"Content-Type": "application/json"}
+    headers=headers
   )
 
 client = anthropic.Anthropic(api_key=anthropic_api_key)
