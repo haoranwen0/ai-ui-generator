@@ -118,7 +118,7 @@ def main(req: https_fn.Request) -> https_fn.Response:
 
 #   return https_fn.Response(f"Message added with ID: {doc_ref.id}")
 
-def list_projects(req):
+def list_projects(req: https_fn.Request) -> https_fn.Response:
   uid = get_uid(req.headers)
   docs = db.collection("users").document(uid).collection('projects').stream()
   project_list = []
@@ -220,9 +220,6 @@ def get_uid(header: Dict[str, str]) -> str:
 
 
 def get_test_user(req: https_fn.Request) -> https_fn.Response:
-    return https_fn.Response(get_id_token())
-
-def get_id_token():
   def create_custom_token(uid):
     try:
       return auth.create_custom_token(uid)
@@ -230,8 +227,9 @@ def get_id_token():
       print(f"Error creating custom token: {e}")
       return None
 
+  uid = req.json["uid"]
   # Generate a custom token
-  custom_token = create_custom_token("0FKH7u0M6RMVI6adp45VRBHdo2NE").decode("utf-8")
+  custom_token = create_custom_token(uid).decode("utf-8")
 
 
   def exchange_custom_token_for_id_token(custom_token):
@@ -249,4 +247,4 @@ def get_id_token():
 
   # Exchange the custom token for an ID token
   id_token = exchange_custom_token_for_id_token(custom_token)
-  return id_token
+  return https_fn.Response(id_token)
