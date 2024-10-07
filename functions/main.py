@@ -48,7 +48,7 @@ project_schema = {
 def get_headers():
   headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Max-Age': '3600'
     }
@@ -139,7 +139,11 @@ def list_projects(req: https_fn.Request) -> https_fn.Response:
   docs = db.collection("users").document(uid).collection('projects').stream()
   project_list = []
   for doc in docs:
-    project_list.append(doc.to_dict())
+    project_dict = {
+      "id": doc.id,
+      "name": doc.get("name")
+    }
+    project_list.append(project_dict)
     # print(f"{doc.id} => {doc.to_dict()}")
   return https_fn.Response(
     json.dumps(project_list),
@@ -150,14 +154,18 @@ def list_projects(req: https_fn.Request) -> https_fn.Response:
 def create_project(req: https_fn.Request) -> https_fn.Response:
   headers = get_headers()
   uid = get_uid(req.headers)
-  project = req.json
-  print(project)
-  print(type(project))
-  try:
-    validate(project, project_schema)
-  except:
-    return https_fn.Response('Invalid project structure', status=405)
-  _, doc_ref = db.collection("users").document(uid).collection('projects').add(project)
+  # project = req.json
+  # print(project)
+  # print(type(project))
+  # try:
+  #   validate(project, project_schema)
+  # except:
+  #   return https_fn.Response('Invalid project structure', status=405)
+  blank_project = {
+    "name": "",
+    "code": ""
+  }
+  _, doc_ref = db.collection("users").document(uid).collection('projects').add(blank_project)
   return https_fn.Response(
     json.dumps({'message': 'Project created', 'projectid': doc_ref.id}),
     status=200,
