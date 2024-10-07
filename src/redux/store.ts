@@ -11,7 +11,7 @@ import codeEditorReducer from './features/codeEditor/codeEditorSlice'
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['counter', 'viewToggle', 'user', 'codeEditor'] // Only 'counter' will be persisted
+  whitelist: [] // Only 'counter' will be persisted
 }
 
 // Combine reducers

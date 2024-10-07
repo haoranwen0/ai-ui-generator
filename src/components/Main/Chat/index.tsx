@@ -131,11 +131,12 @@ const FadeInChatComponent: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const bgColor = useColorModeValue('white', 'gray.800')
-  const textColor = useColorModeValue('gray.800', 'gray.100')
-  const inputBgColor = useColorModeValue('gray.100', 'gray.700')
-  const botMessageBg = useColorModeValue('gray.100', 'gray.700')
-  const userMessageBg = useColorModeValue('blue.500', 'blue.400')
+  const bgColor = useColorModeValue('purple.50', 'purple.900')
+  const textColor = useColorModeValue('purple.800', 'purple.100')
+  const inputBgColor = useColorModeValue('purple.100', 'purple.700')
+  const botMessageBg = useColorModeValue('purple.100', 'purple.700')
+  const userMessageBg = useColorModeValue('purple.300', 'purple.500')
+  const buttonColor = useColorModeValue('purple.400', 'purple.300')
 
   const user = useAppSelector((state) => state.user.user)
   const isLoading = useAppSelector(selectIsLoading)
@@ -220,7 +221,12 @@ const FadeInChatComponent: React.FC = () => {
           mb={2}
           onMouseLeave={() => setIsOpen(false)}
         >
-          <Flex p={4} borderBottomWidth={1} alignItems='center'>
+          <Flex
+            p={4}
+            borderBottomWidth={1}
+            alignItems='center'
+            borderBottomColor={useColorModeValue('purple.200', 'purple.600')}
+          >
             <Heading size='md' color={textColor}>
               ChatBot
             </Heading>
@@ -232,48 +238,35 @@ const FadeInChatComponent: React.FC = () => {
             p={4}
             alignItems='stretch'
           >
-            {messages.map((message, index) => {
-              return (
-                <Flex
-                  flexDir='column'
-                  key={index}
-                  alignItems={
-                    message.role === 'user' ? 'flex-end' : 'flex-start'
-                  }
+            {messages.map((message, index) => (
+              <Flex
+                flexDir='column'
+                key={index}
+                alignItems={message.role === 'user' ? 'flex-end' : 'flex-start'}
+              >
+                <Box
+                  bg={message.role === 'user' ? userMessageBg : botMessageBg}
+                  color={textColor}
+                  borderRadius='md'
+                  px={4}
+                  py={2}
+                  maxWidth='70%'
                 >
                   {message.role === 'user' ? (
-                    <Box
-                      bg={userMessageBg}
-                      color={textColor}
-                      borderRadius='md'
-                      px={4}
-                      py={2}
-                      maxWidth='70%'
-                    >
-                      <Text fontSize='md'>{message.content}</Text>
-                    </Box>
+                    <Text fontSize='md'>{message.content}</Text>
                   ) : (
-                    <Box
-                      bg={botMessageBg}
-                      color={textColor}
-                      borderRadius='md'
-                      px={4}
-                      py={2}
-                      maxWidth='70%'
-                    >
-                      <AssistantResponse content={message.content} />
-                    </Box>
+                    <AssistantResponse content={message.content} />
                   )}
-                </Flex>
-              )
-            })}
+                </Box>
+              </Flex>
+            ))}
             {isLoading && (
               <Flex justifyContent='center' alignItems='center' width='100%'>
                 <Spinner
                   thickness='2px'
                   speed='0.65s'
-                  emptyColor='gray.200'
-                  color='blue.500'
+                  emptyColor={useColorModeValue('purple.100', 'purple.700')}
+                  color={buttonColor}
                   size='sm'
                 />
               </Flex>
@@ -292,12 +285,17 @@ const FadeInChatComponent: React.FC = () => {
                   borderRadius='md'
                   pr={10}
                   flex={1}
+                  _placeholder={{
+                    color: useColorModeValue('purple.400', 'purple.300')
+                  }}
                 />
                 <IconButton
                   aria-label='Send message'
                   icon={<FaPaperPlane />}
                   type='submit'
-                  colorScheme='blue'
+                  colorScheme='purple'
+                  bg={buttonColor}
+                  _hover={{ bg: useColorModeValue('purple.500', 'purple.400') }}
                   position='absolute'
                   right={4}
                   zIndex={2}

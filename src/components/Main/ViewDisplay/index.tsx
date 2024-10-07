@@ -5,7 +5,8 @@ import {
   SandpackLayout,
   SandpackPreview,
   SandpackCodeEditor,
-  useActiveCode
+  useActiveCode,
+  Sandpack
 } from '@codesandbox/sandpack-react'
 import { useAppSelector } from '../../../redux/hooks'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
@@ -42,7 +43,7 @@ const ViewDisplay = () => {
 
   return (
     <Flex h='100vh' w='100%'>
-      <SandpackProvider
+      <Sandpack
         template='react'
         theme='auto'
         customSetup={{
@@ -61,17 +62,19 @@ const ViewDisplay = () => {
           '/App.js': code
         }}
         options={{
+          showTabs: true,
+          showLineNumbers: true,
+          showInlineErrors: true,
+          wrapContent: true,
           classes: {
             'sp-wrapper': 'custom-wrapper',
             'sp-layout': 'custom-layout',
-            'sp-tab-button': 'custom-tab'
+            'sp-tab-button': 'custom-tab',
+            'sp-editor': 'custom-editor',
+            'sp-preview': 'custom-preview'
           }
         }}
-      >
-        <SandpackLayout>
-          {view === 'Code' ? <SandpackCodeEditor /> : <SandpackPreview />}
-        </SandpackLayout>
-      </SandpackProvider>
+      />
     </Flex>
   )
 }

@@ -10,7 +10,9 @@ import {
   PopoverContent,
   PopoverBody,
   Text,
-  Button
+  Button,
+  useDisclosure,
+  SlideFade
 } from '@chakra-ui/react'
 import {
   FaSun,
@@ -19,8 +21,6 @@ import {
   FaEye,
   FaCog,
   FaSignOutAlt,
-  FaMagic,
-  FaRobot,
   FaComments
 } from 'react-icons/fa'
 
@@ -31,13 +31,13 @@ import { auth } from '../../..'
 
 const IconControls = () => {
   const dispatch = useAppDispatch()
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const { colorMode, toggleColorMode } = useColorMode()
-  const [isVisible, setIsVisible] = useState(true)
-  const [usageRemaining, setUsageRemaining] = useState(15)
+  const [usageRemaining] = useState(15)
 
-  const iconColor = { light: 'purple.400', dark: 'purple.200' }
-  const bgColor = { light: 'purple.50', dark: 'purple.900' }
+  const iconColor = { light: 'blue.600', dark: 'blue.200' }
+  const bgColor = { light: 'blue.50', dark: 'blue.900' }
 
   const icons = [
     {
@@ -62,101 +62,98 @@ const IconControls = () => {
 
   return (
     <Box
-      position='absolute'
-      bottom='4'
-      left='4'
+      position='fixed'
+      bottom={4}
+      left={4}
       zIndex={1000}
-      // onMouseEnter={() => setIsVisible(true)}
-      // onMouseLeave={() => setIsVisible(false)}
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
     >
-      <Box
-        position='absolute'
-        bottom='0'
-        left='0'
-        width='200px'
-        height='200px'
-        opacity={0}
-      />
-      <VStack
-        spacing={1}
-        bg={bgColor[colorMode]}
-        borderRadius='md'
-        p={1}
-        boxShadow='md'
-        opacity={isVisible ? 1 : 0}
-        transform={`translateY(${isVisible ? 0 : 10}px)`}
-        transition='all 0.3s ease-in-out'
-      >
-        {icons.map((item) => (
-          <Tooltip key={item.name} label={item.name} placement='right' hasArrow>
-            <IconButton
-              aria-label={item.name}
-              icon={<item.icon />}
-              variant='ghost'
-              color={iconColor[colorMode]}
-              _hover={{ bg: 'purple.100', color: 'purple.600' }}
-              _active={{ bg: 'purple.200', color: 'purple.700' }}
-              onClick={item.onClick}
-              transition='all 0.2s'
-            />
-          </Tooltip>
-        ))}
-        <Popover placement='right-start'>
-          <PopoverTrigger>
-            <IconButton
-              aria-label='Settings'
-              icon={<FaCog />}
-              variant='ghost'
-              color={iconColor[colorMode]}
-              _hover={{ bg: 'purple.100', color: 'purple.600' }}
-              _active={{ bg: 'purple.200', color: 'purple.700' }}
-              transition='all 0.2s'
-            />
-          </PopoverTrigger>
-          <PopoverContent
-            width='200px'
-            bg={bgColor[colorMode]}
-            borderColor={iconColor[colorMode]}
-          >
-            <PopoverBody>
-              <VStack spacing={3} align='stretch'>
-                <Box>
-                  <Text fontWeight='bold' fontSize='sm'>
-                    Usage Remaining
-                  </Text>
-                  <Text fontSize='sm'>{usageRemaining} credits</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight='bold' fontSize='sm' mb={1}>
-                    Theme
-                  </Text>
+      <SlideFade in={isOpen} offsetX='-20px'>
+        <VStack
+          spacing={1}
+          bg={bgColor[colorMode]}
+          borderRadius='md'
+          p={2}
+          boxShadow='md'
+          alignItems='flex-start'
+        >
+          {icons.map((item) => (
+            <Tooltip
+              key={item.name}
+              label={item.name}
+              placement='right'
+              hasArrow
+            >
+              <IconButton
+                aria-label={item.name}
+                icon={<item.icon />}
+                variant='ghost'
+                color={iconColor[colorMode]}
+                _hover={{ bg: 'blue.100', color: 'blue.600' }}
+                _active={{ bg: 'blue.200', color: 'blue.700' }}
+                onClick={item.onClick}
+                transition='all 0.2s'
+              />
+            </Tooltip>
+          ))}
+          <Popover placement='right-start'>
+            <PopoverTrigger>
+              <IconButton
+                aria-label='Settings'
+                icon={<FaCog />}
+                variant='ghost'
+                color={iconColor[colorMode]}
+                _hover={{ bg: 'blue.100', color: 'blue.600' }}
+                _active={{ bg: 'blue.200', color: 'blue.700' }}
+                transition='all 0.2s'
+              />
+            </PopoverTrigger>
+            <PopoverContent
+              width='200px'
+              bg={bgColor[colorMode]}
+              borderColor={iconColor[colorMode]}
+            >
+              <PopoverBody>
+                <VStack spacing={3} align='stretch'>
+                  <Box>
+                    <Text fontWeight='bold' fontSize='sm'>
+                      Usage Remaining
+                    </Text>
+                    <Text fontSize='sm'>{usageRemaining} credits</Text>
+                  </Box>
+                  <Box>
+                    <Text fontWeight='bold' fontSize='sm' mb={1}>
+                      Theme
+                    </Text>
+                    <Button
+                      leftIcon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
+                      onClick={toggleColorMode}
+                      colorScheme='blue'
+                      size='sm'
+                      variant='outline'
+                      width='100%'
+                    >
+                      {colorMode === 'light' ? 'Dark' : 'Light'} Mode
+                    </Button>
+                  </Box>
                   <Button
-                    leftIcon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
-                    onClick={toggleColorMode}
-                    colorScheme='purple'
+                    leftIcon={<FaSignOutAlt />}
+                    onClick={() => {
+                      signOut(auth)
+                    }}
+                    colorScheme='blue'
                     size='sm'
                     variant='outline'
-                    width='100%'
                   >
-                    {colorMode === 'light' ? 'Dark' : 'Light'} Mode
+                    Sign Out
                   </Button>
-                </Box>
-                <Button
-                  leftIcon={<FaSignOutAlt />}
-                  onClick={() => {
-                    signOut(auth)
-                  }}
-                  colorScheme='purple'
-                  size='sm'
-                  variant='outline'
-                >
-                  Sign Out
-                </Button>
-              </VStack>
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
-      </VStack>
+                </VStack>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        </VStack>
+      </SlideFade>
     </Box>
   )
 }
