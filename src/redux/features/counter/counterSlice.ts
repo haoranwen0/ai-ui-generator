@@ -10,7 +10,7 @@ interface CounterState {
 
 // Define the initial state using that type
 const initialState: CounterState = {
-  value: 0
+  value: 15
 }
 
 export const counterSlice = createSlice({
@@ -18,6 +18,9 @@ export const counterSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    setCount: (state, action: PayloadAction<number>) => {
+      state.value = action.payload
+    },
     increment: (state) => {
       state.value += 1
     },
@@ -31,7 +34,7 @@ export const counterSlice = createSlice({
   }
 })
 
-export const { increment, decrement, incrementByAmount } = counterSlice.actions
+export const { setCount, increment, decrement, incrementByAmount } = counterSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectCount = (state: RootState) => state.counter.value

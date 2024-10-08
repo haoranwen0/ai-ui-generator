@@ -78,7 +78,7 @@ def router(request):
             },
         },
         {"pattern": r"^/chat$", "methods": {"POST": chat}},
-        {"pattern": r"^/count$", "methods": {"GET": get_api_count}},
+        {"pattern": r"^/usage$", "methods": {"GET": get_api_count}},
         {"pattern": r"^/test$", "methods": {"GET": get_test_user}},
         # {
         #   "pattern": r"^/api/products/(?P<product_id>\w+)$",

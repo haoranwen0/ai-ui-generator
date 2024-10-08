@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   VStack,
@@ -24,17 +24,48 @@ import {
   FaComments
 } from 'react-icons/fa'
 
-import { useAppDispatch } from '../../../redux/hooks'
 import { setView } from '../../../redux/features/viewToggle/viewToggleSlice'
-import { signOut } from 'firebase/auth'
-import { auth } from '../../..'
+import { signOut, onAuthStateChanged, getAuth, User, getIdToken } from 'firebase/auth'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { setCount } from '../../../redux/features/counter/counterSlice'
+import axios from 'axios';
 
 const IconControls = () => {
-  const dispatch = useAppDispatch()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const dispatch = useAppDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const auth = getAuth();
+
+  const counter = useAppSelector((state) => state.counter.value)
 
   const { colorMode, toggleColorMode } = useColorMode()
-  const [usageRemaining] = useState(15)
+  // const [usageRemaining, setUsageRemaining] = useState(15)
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        fetchUsage(currentUser);
+      } else {
+        console.log('No user signed in');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const fetchUsage = async (currentUser: User) => {
+    try {
+      const idToken = await getIdToken(currentUser);
+      const response = await axios.get('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/usage', {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      console.log(response.data)
+      dispatch(setCount(response.data['count']));
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+    }
+  };
 
   const iconColor = { light: 'purple.600', dark: 'purple.200' }
   const bgColor = { light: 'gray.50', dark: 'gray.900' }
@@ -123,7 +154,7 @@ const IconControls = () => {
                     <Text fontWeight='bold' fontSize='sm'>
                       Usage Remaining
                     </Text>
-                    <Text fontSize='sm'>{usageRemaining} credits</Text>
+                    <Text fontSize='sm'>{counter} credits</Text>
                   </Box>
                   {/* <Box>
                     <Text fontWeight='bold' fontSize='sm' mb={1}>
