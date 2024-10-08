@@ -110,6 +110,27 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const defaultCode = `import { ChakraProvider, Box, Heading, Text, Stack, Input, Button } from '@chakra-ui/react'
+
+  function App() {
+    return (
+      <ChakraProvider>
+        <Box p={4}>
+          <Heading mb={4}>Hello, Chakra UI!</Heading>
+          <Text mb={2}>This is a sample component using Chakra UI.</Text>
+          <Stack spacing={3}>
+            <Input placeholder="Enter your name" />
+            <Button colorScheme="blue">
+              Click me
+            </Button>
+          </Stack>
+        </Box>
+      </ChakraProvider>
+    );
+  }
+
+  export default App;`
+
   const handleCreateProject = async () => {
     if (user === null || newProjectName.trim() === '') {
       return;
@@ -117,7 +138,7 @@ const Dashboard: React.FC = () => {
     try {
       const idToken = await getIdToken(user);
       const response = await axios.post('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects',
-        { name: newProjectName, code: '' },
+        { name: newProjectName, code: defaultCode },
         {
           headers: {
             Authorization: `Bearer ${idToken}`,
@@ -197,26 +218,56 @@ const Dashboard: React.FC = () => {
         )}
       </Box>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create New Project</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        isCentered
+      >
+        <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) hue-rotate(15deg)" />
+        <ModalContent 
+          bg={useColorModeValue('white', 'gray.800')}
+          borderRadius="md"
+          boxShadow="xl"
+        >
+          <ModalHeader 
+            borderBottomWidth="1px" 
+            borderColor={useColorModeValue('purple.100', 'purple.700')}
+            color={useColorModeValue('purple.700', 'purple.200')}
+          >
+            Create New Project
+          </ModalHeader>
+          <ModalCloseButton color={useColorModeValue('purple.500', 'purple.200')} />
+          <ModalBody pt={6}>
             <FormControl>
-              <FormLabel>Project Name</FormLabel>
+              <FormLabel color={useColorModeValue('purple.600', 'purple.300')}>Project Name</FormLabel>
               <Input
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
                 placeholder="Enter project name"
+                borderColor={useColorModeValue('purple.300', 'purple.500')}
+                _hover={{ borderColor: useColorModeValue('purple.400', 'purple.400') }}
+                _focus={{ borderColor: useColorModeValue('purple.500', 'purple.300'), boxShadow: `0 0 0 1px ${useColorModeValue('purple.500', 'purple.300')}` }}
               />
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreateProject}>
+            <Button 
+              onClick={handleCreateProject}
+              bg={useColorModeValue('purple.500', 'purple.200')}
+              color={useColorModeValue('white', 'gray.800')}
+              _hover={{ bg: useColorModeValue('purple.600', 'purple.300') }}
+              mr={3}
+            >
               Create
             </Button>
-            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => setIsModalOpen(false)}
+              color={useColorModeValue('purple.500', 'purple.200')}
+              _hover={{ bg: useColorModeValue('purple.50', 'purple.700') }}
+            >
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

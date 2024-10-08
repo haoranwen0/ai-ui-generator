@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Flex } from '@chakra-ui/react'
+import { Flex, IconButton, Tooltip, Box, Text, useColorModeValue, useToast } from '@chakra-ui/react'
+import { ArrowBackIcon } from '@chakra-ui/icons'
+import { FiHome } from 'react-icons/fi'
 import {
   SandpackProvider,
   SandpackLayout,
@@ -9,7 +11,7 @@ import {
   Sandpack
 } from '@codesandbox/sandpack-react'
 import { useAppSelector } from '../../../redux/hooks'
-import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
+// import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 import { useDispatch } from 'react-redux'
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -17,9 +19,11 @@ import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth';
 
 const ViewDisplay = () => {
   const view = useAppSelector((state) => state.viewToggle.view)
-  const code = useAppSelector((state) => state.codeEditor.value)
-  // const [code, setCode] = useSta
+  // const code = useAppSelector((state) => state.codeEditor.value)
 
+  const toast = useToast();
+
+  const {code, updateCode} = useActiveCode();  //useState('');
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +39,7 @@ const ViewDisplay = () => {
     const currentUser = auth.currentUser;
     if (currentUser) {
       setUser(currentUser);
-      // fetchCode(currentUser);
+      fetchCode(currentUser);
     } else {
       setUser(null);
       setIsLoading(false);
@@ -45,7 +49,7 @@ const ViewDisplay = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        // fetchCode(currentUser);
+        fetchCode(currentUser);
       } else {
         setIsLoading(false);
         setError('Please sign in to view your projects.');
@@ -58,34 +62,34 @@ const ViewDisplay = () => {
     return () => unsubscribe();
   }, [auth, navigate]);
 
-  // const fetchCode = async (currentUser: User) => {
-  //   setIsLoading(true);
-  //   setError(null);
-  //   try {
-  //     const idToken = await getIdToken(currentUser);
-  //     console.log("token", idToken);
+  const fetchCode = async (currentUser: User) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const idToken = await getIdToken(currentUser);
+      console.log("token", idToken);
 
-  //     const response = await axios.get(`http://127.0.0.1:5001/ai-ui-generator/us-central1/main/project/${designID}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${idToken}`,
-  //       },
-  //     });
+      const response = await axios.get(`http://127.0.0.1:5001/ai-ui-generator/us-central1/main/project/${designID}`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
 
-  //     setProjects(response.data);
-  //   } catch (err) {
-  //     console.error('Error fetching projects:', err);
-  //     setError('Failed to fetch projects. Please try again later.');
-  //     toast({
-  //       title: 'Error',
-  //       description: 'Failed to fetch projects. Please try again later.',
-  //       status: 'error',
-  //       duration: 5000,
-  //       isClosable: true,
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+      updateCode(response.data['code']);
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+      setError('Failed to fetch projects. Please try again later.');
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch projects. Please try again later.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   useEffect(() => {
@@ -144,40 +148,77 @@ const ViewDisplay = () => {
   // export default App;
   // `)
 
+  const handleBackToDashboard = () => {
+    navigate('/dashboard'); // Adjust this path if your dashboard route is different
+  };
+
+  const bgColor = useColorModeValue('purple.500', 'purple.600');
+  const buttonBgColor = useColorModeValue('purple.400', 'purple.500');
+  const buttonHoverBgColor = useColorModeValue('purple.300', 'purple.400');
+
   return (
-    <Flex h='100vh' w='100%'>
-      <Sandpack
-        template='react'
-        theme='auto'
-        customSetup={{
-          dependencies: {
-            '@chakra-ui/react': 'latest',
-            '@chakra-ui/icons': 'latest',
-            '@emotion/react': 'latest',
-            '@emotion/styled': 'latest',
-            'framer-motion': 'latest',
-            'react-icons': 'latest',
-            recharts: 'latest'
-          },
-          entry: '/index.js'
-        }}
-        files={{
-          '/App.js': code
-        }}
-        options={{
-          showTabs: true,
-          showLineNumbers: true,
-          showInlineErrors: true,
-          wrapContent: true,
-          classes: {
-            'sp-wrapper': 'custom-wrapper',
-            'sp-layout': 'custom-layout',
-            'sp-tab-button': 'custom-tab',
-            'sp-editor': 'custom-editor',
-            'sp-preview': 'custom-preview'
-          }
-        }}
-      />
+    <Flex direction="column" h='100vh' w='100%'>
+      <Flex
+        as="header"
+        align="center"
+        justify="space-between"
+        wrap="wrap"
+        padding="0.5rem"
+        bg={bgColor}
+        color="white"
+        boxShadow="md"
+      >
+        <Flex align="center">
+          <Tooltip label="Back to Dashboard" placement="right">
+            <IconButton
+              icon={<FiHome />}
+              onClick={handleBackToDashboard}
+              size="md"
+              fontSize="20px"
+              variant="solid"
+              bg={buttonBgColor}
+              _hover={{ bg: buttonHoverBgColor }}
+              mr={3}
+              aria-label="Back to Dashboard"
+            />
+          </Tooltip>
+        </Flex>
+        <Text fontWeight="bold" fontSize="lg">Augment</Text>
+      </Flex>
+      <Box flex="1">
+        <Sandpack
+          template='react'
+          theme='auto'
+          customSetup={{
+            dependencies: {
+              '@chakra-ui/react': 'latest',
+              '@chakra-ui/icons': 'latest',
+              '@emotion/react': 'latest',
+              '@emotion/styled': 'latest',
+              'framer-motion': 'latest',
+              'react-icons': 'latest',
+              recharts: 'latest'
+            },
+            entry: '/index.js'
+          }}
+          files={{
+            '/App.js': code
+          }}
+          options={{
+            showTabs: false,
+            showLineNumbers: true,
+            showInlineErrors: true,
+            wrapContent: true,
+            classes: {
+              'sp-wrapper': 'custom-wrapper',
+              'sp-layout': 'custom-layout',
+              'sp-tab-button': 'custom-tab',
+              'sp-editor': 'custom-editor',
+              'sp-preview': 'custom-preview'
+            }
+          }}
+        />
+      </Box>
     </Flex>
   )
 }
