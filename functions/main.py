@@ -44,88 +44,74 @@ project_schema = {
 #     return f(*args, **kwargs)
 #   return decorated_function
 
+
 def get_headers():
-  headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Max-Age': '3600'
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Max-Age": "3600",
     }
-  return headers
+    return headers
+
 
 def router(request):
-  if request.method == 'OPTIONS':
-    return https_fn.Response('', status=204, headers=get_headers())
+    if request.method == "OPTIONS":
+        return https_fn.Response("", status=204, headers=get_headers())
 
-  path = request.path
-  method = request.method
+    path = request.path
+    method = request.method
 
-  # Define your routes with dynamic segments
-  routes = [
-    {
-      "pattern": r"^/projects$",
-      "methods": {
-        "GET": list_projects,
-        "POST": create_project
-      }
-    },
-    {
-      "pattern": r"^/project/(?P<projectid>[^/]+)$",
-      "methods": {
-        "GET": get_project,
-        "PUT": update_project,
-        "PATCH": update_code
-        # "DELETE": delete_project
-      }
-    },
-    {
-      "pattern": r"^/chat$",
-      "methods": {
-        "POST": chat
-      }
-    },
-    {
-      "pattern": r"^/count$",
-      "methods": {
-        "GET": get_api_count
-      }
-    },
-    {
-      "pattern": r"^/test$",
-      "methods": {
-        "GET": get_test_user
-      }
-    }
-    # {
-    #   "pattern": r"^/api/products/(?P<product_id>\w+)$",
-    #   "methods": {
-    #     "GET": get_product,
-    #     "PUT": update_product,
-    #     "DELETE": delete_product
-    #   }
-    # }
-  ]
+    # Define your routes with dynamic segments
+    routes = [
+        {
+            "pattern": r"^/projects$",
+            "methods": {"GET": list_projects, "POST": create_project},
+        },
+        {
+            "pattern": r"^/project/(?P<projectid>[^/]+)$",
+            "methods": {
+                "GET": get_project,
+                "PUT": update_project,
+                "PATCH": update_code,
+                # "DELETE": delete_project
+            },
+        },
+        {"pattern": r"^/chat$", "methods": {"POST": chat}},
+        {"pattern": r"^/count$", "methods": {"GET": get_api_count}},
+        {"pattern": r"^/test$", "methods": {"GET": get_test_user}},
+        # {
+        #   "pattern": r"^/api/products/(?P<product_id>\w+)$",
+        #   "methods": {
+        #     "GET": get_product,
+        #     "PUT": update_product,
+        #     "DELETE": delete_product
+        #   }
+        # }
+    ]
 
-  # Find matching route
-  for route in routes:
-    match = re.match(route["pattern"], path)
-    if match:
-      if method in route["methods"]:
-        # Extract parameters from the URL
-        params = match.groupdict()
-        # Call the appropriate function with parameters
-        return route["methods"][method](request, **params)
-      else:
-        return https_fn.Response("Method not allowed", status=405)
+    # Find matching route
+    for route in routes:
+        match = re.match(route["pattern"], path)
+        if match:
+            if method in route["methods"]:
+                # Extract parameters from the URL
+                params = match.groupdict()
+                # Call the appropriate function with parameters
+                return route["methods"][method](request, **params)
+            else:
+                return https_fn.Response("Method not allowed", status=405)
 
-  return https_fn.Response("Not found", status=404)
+    return https_fn.Response("Not found", status=404)
+
 
 @https_fn.on_request()
 def main(req: https_fn.Request) -> https_fn.Response:
-  if req.method == 'OPTIONS':
-    return https_fn.Response('', status=204, headers=get_headers())
+    if req.method == "OPTIONS":
+        return https_fn.Response("", status=204, headers=get_headers())
 
-  return router(req)
+    return router(req)
+
 
 # def add_message(req: https_fn.Request) -> https_fn.Response:
 #   # Get the message from the request
@@ -139,100 +125,104 @@ def main(req: https_fn.Request) -> https_fn.Response:
 
 #   return https_fn.Response(f"Message added with ID: {doc_ref.id}")
 
+
 def get_api_count(req: https_fn.Request) -> https_fn.Response:
-  headers = get_headers()
-  uid = get_uid(req.headers)
-  doc_ref = db.collection("users").document(uid)
-  doc = doc_ref.get()
-  # Check if the document doesn't exist
-  if not doc.exists or "api_count" not in doc.to_dict():
-    doc_ref.set({"api_count": 15})
-  return https_fn.Response(
-    json.dumps({'message': doc.to_dict(), 'count': doc.get("api_count")}),
-    status=200,
-    headers=headers
-  )
+    headers = get_headers()
+    uid = get_uid(req.headers)
+    doc_ref = db.collection("users").document(uid)
+    doc = doc_ref.get()
+    # Check if the document doesn't exist
+    if not doc.exists or "api_count" not in doc.to_dict():
+        doc_ref.set({"api_count": 15})
+    return https_fn.Response(
+        json.dumps({"message": doc.to_dict(), "count": doc.get("api_count")}),
+        status=200,
+        headers=headers,
+    )
+
 
 def list_projects(req: https_fn.Request) -> https_fn.Response:
-  headers = get_headers()
-  uid = get_uid(req.headers)
-  docs = db.collection("users").document(uid).collection('projects').stream()
-  project_list = []
-  for doc in docs:
-    project_dict = {
-      "id": doc.id,
-      "name": doc.get("name")
-    }
-    project_list.append(project_dict)
-    # print(f"{doc.id} => {doc.to_dict()}")
-  return https_fn.Response(
-    json.dumps(project_list),
-    status=200,
-    headers=headers
-  )
+    headers = get_headers()
+    uid = get_uid(req.headers)
+    docs = db.collection("users").document(uid).collection("projects").stream()
+    project_list = []
+    for doc in docs:
+        project_dict = {"id": doc.id, "name": doc.get("name")}
+        project_list.append(project_dict)
+        # print(f"{doc.id} => {doc.to_dict()}")
+    return https_fn.Response(json.dumps(project_list), status=200, headers=headers)
+
 
 def create_project(req: https_fn.Request) -> https_fn.Response:
-  headers = get_headers()
-  uid = get_uid(req.headers)
-  project = req.json
-  try:
-    validate(project, project_schema)
-  except:
-    return https_fn.Response('Invalid project structure', status=405)
-  _, doc_ref = db.collection("users").document(uid).collection('projects').add(project)
-  return https_fn.Response(
-    json.dumps({'message': 'Project created', 'projectid': doc_ref.id}),
-    status=200,
-    headers=headers
-  )
+    headers = get_headers()
+    uid = get_uid(req.headers)
+    project = req.json
+    try:
+        validate(project, project_schema)
+    except:
+        return https_fn.Response("Invalid project structure", status=405)
+    _, doc_ref = (
+        db.collection("users").document(uid).collection("projects").add(project)
+    )
+    return https_fn.Response(
+        json.dumps({"message": "Project created", "projectid": doc_ref.id}),
+        status=200,
+        headers=headers,
+    )
+
 
 def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
-  headers = get_headers()
-  uid = get_uid(req.headers)
-  project = db.collection("users").document(uid).collection('projects').document(projectid).get()
-  if not project.exists:
-    return https_fn.Response('Project not found', status=404)
-  return https_fn.Response(
-    json.dumps(project.to_dict()),
-    status=200,
-    headers=headers
-  )
+    headers = get_headers()
+    uid = get_uid(req.headers)
+    project = (
+        db.collection("users")
+        .document(uid)
+        .collection("projects")
+        .document(projectid)
+        .get()
+    )
+    if not project.exists:
+        return https_fn.Response("Project not found", status=404)
+    return https_fn.Response(json.dumps(project.to_dict()), status=200, headers=headers)
+
 
 # TODO: Change so that project can't be renamed
 def update_code(req: https_fn.Request, projectid: str) -> https_fn.Response:
-  headers = get_headers()
-  uid = get_uid(req.headers)
-  project_ref = db.collection("users").document(uid).collection("projects").document(projectid)
-  old_project = project_ref.get()
-  if not old_project.exists:
-    return https_fn.Response('Project not found', status=404)
-  new_code = req.json['code']
-  project_ref.update({'code': new_code})
-  return https_fn.Response(
-    json.dumps({'message': 'Code updated'}),
-    status=200,
-    headers=headers
-  )
+    headers = get_headers()
+    uid = get_uid(req.headers)
+    project_ref = (
+        db.collection("users").document(uid).collection("projects").document(projectid)
+    )
+    old_project = project_ref.get()
+    if not old_project.exists:
+        return https_fn.Response("Project not found", status=404)
+    new_code = req.json["code"]
+    project_ref.update({"code": new_code})
+    return https_fn.Response(
+        json.dumps({"message": "Code updated"}), status=200, headers=headers
+    )
+
 
 # TODO: Change so that project can't be renamed
 def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
-  headers = get_headers()
-  uid = get_uid(req.headers)
-  project_ref = db.collection("users").document(uid).collection("projects").document(projectid)
-  old_project = project_ref.get()
-  if not old_project.exists:
-    return https_fn.Response('Project not found', status=404)
-  new_project = req.json
-  try:
-    validate(new_project, project_schema)
-  except:
-    return https_fn.Response('Invalid project structure', status=405)
-  project_ref.update(req.json)
-  return https_fn.Response(
-    json.dumps({'message': 'Project updated'}),
-    status=200,
-    headers=headers
-  )
+    headers = get_headers()
+    uid = get_uid(req.headers)
+    project_ref = (
+        db.collection("users").document(uid).collection("projects").document(projectid)
+    )
+    old_project = project_ref.get()
+    if not old_project.exists:
+        return https_fn.Response("Project not found", status=404)
+    new_project = req.json
+    try:
+        validate(new_project, project_schema)
+    except:
+        return https_fn.Response("Invalid project structure", status=405)
+    project_ref.update(req.json)
+    return https_fn.Response(
+        json.dumps({"message": "Project updated"}), status=200, headers=headers
+    )
+
 
 client = anthropic.Anthropic(api_key=anthropic_api_key)
 
@@ -245,12 +235,12 @@ def chat(req: https_fn.Request) -> https_fn.Response:
     doc = doc_ref.get()
     # Check if the document doesn't exist
     if not doc.exists or "api_count" not in doc.to_dict():
-      doc_ref.set({"api_count": 15})
+        doc_ref.set({"api_count": 15})
     else:
-      doc_ref.update({"api_count": firestore.Increment(-1)})
+        doc_ref.update({"api_count": firestore.Increment(-1)})
     # Check if the user has enough API calls
     if doc.to_dict()["api_count"] <= 0:
-      return https_fn.Response('Out of API calls', status=405)
+        return https_fn.Response("Out of API calls", status=405)
 
     chat_history = req.json["chat_history"]
     chat_history.insert(0, {"role": "user", "content": user_initial_prompt()})

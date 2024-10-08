@@ -125,7 +125,7 @@ const IconControls = () => {
                     </Text>
                     <Text fontSize='sm'>{usageRemaining} credits</Text>
                   </Box>
-                  <Box>
+                  {/* <Box>
                     <Text fontWeight='bold' fontSize='sm' mb={1}>
                       Theme
                     </Text>
@@ -139,7 +139,7 @@ const IconControls = () => {
                     >
                       {colorMode === 'light' ? 'Dark' : 'Light'} Mode
                     </Button>
-                  </Box>
+                  </Box> */}
                   <Button
                     leftIcon={<FaSignOutAlt />}
                     onClick={() => {
