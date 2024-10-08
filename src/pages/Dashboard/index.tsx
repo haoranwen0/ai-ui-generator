@@ -14,12 +14,12 @@ import {
 import { FiPlus } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth';
 
 interface Project {
   id: string;
   name: string;
-  lastModified: string;
+  // lastModified: string;
   // Add any other properties that your project objects contain
 }
 
@@ -44,9 +44,9 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
         <Heading size="md" mb={2}>
           {project.name}
         </Heading>
-        <Text fontSize="sm" color="gray.500">
+        {/* <Text fontSize="sm" color="gray.500">
           Last modified: {new Date(project.lastModified).toLocaleDateString()}
-        </Text>
+        </Text> */}
       </Box>
     </Box>
   );
@@ -84,7 +84,8 @@ const Dashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const idToken = await currentUser.getIdToken();
+      const idToken = await getIdToken(currentUser);
+      console.log("token", idToken);
 
       const response = await axios.get<Project[]>('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects', {
         headers: {
@@ -108,10 +109,24 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleCreateProject = () => {
+  const handleCreateProject = async () => {
+    if (user === null) {
+      return;
+    }
+    const idToken = await getIdToken(user);
+    console.log("token", idToken);
+
+    const response = await axios.post('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects',
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
     // Logic to create a new project
     console.log('Creating a new project');
-    // Navigate to the project creation page or open a modal
+    console.log(response.data);
+    // Then navigate to the project creation page or open a modal
     // For example:
     // navigate('/create-project');
   };
@@ -157,7 +172,11 @@ const Dashboard: React.FC = () => {
           <Text color="red.500" textAlign="center">
             {error}
           </Text>
-        ) : (
+        ) : projects.length === 0 ? (
+          <Text color="red.500" textAlign="center">
+            You currently have no projects.
+          </Text>
+        ): (
           <Grid
             templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
             gap={6}
