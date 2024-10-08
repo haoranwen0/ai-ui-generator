@@ -110,7 +110,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
 const AuthPage: React.FC = () => {
   useHasAccess({
-    validAccessRedirectLink: '/main-app-page'
+    validAccessRedirectLink: '/dashboard'
   })
 
   const [tabIndex, setTabIndex] = useState(0)

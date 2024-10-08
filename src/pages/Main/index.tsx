@@ -10,7 +10,7 @@ const Main: React.FC = () => {
   })
 
   return (
-    <Box w='100%' h='100vh' bg='red.300'>
+    <Box w='100%' h='100vh'>
       <ViewDisplay />
       <HoverChatComponent />
       <IconControls />

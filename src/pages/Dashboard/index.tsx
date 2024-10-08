@@ -10,17 +10,25 @@ import {
   useColorModeValue,
   Spinner,
   useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Input,
+  FormControl,
+  FormLabel,
 } from '@chakra-ui/react';
 import { FiPlus } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth';
 
 interface Project {
   id: string;
   name: string;
-  lastModified: string;
-  // Add any other properties that your project objects contain
 }
 
 const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
@@ -38,15 +46,12 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
       transition="all 0.3s"
       _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
       cursor="pointer"
-      onClick={() => navigate(`/main-app-page/${project.id}`)}
+      onClick={() => navigate(`/design/${project.id}`)}
     >
       <Box p={4}>
         <Heading size="md" mb={2}>
           {project.name}
         </Heading>
-        <Text fontSize="sm" color="gray.500">
-          Last modified: {new Date(project.lastModified).toLocaleDateString()}
-        </Text>
       </Box>
     </Box>
   );
@@ -62,6 +67,8 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -71,12 +78,9 @@ const Dashboard: React.FC = () => {
       } else {
         setIsLoading(false);
         setError('Please sign in to view your projects.');
-        // Optionally, redirect to login page
-        // navigate('/login');
       }
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [auth, navigate]);
 
@@ -84,14 +88,12 @@ const Dashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const idToken = await currentUser.getIdToken();
-
+      const idToken = await getIdToken(currentUser);
       const response = await axios.get<Project[]>('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects', {
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
       });
-
       setProjects(response.data);
     } catch (err) {
       console.error('Error fetching projects:', err);
@@ -108,12 +110,55 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleCreateProject = () => {
-    // Logic to create a new project
-    console.log('Creating a new project');
-    // Navigate to the project creation page or open a modal
-    // For example:
-    // navigate('/create-project');
+  const defaultCode = `import { ChakraProvider, Box, Heading, Text, Stack, Input, Button } from '@chakra-ui/react'
+
+  function App() {
+    return (
+      <ChakraProvider>
+        <Box p={4}>
+          <Heading mb={4}>Hello, Chakra UI!</Heading>
+          <Text mb={2}>This is a sample component using Chakra UI.</Text>
+          <Stack spacing={3}>
+            <Input placeholder="Enter your name" />
+            <Button colorScheme="blue">
+              Click me
+            </Button>
+          </Stack>
+        </Box>
+      </ChakraProvider>
+    );
+  }
+
+  export default App;`
+
+  const handleCreateProject = async () => {
+    if (user === null || newProjectName.trim() === '') {
+      return;
+    }
+    try {
+      const idToken = await getIdToken(user);
+      const response = await axios.post('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects',
+        { name: newProjectName, code: defaultCode },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
+      const projectID = response.data['projectid'];
+      setIsModalOpen(false);
+      setNewProjectName('');
+      navigate(`/design/${projectID}`);
+    } catch (err) {
+      console.error('Error creating project:', err);
+      toast({
+        title: 'Error',
+        description: 'Failed to create project. Please try again.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   if (!user) {
@@ -141,7 +186,7 @@ const Dashboard: React.FC = () => {
         </Heading>
         <Button
           leftIcon={<FiPlus />}
-          onClick={handleCreateProject}
+          onClick={() => setIsModalOpen(true)}
           colorScheme="purple"
         >
           Create New Project
@@ -157,6 +202,10 @@ const Dashboard: React.FC = () => {
           <Text color="red.500" textAlign="center">
             {error}
           </Text>
+        ) : projects.length === 0 ? (
+          <Text textAlign="center">
+            You currently have no projects.
+          </Text>
         ) : (
           <Grid
             templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
@@ -168,6 +217,60 @@ const Dashboard: React.FC = () => {
           </Grid>
         )}
       </Box>
+
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        isCentered
+      >
+        <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px) hue-rotate(15deg)" />
+        <ModalContent 
+          bg={useColorModeValue('white', 'gray.800')}
+          borderRadius="md"
+          boxShadow="xl"
+        >
+          <ModalHeader 
+            borderBottomWidth="1px" 
+            borderColor={useColorModeValue('purple.100', 'purple.700')}
+            color={useColorModeValue('purple.700', 'purple.200')}
+          >
+            Create New Project
+          </ModalHeader>
+          <ModalCloseButton color={useColorModeValue('purple.500', 'purple.200')} />
+          <ModalBody pt={6}>
+            <FormControl>
+              <FormLabel color={useColorModeValue('purple.600', 'purple.300')}>Project Name</FormLabel>
+              <Input
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                placeholder="Enter project name"
+                borderColor={useColorModeValue('purple.300', 'purple.500')}
+                _hover={{ borderColor: useColorModeValue('purple.400', 'purple.400') }}
+                _focus={{ borderColor: useColorModeValue('purple.500', 'purple.300'), boxShadow: `0 0 0 1px ${useColorModeValue('purple.500', 'purple.300')}` }}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button 
+              onClick={handleCreateProject}
+              bg={useColorModeValue('purple.500', 'purple.200')}
+              color={useColorModeValue('white', 'gray.800')}
+              _hover={{ bg: useColorModeValue('purple.600', 'purple.300') }}
+              mr={3}
+            >
+              Create
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => setIsModalOpen(false)}
+              color={useColorModeValue('purple.500', 'purple.200')}
+              _hover={{ bg: useColorModeValue('purple.50', 'purple.700') }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

@@ -175,7 +175,7 @@ const ViewDisplay = () => {
           entry: '/index.js'
         }}
         files={{
-          '/App.js': code
+          '/App.js': currentCode
         }}
         options={{
           classes: {
