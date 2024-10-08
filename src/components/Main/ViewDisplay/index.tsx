@@ -23,7 +23,7 @@ const ViewDisplay = () => {
 
   const toast = useToast();
 
-  const {code, updateCode} = useActiveCode();  //useState('');
+  const [currentCode, setCurrentCode] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -36,15 +36,15 @@ const ViewDisplay = () => {
   // const [lastSavedContent, setLastSavedContent] = useState('');
 
   useEffect(() => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUser(currentUser);
-      fetchCode(currentUser);
-    } else {
-      setUser(null);
-      setIsLoading(false);
-      setError('Please sign in to view your projects.');
-    }
+    // const currentUser = auth.currentUser;
+    // if (currentUser) {
+    //   setUser(currentUser);
+    //   fetchCode(currentUser);
+    // } else {
+    //   setUser(null);
+    //   setIsLoading(false);
+    //   setError('Please sign in to view your projects.');
+    // }}, []);
     
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -75,7 +75,7 @@ const ViewDisplay = () => {
         },
       });
 
-      updateCode(response.data['code']);
+      setCurrentCode(response.data['code']);
     } catch (err) {
       console.error('Error fetching projects:', err);
       setError('Failed to fetch projects. Please try again later.');
@@ -91,11 +91,10 @@ const ViewDisplay = () => {
     }
   };
 
-
   useEffect(() => {
     const saveInterval = setInterval(() => {
       saveContent();
-    }, 5000); // Save every 30 seconds
+    }, 3000); // Save every 30 seconds
 
     return () => clearInterval(saveInterval);
   }, []);
@@ -103,6 +102,8 @@ const ViewDisplay = () => {
   const saveContent = async () => {
     console.log('saving content');
     console.log(user);
+    console.log(currentCode);
+    console.log(auth.currentUser);
     if (user === null) {
       return;
     }
@@ -110,7 +111,7 @@ const ViewDisplay = () => {
       const idToken = await getIdToken(user);
   
       await axios.patch(`http://127.0.0.1:5001/ai-ui-generator/us-central1/main/project/${designID}`,
-        { code },
+        { currentCode },
         {
           headers: {
             Authorization: `Bearer ${idToken}`,
@@ -123,7 +124,7 @@ const ViewDisplay = () => {
   };
 
 
-  console.log('code', code)
+  // console.log('code', code)
 
   //   const [code, setCode] = useState(`
   // import { ChakraProvider, Box, Heading, Text, Stack, Input, Button } from '@chakra-ui/react'
@@ -150,6 +151,20 @@ const ViewDisplay = () => {
 
   const handleBackToDashboard = () => {
     navigate('/dashboard'); // Adjust this path if your dashboard route is different
+  };
+
+  const CodeManager = () => {
+    const { code } = useActiveCode();
+  
+    useEffect(() => {
+      const saveTimeout = setTimeout(() => {
+        setCurrentCode(code);
+      }, 3000);
+  
+      return () => clearTimeout(saveTimeout);
+    }, [code, setCurrentCode]);
+  
+    return null; // This component doesn't render anything
   };
 
   const bgColor = useColorModeValue('purple.500', 'purple.600');
@@ -186,38 +201,41 @@ const ViewDisplay = () => {
         <Text fontWeight="bold" fontSize="lg">Augment</Text>
       </Flex>
       <Box flex="1">
-        <Sandpack
-          template='react'
-          theme='auto'
-          customSetup={{
-            dependencies: {
-              '@chakra-ui/react': 'latest',
-              '@chakra-ui/icons': 'latest',
-              '@emotion/react': 'latest',
-              '@emotion/styled': 'latest',
-              'framer-motion': 'latest',
-              'react-icons': 'latest',
-              recharts: 'latest'
-            },
-            entry: '/index.js'
-          }}
-          files={{
-            '/App.js': code
-          }}
-          options={{
-            showTabs: false,
-            showLineNumbers: true,
-            showInlineErrors: true,
-            wrapContent: true,
-            classes: {
-              'sp-wrapper': 'custom-wrapper',
-              'sp-layout': 'custom-layout',
-              'sp-tab-button': 'custom-tab',
-              'sp-editor': 'custom-editor',
-              'sp-preview': 'custom-preview'
-            }
-          }}
-        />
+      <SandpackProvider
+        template="react"
+        theme="auto"
+        customSetup={{
+          dependencies: {
+            '@chakra-ui/react': 'latest',
+            '@chakra-ui/icons': 'latest',
+            '@emotion/react': 'latest',
+            '@emotion/styled': 'latest',
+            'framer-motion': 'latest',
+            'react-icons': 'latest',
+            recharts: 'latest'
+          },
+          entry: '/index.js'
+        }}
+        files={{
+          '/App.js': currentCode
+        }}
+      >
+        <SandpackLayout
+          className="custom-wrapper custom-layout"
+        >
+          <SandpackCodeEditor
+            showTabs={false}
+            showLineNumbers={true}
+            showInlineErrors={true}
+            wrapContent={true}
+            className="custom-editor"
+          />
+          <SandpackPreview
+            className="custom-preview"
+          />
+        </SandpackLayout>
+        <CodeManager/>
+      </SandpackProvider>
       </Box>
     </Flex>
   )
