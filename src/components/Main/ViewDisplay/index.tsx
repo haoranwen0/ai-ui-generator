@@ -67,6 +67,10 @@ const ViewDisplay = () => {
   };
 
   useEffect(() => {
+    console.log('Code is this:', code);
+  }, [code]);
+
+  useEffect(() => {
     const saveInterval = setInterval(() => {
       saveContent();
     }, 3000); // Save every 30 seconds
@@ -175,7 +179,7 @@ const ViewDisplay = () => {
           entry: '/index.js'
         }}
         files={{
-          '/App.js': currentCode
+          '/App.js': code
         }}
         options={{
           classes: {
@@ -190,7 +194,7 @@ const ViewDisplay = () => {
       >
         <SandpackLayout>
           <SandpackFileExplorer />
-          <CodeEditor />
+          <CodeEditor setCode={setCode} />
           <SandpackPreview />
         </SandpackLayout>
       </SandpackProvider>
@@ -199,7 +203,12 @@ const ViewDisplay = () => {
   )
 }
 
-const CodeEditor = () => {
+
+interface CodeEditorProps {
+  setCode: React.Dispatch<React.SetStateAction<string>>
+}
+
+const CodeEditor: React.FC<CodeEditorProps> = ({ setCode }) => {
   const { code } = useActiveCode()
 
   useEffect(() => {
