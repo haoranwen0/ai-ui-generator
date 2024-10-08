@@ -273,6 +273,7 @@ def chat(req: https_fn.Request) -> https_fn.Response:
             "name": "get_code",
         },
         messages=chat_history,
+        temperature=0.5,
     )
 
     print(completion.content[0])

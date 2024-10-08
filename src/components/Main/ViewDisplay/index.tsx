@@ -1,9 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Flex } from '@chakra-ui/react'
-import { Sandpack } from '@codesandbox/sandpack-react'
-import { useAppSelector } from '../../../redux/hooks'
+import {
+  Sandpack,
+  SandpackCodeEditor,
+  SandpackPreview,
+  SandpackProvider,
+  useActiveCode,
+  SandpackFileExplorer,
+  SandpackLayout
+} from '@codesandbox/sandpack-react'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 
 const ViewDisplay = () => {
+  const dispatch = useAppDispatch()
+
   const code = useAppSelector((state) => state.codeEditor.value)
 
   //   const [code, setCode] = useState(`
@@ -31,7 +42,7 @@ const ViewDisplay = () => {
 
   return (
     <Flex h='100vh' w='100%'>
-      <Sandpack
+      <SandpackProvider
         template='react'
         theme='auto'
         customSetup={{
@@ -42,7 +53,8 @@ const ViewDisplay = () => {
             '@emotion/styled': 'latest',
             'framer-motion': 'latest',
             'react-icons': 'latest',
-            recharts: 'latest'
+            recharts: 'latest',
+            'react-draggable': 'latest'
           },
           entry: '/index.js'
         }}
@@ -50,34 +62,38 @@ const ViewDisplay = () => {
           '/App.js': code
         }}
         options={{
-          showTabs: true,
-          showLineNumbers: true,
-          showInlineErrors: true,
-          wrapContent: true,
           classes: {
             'sp-wrapper': 'custom-wrapper',
             'sp-layout': 'custom-layout',
             'sp-tab-button': 'custom-tab',
             'sp-editor': 'custom-editor',
-            'sp-preview': 'custom-preview'
+            'sp-preview': 'custom-preview',
+            'sp-file-explorer': 'custom-file-explorer'
           }
         }}
-      />
+      >
+        <SandpackLayout>
+          <SandpackFileExplorer />
+          <CodeEditor />
+          <SandpackPreview />
+        </SandpackLayout>
+      </SandpackProvider>
     </Flex>
   )
 }
 
-// const CodeEditor = () => {
-//   const { code } = useActiveCode()
+const CodeEditor = () => {
+  const { code } = useActiveCode()
 
-//   const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-//   useEffect(() => {
-//     console.log('code', code)
-//     dispatch(setCode(code))
-//   }, [code, dispatch])
+  useEffect(() => {
+    dispatch(setCode(code))
+  }, [code, dispatch])
 
-//   return <SandpackCodeEditor showInlineErrors={true} />
-// }
+  return (
+    <SandpackCodeEditor showTabs showLineNumbers showInlineErrors wrapContent />
+  )
+}
 
 export default ViewDisplay

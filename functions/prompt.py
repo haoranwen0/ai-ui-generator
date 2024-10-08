@@ -1,5 +1,5 @@
 def user_initial_prompt() -> str:
-    return f"""I will provide a prompt and style. Generate some creative designs in Chakra-UI with the proposed style. First ask me existing applications that may be similar to what I want and give me some options. Prompt me to answer if I want my design to look similar to those or have similar styles. Then prompt me to ask styles about the design, and questions necessary for creating a ux/ui design. Then generate the design in Chakra UI in a single page application. So generate the design in a single file. Additionally, if the design uses icons, use react-icons."""
+    return f"""I will provide a prompt and style. Generate some creative designs in Chakra-UI with the proposed style. First ask me existing applications that may be similar to what I want and give me some options. Prompt me to answer if I want my design to look similar to those or have similar styles. Then prompt me to ask styles about the design, and questions necessary for creating a ux/ui design. Then generate the design in Chakra UI in a single page application. So generate the design in a single file. Additionally, if the design uses icons, use react-icons. Do not use any emojis."""
 
 
 #     return f"""
