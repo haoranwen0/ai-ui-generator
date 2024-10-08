@@ -125,79 +125,6 @@ def main(req: https_fn.Request) -> https_fn.Response:
 
 
 def list_projects(req: https_fn.Request) -> https_fn.Response:
-<<<<<<< HEAD
-    uid = get_uid(req.headers)
-    docs = db.collection("users").document(uid).collection("projects").stream()
-    project_list = []
-    for doc in docs:
-        project_list.append(doc.to_dict())
-        # print(f"{doc.id} => {doc.to_dict()}")
-    return https_fn.Response(
-        json.dumps(project_list),
-        status=200,
-        headers={"Content-Type": "application/json"},
-    )
-
-
-def create_project(req: https_fn.Request) -> https_fn.Response:
-    uid = get_uid(req.headers)
-    project = req.json
-    print(project)
-    print(type(project))
-    try:
-        validate(project, project_schema)
-    except:
-        return https_fn.Response("Invalid project structure", status=405)
-    _, doc_ref = (
-        db.collection("users").document(uid).collection("projects").add(project)
-    )
-    return https_fn.Response(
-        json.dumps({"message": "Project created", "projectid": doc_ref.id}),
-        status=200,
-        headers={"Content-Type": "application/json"},
-    )
-
-
-def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
-    uid = get_uid(req.headers)
-    project = (
-        db.collection("users")
-        .document(uid)
-        .collection("projects")
-        .document(projectid)
-        .get()
-    )
-    if not project.exists:
-        return https_fn.Response("Project not found", status=404)
-    return https_fn.Response(
-        json.dumps(project.to_dict()),
-        status=200,
-        headers={"Content-Type": "application/json"},
-    )
-
-
-# TODO: Change so that project can't be renamed
-def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
-    uid = get_uid(req.headers)
-    project_ref = (
-        db.collection("users").document(uid).collection("projects").document(projectid)
-    )
-    old_project = project_ref.get()
-    if not old_project.exists:
-        return https_fn.Response("Project not found", status=404)
-    new_project = req.json
-    try:
-        validate(new_project, project_schema)
-    except:
-        return https_fn.Response("Invalid project structure", status=405)
-    project_ref.update(req.json)
-    return https_fn.Response(
-        json.dumps({"message": "Project updated"}),
-        status=200,
-        headers={"Content-Type": "application/json"},
-    )
-
-=======
   headers = get_headers()
   uid = get_uid(req.headers)
   docs = db.collection("users").document(uid).collection('projects').stream()
@@ -259,7 +186,6 @@ def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
     status=200,
     headers=headers
   )
->>>>>>> 31de856 (Added headers)
 
 client = anthropic.Anthropic(api_key=anthropic_api_key)
 

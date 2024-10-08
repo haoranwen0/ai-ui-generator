@@ -159,3 +159,180 @@ SyntaxError: invalid decimal literal
 
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
  
+[debug] [2024-10-08T19:12:12.115Z] File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/main.py changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/main.py changed, reloading triggers"}}
+[debug] [2024-10-08T19:12:13.118Z] Customer code is not Node
+[debug] [2024-10-08T19:12:13.118Z] Validating python source
+[debug] [2024-10-08T19:12:13.118Z] Building python source
+[info] i  functions: Loaded environment variables from .env, .env.local. 
+[debug] [2024-10-08T19:12:13.120Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-10-08T19:12:13.121Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[debug] [2024-10-08T19:12:13.143Z] stdout: /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions
+
+[debug] [2024-10-08T19:12:13.146Z] Running admin server with args: ["python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""] and env: {"GCLOUD_PROJECT":"ai-ui-generator","K_REVISION":"1","PORT":"80","GOOGLE_CLOUD_QUOTA_PROJECT":"ai-ui-generator","FUNCTIONS_EMULATOR":"true","TZ":"UTC","FIREBASE_DEBUG_MODE":"true","FIREBASE_DEBUG_FEATURES":"{\"skipTokenVerification\":true,\"enableCors\":true}","FIREBASE_EMULATOR_HUB":"127.0.0.1:4400","FIREBASE_AUTH_EMULATOR_HOST":"127.0.0.1:9099","FIRESTORE_EMULATOR_HOST":"127.0.0.1:8080","FIREBASE_FIRESTORE_EMULATOR_ADDRESS":"127.0.0.1:8080","CLOUD_EVENTARC_EMULATOR_HOST":"http://127.0.0.1:9299","CLOUD_TASKS_EMULATOR_HOST":"127.0.0.1:9499","FIREBASE_CONFIG":"{\"storageBucket\":\"ai-ui-generator.appspot.com\",\"projectId\":\"ai-ui-generator\"}","GOOGLE_APPLICATION_CREDENTIALS":"/Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json","ADMIN_PORT":"8081"} in /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions
+[debug] [2024-10-08T19:12:13.146Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""]
+[info]  * Serving Flask app 'serving'
+ * Debug mode: off
+
+[error] WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+
+[error] Press CTRL+C to quit
+
+[debug] [2024-10-08T19:12:13.654Z] File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/__pycache__/main.cpython-312.pyc changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/__pycache__/main.cpython-312.pyc changed, reloading triggers"}}
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:13] "GET /__/functions.yaml HTTP/1.1" 200 -
+
+[debug] [2024-10-08T19:12:13.918Z] Got response from /__/functions.yaml endpoints:
+  main:
+    availableMemoryMb: null
+    concurrency: null
+    entryPoint: main
+    httpsTrigger: {}
+    ingressSettings: null
+    labels: {}
+    maxInstances: null
+    minInstances: null
+    platform: gcfv2
+    secretEnvironmentVariables: []
+    serviceAccountEmail: null
+    timeoutSeconds: null
+params: []
+requiredAPIs: []
+specVersion: v1alpha1
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:13] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+[error] /bin/sh: line 1: 54557 Terminated: 15          python3.12 "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py"
+
+[info] ✔  functions: Loaded functions definitions from source: main. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: main."}}
+[info] ✔  functions[us-central1-main]: http function initialized (http://127.0.0.1:5001/ai-ui-generator/us-central1/main). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/ai-ui-generator/us-central1/main)."}}
+[debug] [2024-10-08T19:12:13.955Z] File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/__pycache__/prompt.cpython-312.pyc changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/__pycache__/prompt.cpython-312.pyc changed, reloading triggers"}}
+[debug] [2024-10-08T19:12:14.956Z] Customer code is not Node
+[debug] [2024-10-08T19:12:14.957Z] Validating python source
+[debug] [2024-10-08T19:12:14.957Z] Building python source
+[info] i  functions: Loaded environment variables from .env, .env.local. 
+[debug] [2024-10-08T19:12:14.959Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-10-08T19:12:14.960Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[debug] [2024-10-08T19:12:15.003Z] stdout: /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions
+
+[debug] [2024-10-08T19:12:15.006Z] Running admin server with args: ["python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""] and env: {"GCLOUD_PROJECT":"ai-ui-generator","K_REVISION":"1","PORT":"80","GOOGLE_CLOUD_QUOTA_PROJECT":"ai-ui-generator","FUNCTIONS_EMULATOR":"true","TZ":"UTC","FIREBASE_DEBUG_MODE":"true","FIREBASE_DEBUG_FEATURES":"{\"skipTokenVerification\":true,\"enableCors\":true}","FIREBASE_EMULATOR_HUB":"127.0.0.1:4400","FIREBASE_AUTH_EMULATOR_HOST":"127.0.0.1:9099","FIRESTORE_EMULATOR_HOST":"127.0.0.1:8080","FIREBASE_FIRESTORE_EMULATOR_ADDRESS":"127.0.0.1:8080","CLOUD_EVENTARC_EMULATOR_HOST":"http://127.0.0.1:9299","CLOUD_TASKS_EMULATOR_HOST":"127.0.0.1:9499","FIREBASE_CONFIG":"{\"storageBucket\":\"ai-ui-generator.appspot.com\",\"projectId\":\"ai-ui-generator\"}","GOOGLE_APPLICATION_CREDENTIALS":"/Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json","ADMIN_PORT":"8081"} in /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions
+[debug] [2024-10-08T19:12:15.006Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""]
+[info]  * Serving Flask app 'serving'
+ * Debug mode: off
+
+[error] WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+
+[error] Press CTRL+C to quit
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:15] "GET /__/functions.yaml HTTP/1.1" 200 -
+
+[debug] [2024-10-08T19:12:15.547Z] Got response from /__/functions.yaml endpoints:
+  main:
+    availableMemoryMb: null
+    concurrency: null
+    entryPoint: main
+    httpsTrigger: {}
+    ingressSettings: null
+    labels: {}
+    maxInstances: null
+    minInstances: null
+    platform: gcfv2
+    secretEnvironmentVariables: []
+    serviceAccountEmail: null
+    timeoutSeconds: null
+params: []
+requiredAPIs: []
+specVersion: v1alpha1
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:15] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+[error] /bin/sh: line 1: 54571 Terminated: 15          python3.12 "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py"
+
+[info] ✔  functions: Loaded functions definitions from source: main. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: main."}}
+[debug] [2024-10-08T19:12:35.263Z] File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/main.py changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/main.py changed, reloading triggers"}}
+[debug] [2024-10-08T19:12:36.265Z] Customer code is not Node
+[debug] [2024-10-08T19:12:36.266Z] Validating python source
+[debug] [2024-10-08T19:12:36.266Z] Building python source
+[info] i  functions: Loaded environment variables from .env, .env.local. 
+[debug] [2024-10-08T19:12:36.268Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-10-08T19:12:36.270Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[debug] [2024-10-08T19:12:36.321Z] stdout: /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions
+
+[debug] [2024-10-08T19:12:36.324Z] Running admin server with args: ["python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""] and env: {"GCLOUD_PROJECT":"ai-ui-generator","K_REVISION":"1","PORT":"80","GOOGLE_CLOUD_QUOTA_PROJECT":"ai-ui-generator","FUNCTIONS_EMULATOR":"true","TZ":"UTC","FIREBASE_DEBUG_MODE":"true","FIREBASE_DEBUG_FEATURES":"{\"skipTokenVerification\":true,\"enableCors\":true}","FIREBASE_EMULATOR_HUB":"127.0.0.1:4400","FIREBASE_AUTH_EMULATOR_HOST":"127.0.0.1:9099","FIRESTORE_EMULATOR_HOST":"127.0.0.1:8080","FIREBASE_FIRESTORE_EMULATOR_ADDRESS":"127.0.0.1:8080","CLOUD_EVENTARC_EMULATOR_HOST":"http://127.0.0.1:9299","CLOUD_TASKS_EMULATOR_HOST":"127.0.0.1:9499","FIREBASE_CONFIG":"{\"storageBucket\":\"ai-ui-generator.appspot.com\",\"projectId\":\"ai-ui-generator\"}","GOOGLE_APPLICATION_CREDENTIALS":"/Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json","ADMIN_PORT":"8081"} in /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions
+[debug] [2024-10-08T19:12:36.324Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""]
+[info]  * Serving Flask app 'serving'
+ * Debug mode: off
+
+[error] WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+Press CTRL+C to quit
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:36] "GET /__/functions.yaml HTTP/1.1" 200 -
+
+[debug] [2024-10-08T19:12:36.824Z] Got response from /__/functions.yaml endpoints:
+  main:
+    availableMemoryMb: null
+    concurrency: null
+    entryPoint: main
+    httpsTrigger: {}
+    ingressSettings: null
+    labels: {}
+    maxInstances: null
+    minInstances: null
+    platform: gcfv2
+    secretEnvironmentVariables: []
+    serviceAccountEmail: null
+    timeoutSeconds: null
+params: []
+requiredAPIs: []
+specVersion: v1alpha1
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:36] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+[error] /bin/sh: line 1: 54591 Terminated: 15          python3.12 "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py"
+
+[info] ✔  functions: Loaded functions definitions from source: main. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: main."}}
+[debug] [2024-10-08T19:12:36.859Z] File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/__pycache__/main.cpython-312.pyc changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/__pycache__/main.cpython-312.pyc changed, reloading triggers"}}
+[debug] [2024-10-08T19:12:37.861Z] Customer code is not Node
+[debug] [2024-10-08T19:12:37.861Z] Validating python source
+[debug] [2024-10-08T19:12:37.861Z] Building python source
+[info] i  functions: Loaded environment variables from .env, .env.local. 
+[debug] [2024-10-08T19:12:37.862Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-10-08T19:12:37.863Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[debug] [2024-10-08T19:12:37.892Z] stdout: /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions
+
+[debug] [2024-10-08T19:12:37.896Z] Running admin server with args: ["python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""] and env: {"GCLOUD_PROJECT":"ai-ui-generator","K_REVISION":"1","PORT":"80","GOOGLE_CLOUD_QUOTA_PROJECT":"ai-ui-generator","FUNCTIONS_EMULATOR":"true","TZ":"UTC","FIREBASE_DEBUG_MODE":"true","FIREBASE_DEBUG_FEATURES":"{\"skipTokenVerification\":true,\"enableCors\":true}","FIREBASE_EMULATOR_HUB":"127.0.0.1:4400","FIREBASE_AUTH_EMULATOR_HOST":"127.0.0.1:9099","FIRESTORE_EMULATOR_HOST":"127.0.0.1:8080","FIREBASE_FIRESTORE_EMULATOR_ADDRESS":"127.0.0.1:8080","CLOUD_EVENTARC_EMULATOR_HOST":"http://127.0.0.1:9299","CLOUD_TASKS_EMULATOR_HOST":"127.0.0.1:9499","FIREBASE_CONFIG":"{\"storageBucket\":\"ai-ui-generator.appspot.com\",\"projectId\":\"ai-ui-generator\"}","GOOGLE_APPLICATION_CREDENTIALS":"/Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json","ADMIN_PORT":"8081"} in /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions
+[debug] [2024-10-08T19:12:37.896Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""]
+[info]  * Serving Flask app 'serving'
+ * Debug mode: off
+
+[error] WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+
+[error] Press CTRL+C to quit
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:38] "GET /__/functions.yaml HTTP/1.1" 200 -
+
+[debug] [2024-10-08T19:12:38.441Z] Got response from /__/functions.yaml endpoints:
+  main:
+    availableMemoryMb: null
+    concurrency: null
+    entryPoint: main
+    httpsTrigger: {}
+    ingressSettings: null
+    labels: {}
+    maxInstances: null
+    minInstances: null
+    platform: gcfv2
+    secretEnvironmentVariables: []
+    serviceAccountEmail: null
+    timeoutSeconds: null
+params: []
+requiredAPIs: []
+specVersion: v1alpha1
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:12:38] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+[error] /bin/sh: line 1: 54603 Terminated: 15          python3.12 "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py"
+
+[info] ✔  functions: Loaded functions definitions from source: main. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: main."}}
