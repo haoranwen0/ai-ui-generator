@@ -125,13 +125,13 @@ const AssistantResponse: React.FC<{ content: string }> = ({ content }) => {
 const FadeInChatComponent: React.FC = () => {
   const messages = useAppSelector((store) => store.chat.value)
   const dispatch = useDispatch()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const bgColor = useColorModeValue('purple.50', 'purple.900')
+  const bgColor = useColorModeValue('gray.50', 'gray.900')
   const textColor = useColorModeValue('purple.800', 'purple.100')
   const inputBgColor = useColorModeValue('purple.100', 'purple.700')
   const botMessageBg = useColorModeValue('purple.100', 'purple.700')
@@ -140,23 +140,6 @@ const FadeInChatComponent: React.FC = () => {
 
   const user = useAppSelector((state) => state.user.user)
   const isLoading = useAppSelector(selectIsLoading)
-
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === '/') {
-        event.preventDefault()
-        setIsOpen((prev) => !prev)
-        if (!isOpen) {
-          setTimeout(() => inputRef.current?.focus(), 0)
-        }
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyPress)
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress)
-    }
-  }, [isOpen])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -203,29 +186,30 @@ const FadeInChatComponent: React.FC = () => {
   return (
     <Box
       position='fixed'
-      bottom={4}
+      bottom={0}
       left='50%'
       transform='translateX(-50%)'
       width='50%'
       maxWidth='600px'
       zIndex={1000}
     >
-      <Fade in={isOpen} unmountOnExit>
-        <Box
-          bg={bgColor}
-          boxShadow='xl'
-          borderRadius='md'
-          overflow='hidden'
-          display='flex'
-          flexDirection='column'
-          mb={2}
-          onMouseLeave={() => setIsOpen(false)}
-        >
+      <Box
+        bg={isHistoryOpen ? bgColor : 'transparent'}
+        boxShadow='xl'
+        borderRadius='md'
+        overflow='hidden'
+        display='flex'
+        flexDirection='column'
+        mb={2}
+        onMouseEnter={() => setIsHistoryOpen(true)}
+        onMouseLeave={() => setIsHistoryOpen(false)}
+      >
+        <Fade in={isHistoryOpen} unmountOnExit>
           <Flex
             p={4}
             borderBottomWidth={1}
             alignItems='center'
-            borderBottomColor={useColorModeValue('purple.200', 'purple.600')}
+            borderBottomColor={useColorModeValue('purple.100', 'purple.800')}
           >
             <Heading size='md' color={textColor}>
               ChatBot
@@ -273,51 +257,38 @@ const FadeInChatComponent: React.FC = () => {
             )}
             <div ref={messagesEndRef} />
           </VStack>
-          <Box p={4}>
-            <form onSubmit={handleSubmit}>
-              <Flex>
-                <Input
-                  ref={inputRef}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder='Type a message...'
-                  bg={inputBgColor}
-                  borderRadius='md'
-                  pr={10}
-                  flex={1}
-                  _placeholder={{
-                    color: useColorModeValue('purple.400', 'purple.300')
-                  }}
-                />
-                <IconButton
-                  aria-label='Send message'
-                  icon={<FaPaperPlane />}
-                  type='submit'
-                  colorScheme='purple'
-                  bg={buttonColor}
-                  _hover={{ bg: useColorModeValue('purple.500', 'purple.400') }}
-                  position='absolute'
-                  right={4}
-                  zIndex={2}
-                />
-              </Flex>
-            </form>
-          </Box>
+        </Fade>
+        <Box p={4} bg='transparent'>
+          <form onSubmit={handleSubmit}>
+            <Flex>
+              <Input
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder='Type a message...'
+                bg={inputBgColor}
+                borderRadius='md'
+                pr={10}
+                flex={1}
+                _placeholder={{
+                  color: useColorModeValue('purple.400', 'purple.300')
+                }}
+              />
+              <IconButton
+                aria-label='Send message'
+                icon={<FaPaperPlane />}
+                type='submit'
+                colorScheme='purple'
+                bg={buttonColor}
+                _hover={{ bg: useColorModeValue('purple.500', 'purple.400') }}
+                position='absolute'
+                right={4}
+                zIndex={2}
+              />
+            </Flex>
+          </form>
         </Box>
-      </Fade>
-      {!isOpen && (
-        <Box
-          position='absolute'
-          bottom={0}
-          left={0}
-          right={0}
-          height={12}
-          bg='transparent'
-          cursor='pointer'
-          onClick={() => setIsOpen(true)}
-          onMouseEnter={() => setIsOpen(true)}
-        />
-      )}
+      </Box>
     </Box>
   )
 }

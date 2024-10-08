@@ -40,24 +40,24 @@ const IconControls = () => {
   const bgColor = { light: 'blue.50', dark: 'blue.900' }
 
   const icons = [
-    {
-      name: 'Code Editor',
-      icon: FaCode,
-      onClick: () => dispatch(setView('Code'))
-    },
-    {
-      name: 'Preview',
-      icon: FaEye,
-      onClick: () => dispatch(setView('Preview'))
-    },
-    {
-      name: 'Chat',
-      icon: FaComments,
-      onClick: () => {
-        console.log('Chat button clicked')
-        // TODO: Implement chat toggle functionality
-      }
-    }
+    // {
+    //   name: 'Code Editor',
+    //   icon: FaCode,
+    //   onClick: () => dispatch(setView('Code'))
+    // },
+    // {
+    //   name: 'Preview',
+    //   icon: FaEye,
+    //   onClick: () => dispatch(setView('Preview'))
+    // },
+    // {
+    //   name: 'Chat',
+    //   icon: FaComments,
+    //   onClick: () => {
+    //     console.log('Chat button clicked')
+    //     // TODO: Implement chat toggle functionality
+    //   }
+    // }
   ]
 
   return (
@@ -69,7 +69,7 @@ const IconControls = () => {
       onMouseEnter={onOpen}
       onMouseLeave={onClose}
     >
-      <SlideFade in={isOpen} offsetX='-20px'>
+      <SlideFade in={true} offsetX='-20px'>
         <VStack
           spacing={1}
           bg={bgColor[colorMode]}
@@ -78,7 +78,7 @@ const IconControls = () => {
           boxShadow='md'
           alignItems='flex-start'
         >
-          {icons.map((item) => (
+          {/* {icons.map((item) => (
             <Tooltip
               key={item.name}
               label={item.name}
@@ -96,7 +96,7 @@ const IconControls = () => {
                 transition='all 0.2s'
               />
             </Tooltip>
-          ))}
+          ))} */}
           <Popover placement='right-start'>
             <PopoverTrigger>
               <IconButton

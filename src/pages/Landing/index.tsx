@@ -8,10 +8,13 @@ import {
   Text,
   VStack,
   useColorModeValue,
-  keyframes
+  keyframes,
+  Image
 } from '@chakra-ui/react'
 import { FiCode, FiZap } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+
+import HeroBG from '../../assets/images/hero_bg.png'
 
 // Animation keyframes
 const float = keyframes`
@@ -40,7 +43,7 @@ const Header = () => {
     >
       <Flex align='center' mr={5}>
         <Heading as='h1' size='lg' letterSpacing={'tighter'}>
-          AI UI Framework
+          Augment
         </Heading>
       </Flex>
 
@@ -83,12 +86,14 @@ const Hero = () => {
           direction='column'
           textAlign='center'
         >
-          <VStack spacing={8} mb={16}>
+          <VStack spacing={8} my={16}>
             <Heading
               as='h2'
               size='4xl'
               color={useColorModeValue('gray.800', 'white')}
               fontWeight='bold'
+              bgGradient='linear(to-r, purple.400, pink.400)'
+              bgClip='text'
             >
               AI-Powered UI Generation
             </Heading>
@@ -120,20 +125,24 @@ const Hero = () => {
           </VStack>
 
           {/* Placeholder for image */}
-          <Box
+          {/* <Box
             width='80%'
             maxW='800px'
             height='400px'
             bg='gray.200'
-            borderRadius='md'
+            rounded='md'
             display='flex'
             alignItems='center'
             justifyContent='center'
-          >
-            <Text color='gray.500' fontSize='lg'>
-              Placeholder for Image
-            </Text>
-          </Box>
+          > */}
+          <Image
+            src={HeroBG}
+            objectFit='contain'
+            h='100%'
+            w='80%'
+            rounded='lg'
+          />
+          {/* </Box> */}
 
           <Box
             as={FiCode}

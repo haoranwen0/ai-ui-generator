@@ -1,22 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Flex } from '@chakra-ui/react'
-import {
-  SandpackProvider,
-  SandpackLayout,
-  SandpackPreview,
-  SandpackCodeEditor,
-  useActiveCode,
-  Sandpack
-} from '@codesandbox/sandpack-react'
+import { Sandpack } from '@codesandbox/sandpack-react'
 import { useAppSelector } from '../../../redux/hooks'
-import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
-import { useDispatch } from 'react-redux'
 
 const ViewDisplay = () => {
-  const view = useAppSelector((state) => state.viewToggle.view)
   const code = useAppSelector((state) => state.codeEditor.value)
-
-  console.log('code', code)
 
   //   const [code, setCode] = useState(`
   // import { ChakraProvider, Box, Heading, Text, Stack, Input, Button } from '@chakra-ui/react'
