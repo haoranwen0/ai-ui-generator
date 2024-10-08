@@ -10,6 +10,16 @@ import {
   useColorModeValue,
   Spinner,
   useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Input,
+  FormControl,
+  FormLabel,
 } from '@chakra-ui/react';
 import { FiPlus } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +29,6 @@ import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth';
 interface Project {
   id: string;
   name: string;
-  // lastModified: string;
-  // Add any other properties that your project objects contain
 }
 
 const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
@@ -44,9 +52,6 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
         <Heading size="md" mb={2}>
           {project.name}
         </Heading>
-        {/* <Text fontSize="sm" color="gray.500">
-          Last modified: {new Date(project.lastModified).toLocaleDateString()}
-        </Text> */}
       </Box>
     </Box>
   );
@@ -62,6 +67,8 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -71,12 +78,9 @@ const Dashboard: React.FC = () => {
       } else {
         setIsLoading(false);
         setError('Please sign in to view your projects.');
-        // Optionally, redirect to login page
-        // navigate('/login');
       }
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [auth, navigate]);
 
@@ -85,14 +89,11 @@ const Dashboard: React.FC = () => {
     setError(null);
     try {
       const idToken = await getIdToken(currentUser);
-      console.log("token", idToken);
-
       const response = await axios.get<Project[]>('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects', {
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
       });
-      console.log(response.data);
       setProjects(response.data);
     } catch (err) {
       console.error('Error fetching projects:', err);
@@ -110,28 +111,33 @@ const Dashboard: React.FC = () => {
   };
 
   const handleCreateProject = async () => {
-    if (user === null) {
+    if (user === null || newProjectName.trim() === '') {
       return;
     }
-    const idToken = await getIdToken(user);
-    console.log("token", idToken);
-
-    const response = await axios.post('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects',
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
-    // Logic to create a new project
-    console.log('Creating a new project');
-    console.log(response.data);
-
-    const projectID = response.data['projectid'];
-    return navigate(`/design/${projectID}`);
-    // Then navigate to the project creation page or open a modal
-    // For example:
-    // navigate('/create-project');
+    try {
+      const idToken = await getIdToken(user);
+      const response = await axios.post('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects',
+        { name: newProjectName, code: '' },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
+      const projectID = response.data['projectid'];
+      setIsModalOpen(false);
+      setNewProjectName('');
+      navigate(`/design/${projectID}`);
+    } catch (err) {
+      console.error('Error creating project:', err);
+      toast({
+        title: 'Error',
+        description: 'Failed to create project. Please try again.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   if (!user) {
@@ -159,7 +165,7 @@ const Dashboard: React.FC = () => {
         </Heading>
         <Button
           leftIcon={<FiPlus />}
-          onClick={handleCreateProject}
+          onClick={() => setIsModalOpen(true)}
           colorScheme="purple"
         >
           Create New Project
@@ -176,10 +182,10 @@ const Dashboard: React.FC = () => {
             {error}
           </Text>
         ) : projects.length === 0 ? (
-          <Text color="red.500" textAlign="center">
+          <Text textAlign="center">
             You currently have no projects.
           </Text>
-        ): (
+        ) : (
           <Grid
             templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
             gap={6}
@@ -190,6 +196,30 @@ const Dashboard: React.FC = () => {
           </Grid>
         )}
       </Box>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create New Project</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <FormLabel>Project Name</FormLabel>
+              <Input
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                placeholder="Enter project name"
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleCreateProject}>
+              Create
+            </Button>
+            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

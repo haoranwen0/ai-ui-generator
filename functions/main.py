@@ -155,18 +155,12 @@ def list_projects(req: https_fn.Request) -> https_fn.Response:
 def create_project(req: https_fn.Request) -> https_fn.Response:
   headers = get_headers()
   uid = get_uid(req.headers)
-  # project = req.json
-  # print(project)
-  # print(type(project))
-  # try:
-  #   validate(project, project_schema)
-  # except:
-  #   return https_fn.Response('Invalid project structure', status=405)
-  blank_project = {
-    "name": "",
-    "code": ""
-  }
-  _, doc_ref = db.collection("users").document(uid).collection('projects').add(blank_project)
+  project = req.json
+  try:
+    validate(project, project_schema)
+  except:
+    return https_fn.Response('Invalid project structure', status=405)
+  _, doc_ref = db.collection("users").document(uid).collection('projects').add(project)
   return https_fn.Response(
     json.dumps({'message': 'Project created', 'projectid': doc_ref.id}),
     status=200,
