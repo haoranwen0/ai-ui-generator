@@ -48,7 +48,7 @@ project_schema = {
 def get_headers():
   headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Max-Age': '3600'
     }
@@ -75,6 +75,7 @@ def router(request):
       "methods": {
         "GET": get_project,
         "PUT": update_project,
+        "PATCH": update_code
         # "DELETE": delete_project
       }
     },
@@ -180,6 +181,22 @@ def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
     return https_fn.Response('Project not found', status=404)
   return https_fn.Response(
     json.dumps(project.to_dict()),
+    status=200,
+    headers=headers
+  )
+
+# TODO: Change so that project can't be renamed
+def update_code(req: https_fn.Request, projectid: str) -> https_fn.Response:
+  headers = get_headers()
+  uid = get_uid(req.headers)
+  project_ref = db.collection("users").document(uid).collection("projects").document(projectid)
+  old_project = project_ref.get()
+  if not old_project.exists:
+    return https_fn.Response('Project not found', status=404)
+  new_code = req.json['code']
+  project_ref.update({'code': new_code})
+  return https_fn.Response(
+    json.dumps({'message': 'Code updated'}),
     status=200,
     headers=headers
   )

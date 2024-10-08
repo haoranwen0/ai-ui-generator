@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Flex } from '@chakra-ui/react'
 import {
   SandpackProvider,
@@ -11,10 +11,103 @@ import {
 import { useAppSelector } from '../../../redux/hooks'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 import { useDispatch } from 'react-redux'
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth';
 
 const ViewDisplay = () => {
   const view = useAppSelector((state) => state.viewToggle.view)
   const code = useAppSelector((state) => state.codeEditor.value)
+  // const [code, setCode] = useSta
+
+  const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const auth = getAuth();
+
+  const { designID } = useParams();
+
+  // const [content, setContent] = useState('');
+  // const [lastSavedContent, setLastSavedContent] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        // fetchCode(currentUser);
+      } else {
+        setIsLoading(false);
+        setError('Please sign in to view your projects.');
+        // Optionally, redirect to login page
+        // navigate('/login');
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [auth, navigate]);
+
+  // const fetchCode = async (currentUser: User) => {
+  //   setIsLoading(true);
+  //   setError(null);
+  //   try {
+  //     const idToken = await getIdToken(currentUser);
+  //     console.log("token", idToken);
+
+  //     const response = await axios.get(`http://127.0.0.1:5001/ai-ui-generator/us-central1/main/project/${designID}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${idToken}`,
+  //       },
+  //     });
+
+  //     setProjects(response.data);
+  //   } catch (err) {
+  //     console.error('Error fetching projects:', err);
+  //     setError('Failed to fetch projects. Please try again later.');
+  //     toast({
+  //       title: 'Error',
+  //       description: 'Failed to fetch projects. Please try again later.',
+  //       status: 'error',
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
+  useEffect(() => {
+    const saveInterval = setInterval(() => {
+      saveContent();
+    }, 5000); // Save every 30 seconds
+
+    return () => clearInterval(saveInterval);
+  }, []);
+
+  const saveContent = async () => {
+    console.log('saving content');
+    console.log(user);
+    if (user === null) {
+      return;
+    }
+    try {
+      const idToken = await getIdToken(user);
+  
+      await axios.patch(`http://127.0.0.1:5001/ai-ui-generator/us-central1/main/project/${designID}`,
+        { code },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+      });
+      console.log('Code saved successfully');
+    } catch (error) {
+      console.error('Error saving code:', error);
+    }
+  };
+
 
   console.log('code', code)
 

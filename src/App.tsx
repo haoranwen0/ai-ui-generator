@@ -26,7 +26,9 @@ const router = createBrowserRouter(
       <Route path='auth' element={<Authentication />} />
       <Route path='dashboard' element={<Dashboard />} />
       {/* Change the path name to whatever is fitting. For example, /chat */}
-      <Route path='main-app-page' element={<Main />} />
+      <Route path='design'>
+        <Route path=':designID' element={<Main />} />
+      </Route>
     </Route>
   )
 )

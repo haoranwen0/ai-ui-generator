@@ -38,7 +38,7 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
       transition="all 0.3s"
       _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
       cursor="pointer"
-      onClick={() => navigate(`/main-app-page/${project.id}`)}
+      onClick={() => navigate(`/design/${project.id}`)}
     >
       <Box p={4}>
         <Heading size="md" mb={2}>
@@ -92,7 +92,7 @@ const Dashboard: React.FC = () => {
           Authorization: `Bearer ${idToken}`,
         },
       });
-
+      console.log(response.data);
       setProjects(response.data);
     } catch (err) {
       console.error('Error fetching projects:', err);
@@ -126,6 +126,9 @@ const Dashboard: React.FC = () => {
     // Logic to create a new project
     console.log('Creating a new project');
     console.log(response.data);
+
+    const projectID = response.data['projectid'];
+    return navigate(`/design/${projectID}`);
     // Then navigate to the project creation page or open a modal
     // For example:
     // navigate('/create-project');
