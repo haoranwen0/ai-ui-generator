@@ -85,6 +85,12 @@ def router(request):
       }
     },
     {
+      "pattern": r"^/count$",
+      "methods": {
+        "GET": get_api_count
+      }
+    },
+    {
       "pattern": r"^/test$",
       "methods": {
         "GET": get_test_user
@@ -132,6 +138,20 @@ def main(req: https_fn.Request) -> https_fn.Response:
 #   })
 
 #   return https_fn.Response(f"Message added with ID: {doc_ref.id}")
+
+def get_api_count(req: https_fn.Request) -> https_fn.Response:
+  headers = get_headers()
+  uid = get_uid(req.headers)
+  doc_ref = db.collection("users").document(uid)
+  doc = doc_ref.get()
+  # Check if the document doesn't exist
+  if not doc.exists or "api_count" not in doc.to_dict():
+    doc_ref.set({"api_count": 15})
+  return https_fn.Response(
+    json.dumps({'message': doc.to_dict(), 'count': doc.get("api_count")}),
+    status=200,
+    headers=headers
+  )
 
 def list_projects(req: https_fn.Request) -> https_fn.Response:
   headers = get_headers()
@@ -220,6 +240,18 @@ client = anthropic.Anthropic(api_key=anthropic_api_key)
 def chat(req: https_fn.Request) -> https_fn.Response:
     headers = get_headers()
     uid = get_uid(req.headers)
+
+    doc_ref = db.collection("users").document(uid)
+    doc = doc_ref.get()
+    # Check if the document doesn't exist
+    if not doc.exists or "api_count" not in doc.to_dict():
+      doc_ref.set({"api_count": 15})
+    else:
+      doc_ref.update({"api_count": firestore.Increment(-1)})
+    # Check if the user has enough API calls
+    if doc.to_dict()["api_count"] <= 0:
+      return https_fn.Response('Out of API calls', status=405)
+
     chat_history = req.json["chat_history"]
     chat_history.insert(0, {"role": "user", "content": user_initial_prompt()})
     chat_history.insert(1, {"role": "assistant", "content": assistant_initial_prompt()})
