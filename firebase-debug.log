@@ -1,0 +1,161 @@
+[debug] [2024-10-08T19:10:15.795Z] ----------------------------------------------------------------------
+[debug] [2024-10-08T19:10:15.796Z] Command:       /Users/evanseeyave/.nvm/versions/node/v22.5.1/bin/node /Users/evanseeyave/.nvm/versions/node/v22.5.1/bin/firebase emulators:start --import ./exported-dev-data --export-on-exit ./exported-dev-data
+[debug] [2024-10-08T19:10:15.796Z] CLI Version:   13.16.0
+[debug] [2024-10-08T19:10:15.796Z] Platform:      darwin
+[debug] [2024-10-08T19:10:15.796Z] Node Version:  v22.5.1
+[debug] [2024-10-08T19:10:15.797Z] Time:          Tue Oct 08 2024 15:10:15 GMT-0400 (Eastern Daylight Time)
+[debug] [2024-10-08T19:10:15.797Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-10-08T19:10:15.841Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-10-08T19:10:15.842Z] > authorizing via signed-in user (evan.seeyave@gmail.com)
+[debug] [2024-10-08T19:10:15.924Z] openjdk version "22.0.2" 2024-07-16
+
+[debug] [2024-10-08T19:10:15.924Z] OpenJDK Runtime Environment Homebrew (build 22.0.2)
+OpenJDK 64-Bit Server VM Homebrew (build 22.0.2, mixed mode, sharing)
+
+[debug] [2024-10-08T19:10:15.927Z] Parsed Java major version: 22
+[info] i  emulators: Starting emulators: auth, functions, firestore, hosting {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, hosting"}}
+[debug] [2024-10-08T19:10:16.567Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.567Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.567Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.567Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.567Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.567Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2024-10-08T19:10:16.569Z] [hub] writing locator at /var/folders/ms/jvsg1zqd6ybfd8c0bjwq03th0000gn/T/hub-ai-ui-generator.json
+[debug] [2024-10-08T19:10:16.806Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.806Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.806Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-10-08T19:10:16.806Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: database, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mdatabase, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2024-10-08T19:10:16.808Z] defaultcredentials: writing to file /Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json
+[debug] [2024-10-08T19:10:16.809Z] Setting GAC to /Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json"}}
+[debug] [2024-10-08T19:10:16.810Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator/adminSdkConfig [none]
+[debug] [2024-10-08T19:10:22.788Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator/adminSdkConfig 200
+[debug] [2024-10-08T19:10:22.789Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator/adminSdkConfig {"projectId":"ai-ui-generator","storageBucket":"ai-ui-generator.appspot.com"}
+[info] i  firestore: Importing data from /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/firestore_export/firestore_export.overall_export_metadata {"metadata":{"emulator":{"name":"firestore"},"message":"Importing data from /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/firestore_export/firestore_export.overall_export_metadata"}}
+[debug] [2024-10-08T19:10:22.813Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-10-08T19:10:22.813Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2024-10-08T19:10:22.813Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/Users/evanseeyave/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","ai-ui-generator","--seed_from_export","/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/firestore_export/firestore_export.overall_export_metadata","--rules","/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/Users/evanseeyave/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"ai-ui-generator\",\"--seed_from_export\",\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/firestore_export/firestore_export.overall_export_metadata\",\"--rules\",\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2024-10-08T19:10:23.384Z] Oct 08, 2024 3:10:23 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Oct 08, 2024 3:10:23 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
+[debug] [2024-10-08T19:10:23.395Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
+[debug] [2024-10-08T19:10:23.395Z] 127.0.0.1:8080
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[info] i  auth: Importing config from /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/auth_export/config.json {"metadata":{"emulator":{"name":"auth"},"message":"Importing config from /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/auth_export/config.json"}}
+[info] i  auth: Importing accounts from /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/auth_export/accounts.json {"metadata":{"emulator":{"name":"auth"},"message":"Importing accounts from /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/exported-dev-data/auth_export/accounts.json"}}
+[debug] [2024-10-08T19:10:25.309Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/ai-ui-generator/sites 
+[debug] [2024-10-08T19:10:25.855Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/ai-ui-generator/sites 200
+[debug] [2024-10-08T19:10:25.855Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/ai-ui-generator/sites {"sites":[{"name":"projects/ai-ui-generator/sites/ai-ui-generator","defaultUrl":"https://ai-ui-generator.web.app","appId":"1:834430302725:web:28506ee44aa9d3c4ebfa6c","type":"DEFAULT_SITE"}]}
+[debug] [2024-10-08T19:10:25.855Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator/webApps/1:834430302725:web:28506ee44aa9d3c4ebfa6c/config [none]
+[debug] [2024-10-08T19:10:26.277Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator/webApps/1:834430302725:web:28506ee44aa9d3c4ebfa6c/config 200
+[debug] [2024-10-08T19:10:26.277Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator/webApps/1:834430302725:web:28506ee44aa9d3c4ebfa6c/config {"projectId":"ai-ui-generator","appId":"1:834430302725:web:28506ee44aa9d3c4ebfa6c","storageBucket":"ai-ui-generator.appspot.com","apiKey":"AIzaSyATGwC0IlPagtYw-7OVicGdUF_dhnmuoxc","authDomain":"ai-ui-generator.firebaseapp.com","messagingSenderId":"834430302725","measurementId":"G-YXXCTGMZER"}
+[debug] [2024-10-08T19:10:26.285Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator [none]
+[debug] [2024-10-08T19:10:26.540Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator 200
+[debug] [2024-10-08T19:10:26.541Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/ai-ui-generator {"projectId":"ai-ui-generator","projectNumber":"834430302725","displayName":"ai-ui-generator","name":"projects/ai-ui-generator","resources":{"hostingSite":"ai-ui-generator"},"state":"ACTIVE","etag":"1_3ee9e490-5ac2-4b3f-bdcc-54996ba10353"}
+[debug] [2024-10-08T19:10:26.542Z] Specified "public" directory "build" does not exist; Deploy to Hosting site "ai-ui-generator" may fail or be empty.
+[info] i  hosting[ai-ui-generator]: Serving hosting files from: build {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mbuild\u001b[22m"}}
+[info] ✔  hosting[ai-ui-generator]: Local server: http://127.0.0.1:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5000\u001b[22m\u001b[24m"}}
+[debug] [2024-10-08T19:10:26.617Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-10-08T19:10:26.617Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2024-10-08T19:10:26.617Z] Starting Emulator UI with command {"binary":"node","args":["/Users/evanseeyave/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs"],"optionalArgs":[],"joinArgs":false,"shell":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/evanseeyave/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs\"],\"optionalArgs\":[],\"joinArgs\":false,\"shell\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2024-10-08T19:10:26.719Z] Web / API server started at 127.0.0.1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
+[debug] [2024-10-08T19:10:26.720Z] Web / API server started at ::1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[info] i  functions: Watching "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions\" for Cloud Functions..."}}
+[debug] [2024-10-08T19:10:26.825Z] Customer code is not Node
+[debug] [2024-10-08T19:10:26.825Z] Validating python source
+[debug] [2024-10-08T19:10:26.825Z] Building python source
+[info] i  functions: Loaded environment variables from .env, .env.local. 
+[debug] [2024-10-08T19:10:26.828Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-10-08T19:10:26.830Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[debug] [2024-10-08T19:10:26.868Z] stdout: /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions
+
+[debug] [2024-10-08T19:10:26.871Z] Running admin server with args: ["python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""] and env: {"GCLOUD_PROJECT":"ai-ui-generator","K_REVISION":"1","PORT":"80","GOOGLE_CLOUD_QUOTA_PROJECT":"ai-ui-generator","FUNCTIONS_EMULATOR":"true","TZ":"UTC","FIREBASE_DEBUG_MODE":"true","FIREBASE_DEBUG_FEATURES":"{\"skipTokenVerification\":true,\"enableCors\":true}","FIREBASE_EMULATOR_HUB":"127.0.0.1:4400","FIREBASE_AUTH_EMULATOR_HOST":"127.0.0.1:9099","FIRESTORE_EMULATOR_HOST":"127.0.0.1:8080","FIREBASE_FIRESTORE_EMULATOR_ADDRESS":"127.0.0.1:8080","CLOUD_EVENTARC_EMULATOR_HOST":"http://127.0.0.1:9299","CLOUD_TASKS_EMULATOR_HOST":"127.0.0.1:9499","FIREBASE_CONFIG":"{\"storageBucket\":\"ai-ui-generator.appspot.com\",\"projectId\":\"ai-ui-generator\"}","GOOGLE_APPLICATION_CREDENTIALS":"/Users/evanseeyave/.config/firebase/evan_seeyave_gmail.com_application_default_credentials.json","ADMIN_PORT":"8081"} in /Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions
+[debug] [2024-10-08T19:10:26.871Z] Running command with virtualenv: command=., args=["\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/bin/activate\"","&&","python3.12","\"/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py\""]
+[info]  * Serving Flask app 'serving'
+ * Debug mode: off
+
+[error] WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+
+[error] Press CTRL+C to quit
+
+[error] [2024-10-08 19:10:27,306] ERROR in app: Exception on /__/functions.yaml [GET]
+Traceback (most recent call last):
+  File "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py", line 122, in get_functions_yaml
+    functions = get_functions()
+                ^^^^^^^^^^^^^^^
+  File "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py", line 40, in get_functions
+    spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 991, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1129, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1059, in source_to_code
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/main.py", line 262
+    >>>>>>> 31de856 (Added headers)
+             ^
+SyntaxError: invalid decimal literal
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:10:27] "GET /__/functions.yaml HTTP/1.1" 500 -
+
+[debug] [2024-10-08T19:10:27.308Z] Got response code 500; body <!doctype html>
+<html lang=en>
+<title>500 Internal Server Error</title>
+<h1>Internal Server Error</h1>
+<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>
+
+[error] 127.0.0.1 - - [08/Oct/2024 19:10:27] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+[error] /bin/sh: line 1: 54308 Terminated: 15          python3.12 "/Users/evanseeyave/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/ai-ui-generator/functions/venv/lib/python3.12/site-packages/firebase_functions/private/serving.py"
+
+[error] ⬢  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬─────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI             │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth      │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Hosting        │ 127.0.0.1:5000 │ n/a                             │
+└────────────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
