@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -17,6 +17,8 @@ import { persistor, store } from './redux/store'
 import './index.css'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
 
+import theme from './theme'
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 const analytics = getAnalytics(app)
@@ -30,7 +32,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <App />
       </ChakraProvider>
     </PersistGate>

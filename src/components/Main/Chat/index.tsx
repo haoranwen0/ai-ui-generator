@@ -9,7 +9,9 @@ import {
   IconButton,
   Heading,
   Fade,
-  Spinner
+  Spinner,
+  Kbd,
+  Icon
 } from '@chakra-ui/react'
 import { FaPaperPlane } from 'react-icons/fa'
 import QuestionsContainer, { Question } from '../Questions'
@@ -24,81 +26,6 @@ import { useDispatch } from 'react-redux'
 import { callAIUIGenerator } from '../../../functions/utils'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 
-const questions: Question[] = [
-  {
-    id: 1,
-    text: 'What color scheme would you prefer for the app?',
-    type: 'multiple_choice',
-    options: [
-      'Light (white background)',
-      'Dark (dark background)',
-      'Blue-based',
-      'Green-based'
-    ]
-  },
-  {
-    id: 2,
-    text: 'How would you like to organize the main layout?',
-    type: 'multiple_choice',
-    options: [
-      'Sidebar navigation',
-      'Top navigation bar',
-      'Card-based layout',
-      'Tabbed interface'
-    ]
-  },
-  {
-    id: 3,
-    text: 'Which feature should be most prominent on the main page?',
-    type: 'multiple_choice',
-    options: ['Problem list', 'User profile', 'Leaderboard', 'Discussion forum']
-  },
-  {
-    id: 4,
-    text: 'How would you like to display individual problems?',
-    type: 'multiple_choice',
-    options: ['Card view', 'List view', 'Grid view', 'Expandable sections']
-  },
-  {
-    id: 5,
-    text: 'What type of text editor would you prefer for solving problems?',
-    type: 'multiple_choice',
-    options: [
-      'Simple textarea',
-      'Syntax-highlighted editor',
-      'Split-view (problem and code)',
-      'Full-screen code editor'
-    ]
-  },
-  {
-    id: 6,
-    text: 'How would you like to implement the discussion feature?',
-    type: 'multiple_choice',
-    options: [
-      'Threaded comments',
-      'Real-time chat',
-      'Forum-style posts',
-      'Q&A format'
-    ]
-  },
-  {
-    id: 7,
-    text: 'Do you want to include any gamification elements?',
-    type: 'multiple_choice',
-    options: [
-      'Points system',
-      'Badges/Achievements',
-      'Daily challenges',
-      'None'
-    ]
-  },
-  {
-    id: 8,
-    text: 'How important is mobile responsiveness for your app?',
-    type: 'text'
-  }
-]
-
 export interface Message {
   content: string
   role: 'user' | 'assistant'
@@ -112,8 +39,6 @@ interface AssistantResponse {
 
 const AssistantResponse: React.FC<{ content: string }> = ({ content }) => {
   const assistantData: AssistantResponse = JSON.parse(content)
-
-  console.log(content, assistantData)
 
   if (assistantData.questions) {
     return <QuestionsContainer questions={assistantData.questions} />
@@ -212,7 +137,7 @@ const FadeInChatComponent: React.FC = () => {
             borderBottomColor={useColorModeValue('purple.100', 'purple.800')}
           >
             <Heading size='md' color={textColor}>
-              ChatBot
+              Augment AI
             </Heading>
           </Flex>
           <VStack
@@ -260,31 +185,43 @@ const FadeInChatComponent: React.FC = () => {
         </Fade>
         <Box p={4} bg='transparent'>
           <form onSubmit={handleSubmit}>
-            <Flex>
+            <Flex position='relative'>
               <Input
                 ref={inputRef}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder='Type a message...'
-                bg={inputBgColor}
-                borderRadius='md'
+                bg={`${inputBgColor}CC`} // Added 'CC' for 80% opacity
                 pr={10}
+                borderRadius='md'
+                opacity={0.45}
                 flex={1}
                 _placeholder={{
                   color: useColorModeValue('purple.400', 'purple.300')
                 }}
+                transition='opacity 0.2s ease-in-out'
+                _hover={{
+                  opacity: 1
+                }}
+                _focus={{
+                  opacity: 1
+                }}
               />
-              <IconButton
-                aria-label='Send message'
-                icon={<FaPaperPlane />}
-                type='submit'
-                colorScheme='purple'
-                bg={buttonColor}
-                _hover={{ bg: useColorModeValue('purple.500', 'purple.400') }}
+
+              <Flex
                 position='absolute'
                 right={4}
+                top='50%'
+                transform='translateY(-50%)'
                 zIndex={2}
-              />
+                alignItems='center'
+                opacity={0.8}
+                transition='opacity 0.2s ease-in-out'
+                _hover={{ opacity: 1 }}
+                cursor='pointer'
+              >
+                <Icon as={FaPaperPlane} color={buttonColor} />
+              </Flex>
             </Flex>
           </form>
         </Box>

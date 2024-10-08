@@ -115,7 +115,7 @@ const AuthPage: React.FC = () => {
 
   const [tabIndex, setTabIndex] = useState(0)
   const [authMode, setAuthMode] = useState<AuthMode>('signin')
-  const bgColor = useColorModeValue('purple.50', 'purple.900')
+  const bgColor = useColorModeValue('gray.50', 'gray.900')
   const textColor = useColorModeValue('purple.800', 'purple.100')
 
   const toast = useToast()

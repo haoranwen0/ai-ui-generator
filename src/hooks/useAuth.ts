@@ -6,14 +6,14 @@ import { auth } from '../index'
 
 export default function useAuth() {
   const [finished, setFinished] = useState(false)
-  
+
   const dispatch = useAppDispatch()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in
-        console.log('User is signed in', user)
+        // console.log('User is signed in', user)
         dispatch(signIn(user))
       } else {
         // User is signed out

@@ -36,8 +36,8 @@ const IconControls = () => {
   const { colorMode, toggleColorMode } = useColorMode()
   const [usageRemaining] = useState(15)
 
-  const iconColor = { light: 'blue.600', dark: 'blue.200' }
-  const bgColor = { light: 'blue.50', dark: 'blue.900' }
+  const iconColor = { light: 'purple.600', dark: 'purple.200' }
+  const bgColor = { light: 'gray.50', dark: 'gray.900' }
 
   const icons = [
     // {
@@ -72,9 +72,8 @@ const IconControls = () => {
       <SlideFade in={true} offsetX='-20px'>
         <VStack
           spacing={1}
-          bg={bgColor[colorMode]}
           borderRadius='md'
-          p={2}
+          p={1}
           boxShadow='md'
           alignItems='flex-start'
         >
@@ -101,11 +100,15 @@ const IconControls = () => {
             <PopoverTrigger>
               <IconButton
                 aria-label='Settings'
-                icon={<FaCog />}
-                variant='ghost'
+                icon={<FaCog color='#B794F4' opacity={0.8} />}
+                variant='outline'
                 color={iconColor[colorMode]}
-                _hover={{ bg: 'blue.100', color: 'blue.600' }}
-                _active={{ bg: 'blue.200', color: 'blue.700' }}
+                _hover={{ bg: 'purple.700', color: 'purple.600', opacity: 0.8 }}
+                _active={{
+                  bg: 'purple.700',
+                  color: 'purple.700',
+                  opacity: 0.8
+                }}
                 transition='all 0.2s'
               />
             </PopoverTrigger>
@@ -129,7 +132,7 @@ const IconControls = () => {
                     <Button
                       leftIcon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
                       onClick={toggleColorMode}
-                      colorScheme='blue'
+                      colorScheme='purple'
                       size='sm'
                       variant='outline'
                       width='100%'
@@ -142,7 +145,7 @@ const IconControls = () => {
                     onClick={() => {
                       signOut(auth)
                     }}
-                    colorScheme='blue'
+                    colorScheme='purple'
                     size='sm'
                     variant='outline'
                   >
