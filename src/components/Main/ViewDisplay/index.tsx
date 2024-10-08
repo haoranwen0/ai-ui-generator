@@ -32,6 +32,16 @@ const ViewDisplay = () => {
   // const [lastSavedContent, setLastSavedContent] = useState('');
 
   useEffect(() => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUser(currentUser);
+      // fetchCode(currentUser);
+    } else {
+      setUser(null);
+      setIsLoading(false);
+      setError('Please sign in to view your projects.');
+    }
+    
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
