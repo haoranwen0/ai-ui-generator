@@ -268,7 +268,7 @@ def chat(req: https_fn.Request, projectid: str) -> https_fn.Response:
         tools=[
             {
                 "name": "get_code",
-                "description": "Get the UI UX code for the design",
+                "description": "Get the UI/UX code for the design",
                 "input_schema": {
                     "type": "object",
                     "properties": {

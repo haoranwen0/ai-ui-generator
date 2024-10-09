@@ -127,7 +127,7 @@ const FadeInChatComponent: React.FC = () => {
 
       console.log(response.data);
 
-      dispatch(setMessages(response.data.map((message: any) => ({ content: JSON.stringify(message.content), role: message.role }))));
+      dispatch(setMessages(response.data));
     } catch (error) {
       console.log("Error fetching chat history", error);
     }
