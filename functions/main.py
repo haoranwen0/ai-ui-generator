@@ -165,6 +165,13 @@ def create_project(req: https_fn.Request) -> https_fn.Response:
     _, doc_ref = (
         db.collection("users").document(uid).collection("projects").add(project)
     )
+
+    # Now initialize the user's API count
+    user_ref = db.collection("users").document(uid)
+    user = user_ref.get()
+    if not user.exists or "api_count" not in user.to_dict():
+        user_ref.set({"api_count": 15}, merge=True)
+
     return https_fn.Response(
         json.dumps({"message": "Project created", "projectid": doc_ref.id}),
         status=200,

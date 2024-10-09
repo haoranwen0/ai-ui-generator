@@ -39,7 +39,8 @@ import {
 } from 'firebase/auth'
 import {
   setCount,
-  decrement
+  decrement,
+  selectCount
 } from '../../../redux/features/counter/counterSlice'
 import { useParams } from 'react-router-dom'
 import { get } from '../../../utils/api'
@@ -84,7 +85,7 @@ const FadeInChatComponent: React.FC = () => {
   const userMessageBg = useColorModeValue('purple.300', 'purple.500')
   const buttonColor = useColorModeValue('purple.400', 'purple.300')
 
-  const counter = useAppSelector((state) => state.counter.value)
+  const counter = useAppSelector(selectCount)
   const [user, setUser] = useState<User | null>(null)
   const isLoading = useAppSelector(selectIsLoading)
 

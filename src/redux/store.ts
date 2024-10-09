@@ -11,7 +11,7 @@ import isNewUserReducer from './features/isNewUser/isNewUserSlice'
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['isNewUser'] // Only 'isNewUser' will be persisted
+  whitelist: ['isNewUser', 'counter'] // Only 'isNewUser' will be persisted
 }
 
 // Combine reducers

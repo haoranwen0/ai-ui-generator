@@ -45,6 +45,7 @@ import {
   setIsNewUser
 } from '../../../redux/features/isNewUser/isNewUserSlice'
 import { get, patch } from '../../../utils/api'
+import { setCount } from '../../../redux/features/counter/counterSlice'
 
 const ViewDisplay = () => {
   const dispatch = useAppDispatch()
@@ -65,6 +66,7 @@ const ViewDisplay = () => {
       setUser(currentUser)
       if (currentUser) {
         setIsLoading(true)
+        await fetchUsage(currentUser)
         await fetchCode(await currentUser.getIdToken())
         setIsLoading(false)
       } else {
@@ -99,6 +101,28 @@ const ViewDisplay = () => {
         duration: 5000,
         isClosable: true
       })
+    }
+  }
+
+  const fetchUsage = async (currentUser: User) => {
+    try {
+      const idToken = await currentUser.getIdToken()
+      const response = await get<{ count: number }>(`/usage`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        }
+      })
+      console.log(response.data.count)
+      dispatch(setCount(response.data.count))
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: 'Error fetching projects',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      // console.error('Error fetching projects:', err)
     }
   }
 
