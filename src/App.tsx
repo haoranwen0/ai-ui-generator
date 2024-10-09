@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import {
   createBrowserRouter,
@@ -16,6 +16,7 @@ import {
   NotFound,
   NotAuthenticated
 } from './pages'
+import { useColorMode } from '@chakra-ui/react'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,9 +35,19 @@ const router = createBrowserRouter(
 )
 
 const App: React.FC = () => {
-useAuth();
+  const { setColorMode } = useColorMode()
 
-  return <><RouterProvider router={router} /></>
+  useAuth()
+
+  useEffect(() => {
+    setColorMode('dark')
+  }, [])
+
+  return (
+    <>
+      <RouterProvider router={router} />
+    </>
+  )
 }
 
 export default App
