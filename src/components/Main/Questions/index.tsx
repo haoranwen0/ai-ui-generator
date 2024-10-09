@@ -49,7 +49,7 @@ const QuestionComponent: React.FC<QuestionProps> = ({ question, onAnswer }) => {
   }
 
   // Theme-aware colors
-  const bgColor = useColorModeValue('purple.50', 'purple.900')
+  const bgColor = useColorModeValue('gray.50', 'gray.900')
   const textColor = useColorModeValue('purple.700', 'purple.100')
   const borderColor = useColorModeValue('purple.200', 'purple.700')
   const hoverBorderColor = useColorModeValue('purple.300', 'purple.600')

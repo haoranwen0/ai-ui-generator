@@ -6,21 +6,14 @@ import {
   VStack,
   Text,
   useColorModeValue,
-  IconButton,
   Heading,
   Fade,
   Spinner,
-  Kbd,
   Icon,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
   Button
 } from '@chakra-ui/react'
 import { FaPaperPlane } from 'react-icons/fa'
 import QuestionsContainer, { Question } from '../Questions'
-import axios from 'axios'
 import { useAppSelector, useAppDispatch } from '../../../redux/hooks'
 import {
   addMessage,
@@ -29,18 +22,8 @@ import {
 } from '../../../redux/features/chat/chatSlice'
 import { callAIUIGenerator } from '../../../functions/utils'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
-import {
-  signOut,
-  onAuthStateChanged,
-  getAuth,
-  User,
-  getIdToken
-} from 'firebase/auth'
-import {
-  setCount,
-  decrement
-} from '../../../redux/features/counter/counterSlice'
-import { FiAlertCircle, FiMail, FiPlus } from 'react-icons/fi'
+import { decrement } from '../../../redux/features/counter/counterSlice'
+import { FiAlertCircle, FiMail } from 'react-icons/fi'
 
 export interface Message {
   content: string
@@ -69,14 +52,13 @@ const FadeInChatComponent: React.FC = () => {
 
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
-  const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const bgColor = useColorModeValue('gray.50', 'gray.900')
   const textColor = useColorModeValue('purple.800', 'purple.100')
   const inputBgColor = useColorModeValue('purple.100', 'purple.700')
-  const botMessageBg = useColorModeValue('purple.100', 'purple.700')
+  const botMessageBg = useColorModeValue('gray.100', 'gray.800')
   const userMessageBg = useColorModeValue('purple.300', 'purple.500')
   const buttonColor = useColorModeValue('purple.400', 'purple.300')
 
@@ -154,10 +136,10 @@ const FadeInChatComponent: React.FC = () => {
         display='flex'
         flexDirection='column'
         mb={2}
-        onMouseEnter={() => counter < 0 && setIsHistoryOpen(true)}
-        onMouseLeave={() => counter < 0 && setIsHistoryOpen(false)}
+        onMouseEnter={() => counter > 0 && setIsHistoryOpen(true)}
+        onMouseLeave={() => counter > 0 && setIsHistoryOpen(false)}
       >
-        <Fade in={isHistoryOpen} unmountOnExit>
+        <Fade in={true} unmountOnExit>
           <Flex
             p={4}
             borderBottomWidth={1}
@@ -185,27 +167,46 @@ const FadeInChatComponent: React.FC = () => {
                   bg={message.role === 'user' ? userMessageBg : botMessageBg}
                   color={textColor}
                   borderRadius='md'
-                  px={4}
-                  py={2}
                   maxWidth='70%'
                 >
                   {message.role === 'user' ? (
-                    <Text fontSize='md'>{message.content}</Text>
+                    <Text fontSize='md' px={4} py={2}>
+                      {message.content}
+                    </Text>
                   ) : (
-                    <AssistantResponse content={message.content} />
+                    <Box p={4}>
+                      <AssistantResponse content={message.content} />
+                    </Box>
                   )}
                 </Box>
               </Flex>
             ))}
             {isLoading && (
-              <Flex justifyContent='center' alignItems='center' width='100%'>
+              <Flex
+                justifyContent='center'
+                alignItems='center'
+                width='100%'
+                flexDirection='column'
+              >
                 <Spinner
                   thickness='2px'
                   speed='0.65s'
                   emptyColor={useColorModeValue('purple.100', 'purple.700')}
                   color={buttonColor}
                   size='sm'
+                  mb={2}
                 />
+                <Text fontSize='sm' color={textColor} textAlign='center'>
+                  {
+                    [
+                      'Brewing some magic...',
+                      'Summoning creative spirits...',
+                      'Channeling digital inspiration...',
+                      'Crafting something extraordinary...',
+                      'Weaving code and imagination...'
+                    ][Math.floor(Math.random() * 5)]
+                  }
+                </Text>
               </Flex>
             )}
             <div ref={messagesEndRef} />
@@ -213,7 +214,7 @@ const FadeInChatComponent: React.FC = () => {
         </Fade>
         <Box p={4} bg='transparent'>
           {/* {counter > 0 ? ( */}
-          {counter < 0 ? (
+          {counter > 0 ? (
             <form onSubmit={handleSubmit}>
               <Flex position='relative'>
                 <Input
@@ -283,7 +284,7 @@ const FadeInChatComponent: React.FC = () => {
                 leftIcon={<FiMail />}
                 onClick={() =>
                   window.open(
-                    'https://your-mailing-list-signup-url.com',
+                    'https://qualtricsxmpsybmcsgf.qualtrics.com/jfe/form/SV_37xNYk8iToBrS5M',
                     '_blank'
                   )
                 }
@@ -292,26 +293,6 @@ const FadeInChatComponent: React.FC = () => {
               </Button>
             </Box>
           )}
-          {/* // ) : (
-          //   <Alert
-          //     status='warning'
-          //     variant='subtle'
-          //     flexDirection='column'
-          //     alignItems='center'
-          //     justifyContent='center'
-          //     textAlign='center'
-          //     borderRadius='md'
-          //   >
-          //     <AlertIcon boxSize='40px' mr={0} />
-          //     <AlertTitle mt={4} mb={1} fontSize='lg'>
-          //       Out of credits!
-          //     </AlertTitle>
-          //     <AlertDescription maxWidth='sm'>
-          //       You have used all your available credits. Please purchase more
-          //       to continue chatting.
-          //     </AlertDescription>
-          //   </Alert>
-          // )} */}
         </Box>
       </Box>
     </Box>
