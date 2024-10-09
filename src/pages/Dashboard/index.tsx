@@ -120,7 +120,7 @@ const Dashboard: React.FC = () => {
     })
 
     return () => unsubscribe()
-  }, [auth, navigate])
+  }, [])
 
   const fetchProjects = async (currentUser: User) => {
     setIsLoading(true)

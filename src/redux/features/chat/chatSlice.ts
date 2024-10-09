@@ -21,6 +21,9 @@ export const chatSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    setMessages: (state, action: PayloadAction<Message[]>) => {
+      state.value = action.payload
+    },
     addMessage: (state, action: PayloadAction<Message>) => {
       state.value.push(action.payload)
     },
@@ -30,7 +33,7 @@ export const chatSlice = createSlice({
   }
 })
 
-export const { addMessage, setIsLoading } = chatSlice.actions
+export const { setMessages, addMessage, setIsLoading } = chatSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectChat = (state: RootState) => state.chat.value
