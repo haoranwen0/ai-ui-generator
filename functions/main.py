@@ -77,7 +77,8 @@ def router(request):
                 # "DELETE": delete_project
             },
         },
-        {"pattern": r"^/chat$", "methods": {"POST": chat}},
+        {"pattern": r"^/chat/(?P<projectid>[^/]+)$", "methods": {"POST": chat}},
+        {"pattern": r"^/history/(?P<projectid>[^/]+)$", "methods": {"GET": get_chat_history}},
         {"pattern": r"^/usage$", "methods": {"GET": get_api_count}},
         {"pattern": r"^/test$", "methods": {"GET": get_test_user}},
         # {
@@ -224,13 +225,27 @@ def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
     )
 
 
+def get_chat_history(req: https_fn.Request, projectid: str) -> https_fn.Response:
+    headers = get_headers()
+    uid = get_uid(req.headers)
+    project_ref = (
+        db.collection("users").document(uid).collection("projects").document(projectid)
+    )
+    project = project_ref.get()
+    if not project.exists or "chat_history" not in project.to_dict():
+        return https_fn.Response(json.dumps([]), status=200, headers=headers)
+    chat_history = project.get("chat_history")
+    return https_fn.Response(json.dumps(chat_history), status=200, headers=headers)
+
+
 client = anthropic.Anthropic(api_key=anthropic_api_key)
 
 
-def chat(req: https_fn.Request) -> https_fn.Response:
+def chat(req: https_fn.Request, projectid: str) -> https_fn.Response:
     headers = get_headers()
     uid = get_uid(req.headers)
 
+    # Decrement the API count
     doc_ref = db.collection("users").document(uid)
     doc = doc_ref.get()
     # Check if the document doesn't exist
@@ -334,6 +349,17 @@ def chat(req: https_fn.Request) -> https_fn.Response:
 
     # Parse the JSON string into a Python dictionary
     # parsed_content = json.loads(response_content)
+
+
+    # Now update chat history
+    new_history = chat_history[2:] + [{"content": json.dumps(tool_inputs), "role": "assistant"}]
+    project_ref = (
+        db.collection("users").document(uid).collection("projects").document(projectid)
+    )
+    project = project_ref.get()
+    if not project.exists or "chat_history" not in project.to_dict():
+        project_ref.set({"chat_history": new_history}, merge=True)
+    project_ref.update({"chat_history": new_history})
 
     return https_fn.Response(
         json.dumps(tool_inputs),  # This will now be a properly formatted JSON

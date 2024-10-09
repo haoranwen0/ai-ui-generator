@@ -22,6 +22,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { Message } from '../Chat'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 import { decrement } from '../../../redux/features/counter/counterSlice'
+import { useParams } from 'react-router-dom'
 
 // Define the interfaces
 interface Option {
@@ -132,6 +133,8 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
   const messages = useAppSelector((store) => store.chat.value)
   const user = useAppSelector((store) => store.user.user)
 
+  const { designID } = useParams()
+
   const handleAnswer = (id: number, answer: string) => {
     setAnswers((prev) => ({ ...prev, [id]: answer }))
   }
@@ -150,7 +153,8 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
     try {
       const data = await callAIUIGenerator(
         [...messages, newMessage],
-        await user.getIdToken()
+        await user.getIdToken(),
+        designID as string
       )
       dispatch(addMessage({ content: JSON.stringify(data), role: 'assistant' }))
 

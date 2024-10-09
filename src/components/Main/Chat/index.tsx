@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -10,45 +10,64 @@ import {
   Fade,
   Spinner,
   Icon,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
   Button
-} from '@chakra-ui/react'
-import { FaPaperPlane } from 'react-icons/fa'
-import QuestionsContainer, { Question } from '../Questions'
-import { useAppSelector, useAppDispatch } from '../../../redux/hooks'
+} from "@chakra-ui/react";
+import { FaPaperPlane } from "react-icons/fa";
+import QuestionsContainer, { Question } from "../Questions";
+import axios from "axios";
+import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import {
+  setMessages,
   addMessage,
   selectIsLoading,
-  setIsLoading
-} from '../../../redux/features/chat/chatSlice'
-import { callAIUIGenerator } from '../../../functions/utils'
-import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
-import { decrement } from '../../../redux/features/counter/counterSlice'
+  setIsLoading,
+} from "../../../redux/features/chat/chatSlice";
+import { callAIUIGenerator } from "../../../functions/utils";
+import { setCode } from "../../../redux/features/codeEditor/codeEditorSlice";
 import { FiAlertCircle, FiMail } from 'react-icons/fi'
+import {
+  signOut,
+  onAuthStateChanged,
+  getAuth,
+  User,
+  getIdToken,
+} from "firebase/auth";
+import {
+  setCount,
+  decrement,
+} from "../../../redux/features/counter/counterSlice";
+import { useParams } from "react-router-dom";
 
 export interface Message {
-  content: string
-  role: 'user' | 'assistant'
+  content: string;
+  role: "user" | "assistant";
 }
 
 interface AssistantResponse {
-  code?: string
-  explanation?: string
-  questions?: Question[]
+  code?: string;
+  explanation?: string;
+  questions?: Question[];
 }
 
 const AssistantResponse: React.FC<{ content: string }> = ({ content }) => {
-  const assistantData: AssistantResponse = JSON.parse(content)
+  console.log(content);
+  const assistantData: AssistantResponse = JSON.parse(content);
 
   if (assistantData.questions) {
-    return <QuestionsContainer questions={assistantData.questions} />
+    return <QuestionsContainer questions={assistantData.questions} />;
   }
 
-  return <Text fontSize='md'>{assistantData.explanation}</Text>
-}
+  return <Text fontSize="md">{assistantData.explanation}</Text>;
+};
 
 const FadeInChatComponent: React.FC = () => {
-  const messages = useAppSelector((store) => store.chat.value)
-  const dispatch = useAppDispatch()
+  const messages = useAppSelector((store) => store.chat.value);
+  const dispatch = useAppDispatch();
+  const auth = getAuth();
 
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -62,70 +81,115 @@ const FadeInChatComponent: React.FC = () => {
   const userMessageBg = useColorModeValue('purple.300', 'purple.500')
   const buttonColor = useColorModeValue('purple.400', 'purple.300')
 
-  const counter = useAppSelector((state) => state.counter.value)
-  const user = useAppSelector((state) => state.user.user)
-  const isLoading = useAppSelector(selectIsLoading)
+  const { designID } = useParams();
+
+  const counter = useAppSelector((state) => state.counter.value);
+  const [user, setUser] = useState<User | null>(null);
+  const isLoading = useAppSelector(selectIsLoading);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, isHistoryOpen])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isHistoryOpen]);
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      console.log("Fetching chat history 2");
+      fetchChatHistory(auth.currentUser);
+    }
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        console.log("Fetching chat history");
+        fetchChatHistory(currentUser);
+      } else {
+        setIsLoading(false);
+        // setError('Please sign in to view your projects.')
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const fetchChatHistory = async (currentUser: User) => {
+    try {
+      const idToken = await currentUser.getIdToken();
+
+      console.log(designID, idToken);
+
+      const response = await axios.get(
+        `http://127.0.0.1:5001/ai-ui-generator/us-central1/main/history/${designID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
+
+      console.log(response.data);
+
+      dispatch(setMessages(response.data.map((message: any) => ({ content: JSON.stringify(message.content), role: message.role }))));
+    } catch (error) {
+      console.log("Error fetching chat history", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    console.log(counter)
+    console.log(counter);
 
     if (user === null) {
-      return
+      return;
     }
 
     if (counter <= 0) {
       // Display an alert or message that the user is out of credits
-      console.log('Out of credits')
-      return
+      console.log("Out of credits");
+      return;
     }
 
     if (inputValue.trim()) {
       const newMessage: Message = {
         content: inputValue,
-        role: 'user'
-      }
-      dispatch(addMessage(newMessage))
-      setInputValue('')
+        role: "user",
+      };
+      dispatch(addMessage(newMessage));
+      setInputValue("");
 
-      dispatch(setIsLoading(true))
+      dispatch(setIsLoading(true));
 
       try {
         const data = await callAIUIGenerator(
           [...messages, newMessage],
-          await user.getIdToken()
-        )
+          await user.getIdToken(),
+          designID as string
+        );
 
         dispatch(
-          addMessage({ content: JSON.stringify(data), role: 'assistant' })
-        )
+          addMessage({ content: JSON.stringify(data), role: "assistant" })
+        );
 
         if (data.code) {
-          dispatch(setCode(data.code))
+          dispatch(setCode(data.code));
         }
-        dispatch(decrement())
-        console.log(counter)
+        dispatch(decrement());
+        console.log(counter);
       } catch (error) {
-        console.log('Error submitting message', error)
+        console.log("Error submitting message", error);
       } finally {
-        dispatch(setIsLoading(false))
+        dispatch(setIsLoading(false));
       }
     }
-  }
+  };
 
   return (
     <Box
-      position='fixed'
+      position="fixed"
       bottom={0}
-      left='50%'
-      transform='translateX(-50%)'
-      width='50%'
-      maxWidth='600px'
+      left="50%"
+      transform="translateX(-50%)"
+      width="50%"
+      maxWidth="600px"
       zIndex={1000}
     >
       <Box
@@ -143,19 +207,19 @@ const FadeInChatComponent: React.FC = () => {
           <Flex
             p={4}
             borderBottomWidth={1}
-            alignItems='center'
-            borderBottomColor={useColorModeValue('purple.100', 'purple.800')}
+            alignItems="center"
+            borderBottomColor={useColorModeValue("purple.100", "purple.800")}
           >
             <Heading size='md' color={textColor}>
               Augment UI
             </Heading>
           </Flex>
           <VStack
-            height='60vh'
-            overflowY='auto'
+            height="60vh"
+            overflowY="auto"
             spacing={4}
             p={4}
-            alignItems='stretch'
+            alignItems="stretch"
           >
             {messages.length === 0 && (
               <VStack spacing={4} align='stretch' width='100%'>
@@ -215,12 +279,12 @@ const FadeInChatComponent: React.FC = () => {
             )}
             {messages.map((message, index) => (
               <Flex
-                flexDir='column'
+                flexDir="column"
                 key={index}
-                alignItems={message.role === 'user' ? 'flex-end' : 'flex-start'}
+                alignItems={message.role === "user" ? "flex-end" : "flex-start"}
               >
                 <Box
-                  bg={message.role === 'user' ? userMessageBg : botMessageBg}
+                  bg={message.role === "user" ? userMessageBg : botMessageBg}
                   color={textColor}
                   borderRadius='md'
                   maxWidth='70%'
@@ -246,9 +310,9 @@ const FadeInChatComponent: React.FC = () => {
                 flexWrap='wrap'
               >
                 <Spinner
-                  thickness='2px'
-                  speed='0.65s'
-                  emptyColor={useColorModeValue('purple.100', 'purple.700')}
+                  thickness="2px"
+                  speed="0.65s"
+                  emptyColor={useColorModeValue("purple.100", "purple.700")}
                   color={buttonColor}
                   size='sm'
                   mb={2}
@@ -278,23 +342,23 @@ const FadeInChatComponent: React.FC = () => {
           {/* {counter > 0 ? ( */}
           {counter > 0 ? (
             <form onSubmit={handleSubmit}>
-              <Flex position='relative'>
+              <Flex position="relative">
                 <Input
                   ref={inputRef}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder='Type a message...'
+                  placeholder="Type a message..."
                   bg={`${inputBgColor}CC`} // Added 'CC' for 80% opacity
                   pr={10}
-                  borderRadius='md'
+                  borderRadius="md"
                   opacity={0.45}
                   flex={1}
                   _placeholder={{
-                    color: useColorModeValue('purple.400', 'purple.300')
+                    color: useColorModeValue("purple.400", "purple.300"),
                   }}
-                  transition='opacity 0.2s ease-in-out'
+                  transition="opacity 0.2s ease-in-out"
                   _hover={{
-                    opacity: 1
+                    opacity: 1,
                   }}
                   _focus={{
                     opacity: 1,
@@ -304,14 +368,14 @@ const FadeInChatComponent: React.FC = () => {
                 />
 
                 <Flex
-                  position='absolute'
+                  position="absolute"
                   right={4}
-                  top='50%'
-                  transform='translateY(-50%)'
+                  top="50%"
+                  transform="translateY(-50%)"
                   zIndex={2}
-                  alignItems='center'
+                  alignItems="center"
                   opacity={0.8}
-                  transition='opacity 0.2s ease-in-out'
+                  transition="opacity 0.2s ease-in-out"
                   _hover={{ opacity: 1 }}
                   cursor='pointer'
                   onClick={handleSubmit}
@@ -360,7 +424,7 @@ const FadeInChatComponent: React.FC = () => {
         </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default FadeInChatComponent
+export default FadeInChatComponent;
