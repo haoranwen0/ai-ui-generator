@@ -37,8 +37,7 @@ import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth'
 interface Project {
   id: string
   name: string
-  lastModified: string
-  componentCount: number // New field to represent complexity
+  // lastModified: string
 }
 
 const float = keyframes`
@@ -75,16 +74,13 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
             {project.name}
           </Heading>
         </Flex>
-        <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')} mb={4} flex={1}>
-          This project contains {project.componentCount} components.
-        </Text>
         <Divider mb={4} />
         <Flex justify='space-between' align='center'>
           <Badge colorScheme='purple'>UI</Badge>
-          <Text fontSize='sm' color={useColorModeValue('gray.600', 'gray.400')}>
+          {/* <Text fontSize='sm' color={useColorModeValue('gray.600', 'gray.400')}>
             <Icon as={FiClock} mr={1} />
             {new Date(project.lastModified).toLocaleDateString()}
-          </Text>
+          </Text> */}
         </Flex>
       </Flex>
     </Box>
@@ -170,7 +166,9 @@ const Dashboard: React.FC = () => {
 
   export default App;`
 
-  const handleCreateProject = async () => {
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault()
+
     if (user === null || newProjectName.trim() === '') {
       return
     }
