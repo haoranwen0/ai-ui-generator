@@ -4,12 +4,24 @@ import {
   IconButton,
   Tooltip,
   Box,
-  Text,
   useToast,
   Spinner,
-  Image
+  Image,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Text,
+  VStack,
+  useDisclosure,
+  OrderedList,
+  ListItem
 } from '@chakra-ui/react'
-import { FiHome } from 'react-icons/fi'
+import { FiCheckCircle, FiHome, FiZap } from 'react-icons/fi'
 import {
   SandpackCodeEditor,
   SandpackPreview,
@@ -27,6 +39,10 @@ import {
   selectCode,
   setCode
 } from '../../../redux/features/codeEditor/codeEditorSlice'
+import {
+  selectIsNewUser,
+  setIsNewUser
+} from '../../../redux/features/isNewUser/isNewUserSlice'
 
 const ViewDisplay = () => {
   const dispatch = useAppDispatch()
@@ -34,7 +50,10 @@ const ViewDisplay = () => {
   const navigate = useNavigate()
   const toast = useToast()
 
+  const isNewUser = useAppSelector(selectIsNewUser)
   const code = useAppSelector(selectCode)
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [user, setUser] = useState<User | null>(null)
@@ -55,6 +74,12 @@ const ViewDisplay = () => {
     // Cleanup subscription on unmount
     return () => unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (isNewUser) {
+      onOpen()
+    }
+  }, [isNewUser, onOpen])
 
   const fetchCode = async (idToken: string) => {
     try {
@@ -114,6 +139,94 @@ const ViewDisplay = () => {
 
   return (
     <Flex direction='column' h='100vh' w='100%'>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose()
+          dispatch(setIsNewUser(false))
+        }}
+        size='lg'
+        isCentered
+      >
+        <ModalOverlay backdropFilter='blur(8px)' />
+        <ModalContent
+          borderRadius='xl'
+          boxShadow='xl'
+          bg='gray.900'
+          color='white'
+        >
+          <ModalHeader
+            textAlign='left'
+            fontSize='2xl'
+            fontWeight='bold'
+            borderBottom='1px'
+            borderColor='gray.700'
+            py={4}
+          >
+            Welcome to{' '}
+            <Text
+              as='span'
+              bgGradient='linear(to-r, purple.400, pink.400)'
+              bgClip='text'
+            >
+              Augment
+            </Text>
+            !
+          </ModalHeader>
+          <ModalCloseButton color='gray.400' />
+          <ModalBody py={6}>
+            <VStack spacing={6} align='stretch'>
+              <Text textAlign='left' fontSize='lg' fontWeight='medium'>
+                Here are some quick tips to get you started:
+              </Text>
+              <OrderedList spacing={4} stylePosition='outside'>
+                <ListItem>
+                  This is a beta version, so it might be a bit... quirky. If you
+                  spot any gremlins in the system, give us a shout at
+                  hranwen@mit.edu. We promise we don&apos;t bite!
+                </ListItem>
+                <ListItem>
+                  You&apos;ve got 10 magical credits to play with. Each time you
+                  chat, you use one credit. Use them wisely, or don&apos;t -
+                  we&apos;re not your mom!
+                </ListItem>
+                <ListItem>
+                  Right now, Augment is a Chakra UI enthusiast. We&apos;re
+                  working on expanding its component palette, so stay tuned for
+                  more UI flavors!
+                </ListItem>
+                <ListItem>
+                  Psst! See that chat bubble at the bottom center? That&apos;s
+                  your direct line to the Augment AI. Tell it your wildest UI
+                  dreams, and watch the magic happen!
+                </ListItem>
+              </OrderedList>
+            </VStack>
+          </ModalBody>
+          <ModalFooter
+            justifyContent='center'
+            borderTop='1px'
+            borderColor='gray.700'
+            py={4}
+          >
+            <Button
+              colorScheme='purple'
+              onClick={() => {
+                onClose()
+                dispatch(setIsNewUser(false))
+              }}
+              size='lg'
+              fontWeight='bold'
+              borderRadius='full'
+              px={8}
+              leftIcon={<FiZap />}
+            >
+              Let&apos;s Create!
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Flex
         as='header'
         align='center'

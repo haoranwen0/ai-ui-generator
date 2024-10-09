@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+
 import {
   Box,
   Button,
@@ -20,14 +21,14 @@ import {
 import {
   AuthError,
   createUserWithEmailAndPassword,
-  getAuth,
   sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  connectAuthEmulator
+  signInWithEmailAndPassword
 } from 'firebase/auth'
 
 import { auth } from '../../index'
 import useHasAccess from '../../hooks/useHasAccess'
+import { setIsNewUser } from '../../redux/features/isNewUser/isNewUserSlice'
+import { useAppDispatch } from '../../redux/hooks'
 
 type AuthMode = 'signin' | 'signup' | 'forgot'
 
@@ -109,6 +110,8 @@ const AuthForm: React.FC<AuthFormProps> = ({
 }
 
 const AuthPage: React.FC = () => {
+  const dispatch = useAppDispatch()
+
   useHasAccess({
     validAccessRedirectLink: '/dashboard'
   })
@@ -150,12 +153,7 @@ const AuthPage: React.FC = () => {
 
   const handleSignUp = async (email: string, password: string) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
-      console.log('User signed up:', userCredential.user)
+      await createUserWithEmailAndPassword(auth, email, password)
       toast({
         title: 'Success',
         description: 'Your account has been created successfully.',
@@ -163,6 +161,7 @@ const AuthPage: React.FC = () => {
         duration: 5000,
         isClosable: true
       })
+      dispatch(setIsNewUser(true))
     } catch (error) {
       handleAuthError(error, 'signing up')
     }

@@ -7,17 +7,18 @@ import viewToggleReducer from './features/viewToggle/viewToggleSlice'
 import userReducer from './features/user/userSlice'
 import chatReducer from './features/chat/chatSlice'
 import codeEditorReducer from './features/codeEditor/codeEditorSlice'
-
+import isNewUserReducer from './features/isNewUser/isNewUserSlice'
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [] // Only 'counter' will be persisted
+  whitelist: ['isNewUser'] // Only 'isNewUser' will be persisted
 }
 
 // Combine reducers
 const rootReducer = combineReducers({
   counter: counterReducer,
   viewToggle: viewToggleReducer,
+  isNewUser: isNewUserReducer,
   user: userReducer,
   chat: chatReducer,
   codeEditor: codeEditorReducer

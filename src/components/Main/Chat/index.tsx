@@ -16,6 +16,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Button
 } from '@chakra-ui/react'
 import { FaPaperPlane } from 'react-icons/fa'
 import QuestionsContainer, { Question } from '../Questions'
@@ -28,8 +29,18 @@ import {
 } from '../../../redux/features/chat/chatSlice'
 import { callAIUIGenerator } from '../../../functions/utils'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
-import { signOut, onAuthStateChanged, getAuth, User, getIdToken } from 'firebase/auth'
-import { setCount, decrement } from '../../../redux/features/counter/counterSlice'
+import {
+  signOut,
+  onAuthStateChanged,
+  getAuth,
+  User,
+  getIdToken
+} from 'firebase/auth'
+import {
+  setCount,
+  decrement
+} from '../../../redux/features/counter/counterSlice'
+import { FiAlertCircle, FiMail, FiPlus } from 'react-icons/fi'
 
 export interface Message {
   content: string
@@ -143,8 +154,8 @@ const FadeInChatComponent: React.FC = () => {
         display='flex'
         flexDirection='column'
         mb={2}
-        onMouseEnter={() => setIsHistoryOpen(true)}
-        onMouseLeave={() => setIsHistoryOpen(false)}
+        onMouseEnter={() => counter < 0 && setIsHistoryOpen(true)}
+        onMouseLeave={() => counter < 0 && setIsHistoryOpen(false)}
       >
         <Fade in={isHistoryOpen} unmountOnExit>
           <Flex
@@ -201,7 +212,8 @@ const FadeInChatComponent: React.FC = () => {
           </VStack>
         </Fade>
         <Box p={4} bg='transparent'>
-          {counter > 0 ? (
+          {/* {counter > 0 ? ( */}
+          {counter < 0 ? (
             <form onSubmit={handleSubmit}>
               <Flex position='relative'>
                 <Input
@@ -237,30 +249,69 @@ const FadeInChatComponent: React.FC = () => {
                   transition='opacity 0.2s ease-in-out'
                   _hover={{ opacity: 1 }}
                   cursor='pointer'
+                  onClick={handleSubmit}
                 >
                   <Icon as={FaPaperPlane} color={buttonColor} />
                 </Flex>
               </Flex>
             </form>
           ) : (
-            <Alert 
-              status='warning'
-              variant='subtle'
-              flexDirection='column'
-              alignItems='center'
-              justifyContent='center'
-              textAlign='center'
+            <Box
+              borderWidth={1}
+              borderColor={useColorModeValue('purple.200', 'purple.700')}
               borderRadius='md'
+              p={4}
+              bg={useColorModeValue('purple.50', 'purple.900')}
+              color={useColorModeValue('purple.800', 'purple.200')}
             >
-              <AlertIcon boxSize='40px' mr={0} />
-              <AlertTitle mt={4} mb={1} fontSize='lg'>
-                Out of credits!
-              </AlertTitle>
-              <AlertDescription maxWidth='sm'>
-                You have used all your available credits. Please purchase more to continue chatting.
-              </AlertDescription>
-            </Alert>
+              <Flex alignItems='center' justifyContent='space-between'>
+                <Text fontWeight='bold'>Out of credits</Text>
+                <Icon
+                  as={FiAlertCircle}
+                  color={useColorModeValue('purple.500', 'purple.300')}
+                />
+              </Flex>
+              <Text mt={2} fontSize='sm'>
+                You&apos;ve used all your available credits. Sign up for our
+                mailing list to stay tuned for the next phase of our project.
+              </Text>
+              <Button
+                mt={3}
+                size='sm'
+                colorScheme='purple'
+                variant='outline'
+                leftIcon={<FiMail />}
+                onClick={() =>
+                  window.open(
+                    'https://your-mailing-list-signup-url.com',
+                    '_blank'
+                  )
+                }
+              >
+                Join Mailing List
+              </Button>
+            </Box>
           )}
+          {/* // ) : (
+          //   <Alert
+          //     status='warning'
+          //     variant='subtle'
+          //     flexDirection='column'
+          //     alignItems='center'
+          //     justifyContent='center'
+          //     textAlign='center'
+          //     borderRadius='md'
+          //   >
+          //     <AlertIcon boxSize='40px' mr={0} />
+          //     <AlertTitle mt={4} mb={1} fontSize='lg'>
+          //       Out of credits!
+          //     </AlertTitle>
+          //     <AlertDescription maxWidth='sm'>
+          //       You have used all your available credits. Please purchase more
+          //       to continue chatting.
+          //     </AlertDescription>
+          //   </Alert>
+          // )} */}
         </Box>
       </Box>
     </Box>
