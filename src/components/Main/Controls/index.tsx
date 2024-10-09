@@ -41,6 +41,9 @@ const IconControls = () => {
   // const [usageRemaining, setUsageRemaining] = useState(15)
 
   useEffect(() => {
+    if (auth.currentUser) {
+      fetchUsage(auth.currentUser);
+    }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         fetchUsage(currentUser);

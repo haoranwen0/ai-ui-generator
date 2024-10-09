@@ -37,8 +37,7 @@ import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth'
 interface Project {
   id: string
   name: string
-  lastModified: string
-  componentCount: number // New field to represent complexity
+  // lastModified: string
 }
 
 const float = keyframes`
@@ -75,16 +74,13 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
             {project.name}
           </Heading>
         </Flex>
-        <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')} mb={4} flex={1}>
-          This project contains {project.componentCount} components.
-        </Text>
         <Divider mb={4} />
         <Flex justify='space-between' align='center'>
           <Badge colorScheme='purple'>UI</Badge>
-          <Text fontSize='sm' color={useColorModeValue('gray.600', 'gray.400')}>
+          {/* <Text fontSize='sm' color={useColorModeValue('gray.600', 'gray.400')}>
             <Icon as={FiClock} mr={1} />
             {new Date(project.lastModified).toLocaleDateString()}
-          </Text>
+          </Text> */}
         </Flex>
       </Flex>
     </Box>
@@ -107,6 +103,9 @@ const Dashboard: React.FC = () => {
   const floatAnimation = `${float} 3s ease-in-out infinite`
 
   useEffect(() => {
+    if (auth.currentUser) {
+      fetchProjects(auth.currentUser);
+    }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser)
       if (currentUser) {
@@ -149,7 +148,30 @@ const Dashboard: React.FC = () => {
     }
   }
 
-  const handleCreateProject = async () => {
+  const defaultCode = `import { ChakraProvider, Box, Heading, Text, Stack, Input, Button } from '@chakra-ui/react'
+
+  function App() {
+    return (
+      <ChakraProvider>
+        <Box p={4}>
+          <Heading mb={4}>Hello, Chakra UI!</Heading>
+          <Text mb={2}>This is a sample component using Chakra UI.</Text>
+          <Stack spacing={3}>
+            <Input placeholder="Enter your name" />
+            <Button colorScheme="blue">
+              Click me
+            </Button>
+          </Stack>
+        </Box>
+      </ChakraProvider>
+    );
+  }
+
+  export default App;`
+
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault()
+
     if (user === null || newProjectName.trim() === '') {
       return
     }
@@ -157,7 +179,7 @@ const Dashboard: React.FC = () => {
       const idToken = await getIdToken(user)
       const response = await axios.post(
         'http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects',
-        { name: newProjectName },
+        { name: newProjectName, code: defaultCode },
         {
           headers: {
             Authorization: `Bearer ${idToken}`
@@ -223,20 +245,14 @@ const Dashboard: React.FC = () => {
 
       <Box maxWidth='1200px' margin='auto' padding={8}>
         <VStack spacing={8} align='stretch'>
-          <StatGroup>
-            <Stat>
-              <StatLabel color={useColorModeValue('purple.600', 'purple.300')}>Total Projects</StatLabel>
-              <StatNumber>{projects.length}</StatNumber>
-            </Stat>
-            <Stat>
-              <StatLabel color={useColorModeValue('purple.600', 'purple.300')}>Last Updated</StatLabel>
-              <StatNumber>
-                {projects.length > 0
-                  ? new Date(Math.max(...projects.map(p => new Date(p.lastModified).getTime()))).toLocaleDateString()
-                  : 'N/A'}
-              </StatNumber>
-            </Stat>
-          </StatGroup>
+          {!isLoading && projects.length > 0 &&
+            <StatGroup>
+              <Stat>
+                <StatLabel color={useColorModeValue('purple.600', 'purple.300')}>Total Projects</StatLabel>
+                <StatNumber>{projects.length}</StatNumber>
+              </Stat>
+            </StatGroup>
+          }
 
           {isLoading ? (
             <Flex justify='center' align='center' height='50vh'>
