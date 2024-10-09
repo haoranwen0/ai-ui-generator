@@ -1,15 +1,24 @@
 import axios from 'axios'
 
 import { Message } from '../components/Main/Chat'
-import { Params } from 'react-router-dom'
+import { post } from '../utils/api'
 
 export const callAIUIGenerator = async (
   messages: Message[],
   userIdToken: string,
   designId: string
 ) => {
-  const response = await axios.post(
-    `http://127.0.0.1:5001/ai-ui-generator/us-central1/main/chat/${designId}`,
+  const response = await post<{
+    code?: string
+    explanation?: string
+    question?: Array<{
+      id: number
+      text: string
+      type: 'multiple_choice' | 'text' | 'multi_select'
+      options?: Array<string>
+    }>
+  }>(
+    `/chat/${designId}`,
     {
       chat_history: messages
     },

@@ -14,7 +14,8 @@ import {
   useDisclosure,
   SlideFade,
   Flex,
-  Icon
+  Icon,
+  useToast
 } from '@chakra-ui/react'
 import {
   FaSun,
@@ -25,7 +26,8 @@ import {
   FaSignOutAlt,
   FaComments,
   FaCoins,
-  FaStar
+  FaStar,
+  FaCommentAlt
 } from 'react-icons/fa'
 
 import { setView } from '../../../redux/features/viewToggle/viewToggleSlice'
@@ -39,10 +41,12 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { setCount } from '../../../redux/features/counter/counterSlice'
 import axios from 'axios'
+import { get } from '../../../utils/api'
 
 const IconControls = () => {
   const dispatch = useAppDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const toast = useToast()
   const auth = getAuth()
 
   const counter = useAppSelector((state) => state.counter.value)
@@ -58,7 +62,7 @@ const IconControls = () => {
       if (currentUser) {
         fetchUsage(currentUser)
       } else {
-        console.log('No user signed in')
+        // console.log('No user signed in')
       }
     })
 
@@ -68,18 +72,22 @@ const IconControls = () => {
   const fetchUsage = async (currentUser: User) => {
     try {
       const idToken = await getIdToken(currentUser)
-      const response = await axios.get(
-        'http://127.0.0.1:5001/ai-ui-generator/us-central1/main/usage',
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`
-          }
+      const response = await get<{ count: number }>(`/usage`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`
         }
-      )
-      console.log(response.data)
-      dispatch(setCount(response.data['count']))
+      })
+      // console.log(response.data)
+      dispatch(setCount(response.data.count))
     } catch (err) {
-      console.error('Error fetching projects:', err)
+      toast({
+        title: 'Error',
+        description: 'Error fetching projects',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      // console.error('Error fetching projects:', err)
     }
   }
 
@@ -105,6 +113,17 @@ const IconControls = () => {
     //     // TODO: Implement chat toggle functionality
     //   }
     // }
+    {
+      name: 'Feedback Forum',
+      icon: FaCommentAlt,
+      onClick: () => {
+        window.open(
+          'https://qualtricsxmpsybmcsgf.qualtrics.com/jfe/form/SV_37xNYk8iToBrS5M',
+          '_blank',
+          'noopener,noreferrer'
+        )
+      }
+    }
   ]
 
   return (
@@ -117,14 +136,8 @@ const IconControls = () => {
       onMouseLeave={onClose}
     >
       <SlideFade in={true} offsetX='-20px'>
-        <VStack
-          spacing={1}
-          borderRadius='md'
-          p={1}
-          boxShadow='md'
-          alignItems='flex-start'
-        >
-          {/* {icons.map((item) => (
+        <VStack borderRadius='md' boxShadow='md' alignItems='flex-start'>
+          {icons.map((item) => (
             <Tooltip
               key={item.name}
               label={item.name}
@@ -133,16 +146,20 @@ const IconControls = () => {
             >
               <IconButton
                 aria-label={item.name}
-                icon={<item.icon />}
-                variant='ghost'
+                icon={<item.icon color='#B794F4' opacity={0.8} />}
+                variant='outline'
                 color={iconColor[colorMode]}
-                _hover={{ bg: 'blue.100', color: 'blue.600' }}
-                _active={{ bg: 'blue.200', color: 'blue.700' }}
+                _hover={{ bg: 'purple.700', color: 'purple.600', opacity: 0.8 }}
+                _active={{
+                  bg: 'purple.700',
+                  color: 'purple.700',
+                  opacity: 0.8
+                }}
                 onClick={item.onClick}
                 transition='all 0.2s'
               />
             </Tooltip>
-          ))} */}
+          ))}
           <Popover placement='right-start'>
             <PopoverTrigger>
               <IconButton

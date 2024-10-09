@@ -44,7 +44,7 @@ const Header = () => {
       zIndex={10}
     >
       <Flex align='center' gap={2}>
-        <Image
+        {/* <Image
           src={Logo}
           alt='Augment Logo'
           boxSize={8}
@@ -52,7 +52,7 @@ const Header = () => {
             'brightness(0) saturate(100%) invert(14%) sepia(100%) saturate(5000%) hue-rotate(280deg) brightness(100%) contrast(100%)',
             'brightness(0) saturate(100%) invert(80%) sepia(100%) saturate(500%) hue-rotate(280deg) brightness(100%) contrast(100%)'
           )}
-        />
+        /> */}
         <Heading as='h1' size='lg' letterSpacing={'tighter'}>
           Augment UI
         </Heading>
@@ -188,14 +188,14 @@ const Footer: React.FC = () => {
           align='center'
         >
           <Text fontSize='sm'>
-            © {currentYear} Augment. All rights reserved.
+            © {currentYear} Augment UI. All rights reserved.
           </Text>
           <Link
-            href='mailto:contact@augment.com'
+            href='mailto:team@augment-ui.com'
             fontSize='sm'
             mt={{ base: 2, md: 0 }}
           >
-            contact@augment.com
+            team@augment-ui.com
           </Link>
         </Flex>
       </Container>

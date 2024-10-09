@@ -133,12 +133,12 @@ const AuthPage: React.FC = () => {
       userCredential.user
         .getIdToken(/* forceRefresh */ true)
         .then(function (idToken) {
-          console.log(idToken)
+          // console.log(idToken)
         })
         .catch(function (error) {
-          console.error('Failed to get ID token')
+          // console.error('Failed to get ID token')
         })
-      console.log('User signed in:', userCredential.user)
+      // console.log('User signed in:', userCredential.user)
       toast({
         title: 'Success',
         description: 'You have successfully signed in.',
@@ -198,7 +198,7 @@ const AuthPage: React.FC = () => {
   }
 
   const handleSubmit = (data: { email: string; password?: string }) => {
-    console.log('Form submitted:', data)
+    // console.log('Form submitted:', data)
 
     switch (authMode) {
       case 'signin':
@@ -247,7 +247,7 @@ const AuthPage: React.FC = () => {
             bgClip='text'
             fontWeight='bold'
           >
-            Augment
+            Augment UI
           </Heading>
           <Text fontSize='md' textAlign='center' color={textColor}>
             Log in or sign up to get started!

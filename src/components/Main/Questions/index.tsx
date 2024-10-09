@@ -9,7 +9,8 @@ import {
   Button,
   useColorModeValue,
   CheckboxGroup,
-  Checkbox
+  Checkbox,
+  useToast
 } from '@chakra-ui/react'
 import { FaQuestionCircle } from 'react-icons/fa'
 import {
@@ -130,6 +131,7 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
 }) => {
   const [answers, setAnswers] = React.useState<Record<number, string>>({})
   const dispatch = useAppDispatch()
+  const toast = useToast()
   const messages = useAppSelector((store) => store.chat.value)
   const user = useAppSelector((store) => store.user.user)
 
@@ -163,7 +165,14 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
       }
       dispatch(decrement())
     } catch (error) {
-      console.log('Error submitting message', error)
+      toast({
+        title: 'Error',
+        description: 'Error submitting message',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      // console.log('Error submitting message', error)
     } finally {
       dispatch(setIsLoading(false))
     }

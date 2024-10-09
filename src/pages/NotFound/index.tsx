@@ -48,7 +48,7 @@ const NotFound: React.FC<NotFoundPageProps> = ({
             width={['full', 'auto']}
             onClick={() => {
               navigate('/', { replace: true })
-              console.log('Go to home')
+              // console.log('Go to home')
             }}
           >
             Go to Home

@@ -17,7 +17,7 @@ export default function useAuth() {
         dispatch(signIn(user))
       } else {
         // User is signed out
-        console.log('User is signed out')
+        // console.log('User is signed out')
         dispatch(signOut())
       }
       setFinished(true)

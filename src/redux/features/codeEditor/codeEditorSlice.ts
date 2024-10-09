@@ -19,7 +19,7 @@ export const codeEditorSlice = createSlice({
   initialState,
   reducers: {
     setCode: (state, action: PayloadAction<string>) => {
-      console.log('action', action)
+      // console.log('action', action)
       state.value = action.payload
     }
   }

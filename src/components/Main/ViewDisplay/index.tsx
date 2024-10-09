@@ -19,7 +19,8 @@ import {
   VStack,
   useDisclosure,
   OrderedList,
-  ListItem
+  ListItem,
+  Link
 } from '@chakra-ui/react'
 import { FiCheckCircle, FiHome, FiZap } from 'react-icons/fi'
 import {
@@ -43,6 +44,7 @@ import {
   selectIsNewUser,
   setIsNewUser
 } from '../../../redux/features/isNewUser/isNewUserSlice'
+import { get, patch } from '../../../utils/api'
 
 const ViewDisplay = () => {
   const dispatch = useAppDispatch()
@@ -83,15 +85,12 @@ const ViewDisplay = () => {
 
   const fetchCode = async (idToken: string) => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:5001/ai-ui-generator/us-central1/main/project/${designID}`,
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`
-          }
+      const response = await get<{ code: string }>(`/project/${designID}`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`
         }
-      )
-      dispatch(setCode(response.data['code']))
+      })
+      dispatch(setCode(response.data.code))
     } catch (err) {
       toast({
         title: 'Error',
@@ -106,7 +105,7 @@ const ViewDisplay = () => {
   useEffect(() => {
     const saveInterval = setInterval(() => {
       saveContent()
-    }, 3000) // Save every 30 seconds
+    }, 5000) // Save every 30 seconds
 
     return () => clearInterval(saveInterval)
   }, [user, designID, code])
@@ -119,8 +118,8 @@ const ViewDisplay = () => {
     try {
       const idToken = await user.getIdToken()
 
-      await axios.patch(
-        `http://127.0.0.1:5001/ai-ui-generator/us-central1/main/project/${designID}`,
+      await patch<{ code: string }>(
+        `/project/${designID}`,
         { code },
         {
           headers: {
@@ -129,7 +128,14 @@ const ViewDisplay = () => {
         }
       )
     } catch (error) {
-      console.error('Error saving code:', error)
+      toast({
+        title: 'Error',
+        description: 'Error saving code',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      // console.error('Error saving code:', error)
     }
   }, [user, designID, code])
 
@@ -169,7 +175,7 @@ const ViewDisplay = () => {
               bgGradient='linear(to-r, purple.400, pink.400)'
               bgClip='text'
             >
-              Augment
+              Augment UI
             </Text>
             !
           </ModalHeader>
@@ -182,11 +188,18 @@ const ViewDisplay = () => {
               <OrderedList spacing={4} stylePosition='outside'>
                 <ListItem>
                   This is a beta version, so it might be a bit... quirky. If you
-                  spot any gremlins in the system, give us a shout at
-                  hranwen@mit.edu. We promise we don&apos;t bite!
+                  spot any gremlins in the system, give us a shout at{' '}
+                  <Link
+                    href='mailto:team@augment-ui.com'
+                    color='purple.400'
+                    textDecoration='underline'
+                  >
+                    team@augment-ui.com
+                  </Link>
+                  . We promise we don&apos;t bite!
                 </ListItem>
                 <ListItem>
-                  You&apos;ve got 10 magical credits to play with. Each time you
+                  You&apos;ve got 15 magical credits to play with. Each time you
                   chat, you use one credit. Use them wisely, or don&apos;t -
                   we&apos;re not your mom!
                 </ListItem>
@@ -254,15 +267,15 @@ const ViewDisplay = () => {
         </Flex>
         <Flex align='center' gap={2}>
           <Text fontWeight='bold' fontSize='lg'>
-            Augment
+            Augment UI
           </Text>
-          <Image
+          {/* <Image
             src={Logo}
             alt='Augment Logo'
             boxSize={6}
             mr={3}
             filter='brightness(0) saturate(100%) invert(80%) sepia(100%) saturate(500%) hue-rotate(280deg) brightness(100%) contrast(100%)'
-          />
+          /> */}
         </Flex>
       </Flex>
       <Box flex='1'>
@@ -283,7 +296,21 @@ const ViewDisplay = () => {
                 'framer-motion': 'latest',
                 'react-icons': 'latest',
                 recharts: 'latest',
-                'react-draggable': 'latest'
+                'react-draggable': 'latest',
+                'react-beautiful-dnd': 'latest',
+                'react-spring': 'latest',
+                'react-transition-group': 'latest',
+                'react-motion': 'latest',
+                'react-dnd': 'latest',
+                'react-dnd-html5-backend': 'latest',
+                'react-slick': 'latest',
+                'slick-carousel': 'latest',
+                'react-animate-on-scroll': 'latest',
+                'react-flip-move': 'latest',
+                'react-reveal': 'latest',
+                'react-awesome-reveal': 'latest',
+                gsap: 'latest',
+                aos: 'latest'
               },
               entry: '/index.js'
             }}

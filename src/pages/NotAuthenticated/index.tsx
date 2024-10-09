@@ -41,7 +41,7 @@ const NotAuthenticated = () => {
       <Container maxW='container.xl' py={20}>
         <VStack spacing={8} textAlign='center'>
           {/* Logo placeholder */}
-          <Image
+          {/* <Image
             src={Logo}
             alt='Augment Logo'
             boxSize={24}
@@ -49,7 +49,7 @@ const NotAuthenticated = () => {
               'brightness(0) saturate(100%) invert(14%) sepia(100%) saturate(5000%) hue-rotate(280deg) brightness(100%) contrast(100%)',
               'brightness(0) saturate(100%) invert(80%) sepia(100%) saturate(500%) hue-rotate(280deg) brightness(100%) contrast(100%)'
             )}
-          />
+          /> */}
 
           {/* Animated lock icon */}
           {/* <Box animation={`${float} 3s ease-in-out infinite`} mb={8}>
@@ -89,7 +89,7 @@ const NotAuthenticated = () => {
               width={['full', 'auto']}
               onClick={() => {
                 navigate('/', { replace: true })
-                console.log('Go to home')
+                // console.log('Go to home')
               }}
             >
               Go to Home
