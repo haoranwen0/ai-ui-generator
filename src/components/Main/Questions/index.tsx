@@ -19,6 +19,7 @@ import { callAIUIGenerator } from '../../../functions/utils'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { Message } from '../Chat'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
+import { decrement } from '../../../redux/features/counter/counterSlice'
 
 // Define the interfaces
 interface Option {
@@ -110,7 +111,7 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
   questions
 }) => {
   const [answers, setAnswers] = React.useState<Record<number, string>>({})
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const messages = useAppSelector((store) => store.chat.value)
   const user = useAppSelector((store) => store.user.user)
 
@@ -139,6 +140,7 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
       if (data.code) {
         dispatch(setCode(data.code))
       }
+      dispatch(decrement())
     } catch (error) {
       console.log('Error submitting message', error)
     } finally {

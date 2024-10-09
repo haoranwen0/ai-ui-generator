@@ -29,7 +29,7 @@ import {
 import { callAIUIGenerator } from '../../../functions/utils'
 import { setCode } from '../../../redux/features/codeEditor/codeEditorSlice'
 import { signOut, onAuthStateChanged, getAuth, User, getIdToken } from 'firebase/auth'
-import { setCount } from '../../../redux/features/counter/counterSlice'
+import { setCount, decrement } from '../../../redux/features/counter/counterSlice'
 
 export interface Message {
   content: string
@@ -80,6 +80,8 @@ const FadeInChatComponent: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    console.log(counter)
+
     if (user === null) {
       return
     }
@@ -113,30 +115,15 @@ const FadeInChatComponent: React.FC = () => {
         if (data.code) {
           dispatch(setCode(data.code))
         }
+        dispatch(decrement())
+        console.log(counter)
       } catch (error) {
         console.log('Error submitting message', error)
       } finally {
         dispatch(setIsLoading(false))
       }
     }
-
-    fetchUsage(user);
   }
-
-  const fetchUsage = async (currentUser: User) => {
-    try {
-      const idToken = await getIdToken(currentUser);
-      const response = await axios.get('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/usage', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-      console.log(response.data)
-      dispatch(setCount(response.data['count']));
-    } catch (err) {
-      console.error('Error fetching projects:', err);
-    }
-  };
 
   return (
     <Box
