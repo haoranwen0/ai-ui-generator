@@ -54,7 +54,7 @@ const Header = () => {
           )}
         />
         <Heading as='h1' size='lg' letterSpacing={'tighter'}>
-          Augment
+          Augment UI
         </Heading>
       </Flex>
 

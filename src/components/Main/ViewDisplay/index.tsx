@@ -197,7 +197,7 @@ const ViewDisplay = () => {
                 </ListItem>
                 <ListItem>
                   Psst! See that chat bubble at the bottom center? That&apos;s
-                  your direct line to the Augment AI. Tell it your wildest UI
+                  your direct line to the Augment UI. Tell it your wildest UI
                   dreams, and watch the magic happen!
                 </ListItem>
               </OrderedList>

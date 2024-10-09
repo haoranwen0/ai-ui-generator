@@ -245,7 +245,7 @@ def chat(req: https_fn.Request) -> https_fn.Response:
     chat_history = req.json["chat_history"]
     chat_history.insert(0, {"role": "user", "content": user_initial_prompt()})
     chat_history.insert(1, {"role": "assistant", "content": assistant_initial_prompt()})
-    # print("CHAT HISTORY", chat_history)
+    print("CHAT HISTORY", chat_history)
 
     completion = client.messages.create(
         model="claude-3-5-sonnet-20240620",
@@ -266,7 +266,11 @@ def chat(req: https_fn.Request) -> https_fn.Response:
                                     "text": {"type": "string"},
                                     "type": {
                                         "type": "string",
-                                        "enum": ["multiple_choice", "text"],
+                                        "enum": [
+                                            "multiple_choice",
+                                            "text",
+                                            "multi_select",
+                                        ],
                                     },
                                     "options": {
                                         "type": "array",

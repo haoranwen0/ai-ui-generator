@@ -7,7 +7,9 @@ import {
   RadioGroup,
   Input,
   Button,
-  useColorModeValue
+  useColorModeValue,
+  CheckboxGroup,
+  Checkbox
 } from '@chakra-ui/react'
 import { FaQuestionCircle } from 'react-icons/fa'
 import {
@@ -30,7 +32,7 @@ interface Option {
 export interface Question {
   id: number
   text: string
-  type: 'multiple_choice' | 'text'
+  type: 'multiple_choice' | 'text' | 'multi_select'
   options?: string[]
 }
 
@@ -73,6 +75,7 @@ const QuestionComponent: React.FC<QuestionProps> = ({ question, onAnswer }) => {
           <FaQuestionCircle style={{ display: 'inline', marginRight: '8px' }} />
           {question.text}
         </Text>
+
         {question.type === 'multiple_choice' && question.options && (
           <RadioGroup onChange={handleChange} value={value}>
             <VStack align='start' spacing={2}>
@@ -83,6 +86,20 @@ const QuestionComponent: React.FC<QuestionProps> = ({ question, onAnswer }) => {
               ))}
             </VStack>
           </RadioGroup>
+        )}
+        {question.type === 'multi_select' && question.options && (
+          <CheckboxGroup
+            onChange={(values) => handleChange(values.join(','))}
+            value={value.split(',')}
+          >
+            <VStack align='start' spacing={2}>
+              {question.options.map((option, index) => (
+                <Checkbox key={index} value={option} colorScheme='purple'>
+                  {option}
+                </Checkbox>
+              ))}
+            </VStack>
+          </CheckboxGroup>
         )}
         {question.type === 'text' && (
           <Input

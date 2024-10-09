@@ -63,14 +63,17 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
       _hover={{ shadow: 'lg', transform: 'translateY(-5px)' }}
       cursor='pointer'
       onClick={() => navigate(`/design/${project.id}`)}
-      height="100%"
-      display="flex"
-      flexDirection="column"
+      height='100%'
+      display='flex'
+      flexDirection='column'
     >
-      <Flex direction="column" p={6} flex={1}>
-        <Flex align="center" mb={4}>
-          <Icon as={FiLayers} fontSize="3xl" color={iconColor} mr={3} />
-          <Heading size='md' color={useColorModeValue('purple.600', 'purple.200')}>
+      <Flex direction='column' p={6} flex={1}>
+        <Flex align='center' mb={4}>
+          <Icon as={FiLayers} fontSize='3xl' color={iconColor} mr={3} />
+          <Heading
+            size='md'
+            color={useColorModeValue('purple.600', 'purple.200')}
+          >
             {project.name}
           </Heading>
         </Flex>
@@ -104,7 +107,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (auth.currentUser) {
-      fetchProjects(auth.currentUser);
+      fetchProjects(auth.currentUser)
     }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser)
@@ -228,8 +231,12 @@ const Dashboard: React.FC = () => {
         color={useColorModeValue('gray.600', 'white')}
         boxShadow='sm'
       >
-        <Heading as='h1' size='lg' color={useColorModeValue('purple.600', 'purple.300')}>
-          My Projects
+        <Heading
+          as='h1'
+          size='lg'
+          color={useColorModeValue('purple.600', 'purple.300')}
+        >
+          My Designs
         </Heading>
         <Button
           leftIcon={<FiPlus />}
@@ -239,20 +246,24 @@ const Dashboard: React.FC = () => {
           fontWeight='bold'
           _hover={{ bg: 'purple.500' }}
         >
-          Create New Project
+          Create New Design
         </Button>
       </Flex>
 
       <Box maxWidth='1200px' margin='auto' padding={8}>
         <VStack spacing={8} align='stretch'>
-          {!isLoading && projects.length > 0 &&
+          {!isLoading && projects.length > 0 && (
             <StatGroup>
               <Stat>
-                <StatLabel color={useColorModeValue('purple.600', 'purple.300')}>Total Projects</StatLabel>
+                <StatLabel
+                  color={useColorModeValue('purple.600', 'purple.300')}
+                >
+                  Total Designs
+                </StatLabel>
                 <StatNumber>{projects.length}</StatNumber>
               </Stat>
             </StatGroup>
-          }
+          )}
 
           {isLoading ? (
             <Flex justify='center' align='center' height='50vh'>
@@ -264,8 +275,15 @@ const Dashboard: React.FC = () => {
             </Text>
           ) : projects.length === 0 ? (
             <VStack spacing={4} align='center'>
-              <Text textAlign='center' fontSize='xl'>You currently have no projects.</Text>
-              <Icon as={FiCode} boxSize={16} color='purple.400' animation={floatAnimation} />
+              <Text textAlign='center' fontSize='xl'>
+                You currently have no projects.
+              </Text>
+              <Icon
+                as={FiCode}
+                boxSize={16}
+                color='purple.400'
+                animation={floatAnimation}
+              />
               <Button
                 onClick={() => setIsModalOpen(true)}
                 colorScheme='purple'
@@ -277,7 +295,10 @@ const Dashboard: React.FC = () => {
               </Button>
             </VStack>
           ) : (
-            <Grid templateColumns='repeat(auto-fill, minmax(280px, 1fr))' gap={6}>
+            <Grid
+              templateColumns='repeat(auto-fill, minmax(280px, 1fr))'
+              gap={6}
+            >
               {projects.map((project) => (
                 <ProjectTile key={project.id} project={project} />
               ))}
@@ -313,7 +334,9 @@ const Dashboard: React.FC = () => {
           <ModalBody pt={6}>
             <form onSubmit={handleCreateProject}>
               <FormControl>
-                <FormLabel color={useColorModeValue('purple.600', 'purple.300')}>
+                <FormLabel
+                  color={useColorModeValue('purple.600', 'purple.300')}
+                >
                   Project Name
                 </FormLabel>
                 <Input

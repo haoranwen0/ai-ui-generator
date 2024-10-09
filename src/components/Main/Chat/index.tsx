@@ -68,7 +68,7 @@ const FadeInChatComponent: React.FC = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [messages, isHistoryOpen])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -130,7 +130,7 @@ const FadeInChatComponent: React.FC = () => {
     >
       <Box
         bg={isHistoryOpen ? bgColor : 'transparent'}
-        boxShadow='xl'
+        // boxShadow='xl'
         borderRadius='md'
         overflow='hidden'
         display='flex'
@@ -139,7 +139,7 @@ const FadeInChatComponent: React.FC = () => {
         onMouseEnter={() => counter > 0 && setIsHistoryOpen(true)}
         onMouseLeave={() => counter > 0 && setIsHistoryOpen(false)}
       >
-        <Fade in={true} unmountOnExit>
+        <Fade in={isHistoryOpen} unmountOnExit>
           <Flex
             p={4}
             borderBottomWidth={1}
@@ -147,7 +147,7 @@ const FadeInChatComponent: React.FC = () => {
             borderBottomColor={useColorModeValue('purple.100', 'purple.800')}
           >
             <Heading size='md' color={textColor}>
-              Augment AI
+              Augment UI
             </Heading>
           </Flex>
           <VStack
@@ -157,6 +157,62 @@ const FadeInChatComponent: React.FC = () => {
             p={4}
             alignItems='stretch'
           >
+            {messages.length === 0 && (
+              <VStack spacing={4} align='stretch' width='100%'>
+                <Text fontSize='lg' fontWeight='bold' color={textColor}>
+                  Try these example prompts:
+                </Text>
+                <Button
+                  onClick={() =>
+                    setInputValue(
+                      'Design a modern login page with a gradient background'
+                    )
+                  }
+                  colorScheme='purple'
+                  variant='outline'
+                  justifyContent='flex-start'
+                  height='auto'
+                  whiteSpace='normal'
+                  textAlign='left'
+                  py={2}
+                >
+                  Design a modern login page with a gradient background
+                </Button>
+                <Button
+                  onClick={() =>
+                    setInputValue(
+                      'Create a responsive navigation bar with a logo and dropdown menu'
+                    )
+                  }
+                  colorScheme='purple'
+                  variant='outline'
+                  justifyContent='flex-start'
+                  height='auto'
+                  whiteSpace='normal'
+                  textAlign='left'
+                  py={2}
+                >
+                  Create a responsive navigation bar with a logo and dropdown
+                  menu
+                </Button>
+                <Button
+                  onClick={() =>
+                    setInputValue(
+                      'Generate a card component for displaying product information'
+                    )
+                  }
+                  colorScheme='purple'
+                  variant='outline'
+                  justifyContent='flex-start'
+                  height='auto'
+                  whiteSpace='normal'
+                  textAlign='left'
+                  py={2}
+                >
+                  Generate a card component for displaying product information
+                </Button>
+              </VStack>
+            )}
             {messages.map((message, index) => (
               <Flex
                 flexDir='column'
@@ -187,6 +243,7 @@ const FadeInChatComponent: React.FC = () => {
                 alignItems='center'
                 width='100%'
                 flexDirection='column'
+                flexWrap='wrap'
               >
                 <Spinner
                   thickness='2px'
@@ -199,12 +256,17 @@ const FadeInChatComponent: React.FC = () => {
                 <Text fontSize='sm' color={textColor} textAlign='center'>
                   {
                     [
-                      'Brewing some magic...',
-                      'Summoning creative spirits...',
-                      'Channeling digital inspiration...',
-                      'Crafting something extraordinary...',
-                      'Weaving code and imagination...'
-                    ][Math.floor(Math.random() * 5)]
+                      'Did you know? The first graphical user interface was developed at Xerox PARC in the 1970s.',
+                      'Fun fact: The average user forms an opinion about a website in just 0.05 seconds!',
+                      'UX trivia: "Responsive design" was coined by Ethan Marcotte in 2010.',
+                      'Interesting: The term "User Experience" was coined by Don Norman in the 1990s while at Apple.',
+                      'Color fact: Blue is the most common color used in UI design for its calming effect.',
+                      'Typography tidbit: Sans-serif fonts are generally easier to read on digital screens.',
+                      'Usability note: The "three-click rule" suggests users should find info within three mouse clicks.',
+                      'Design history: Skeuomorphism was a major UI trend in early smartphone interfaces.',
+                      'Accessibility fact: About 1 in 12 men have some form of color blindness.',
+                      "UX principle: Hick's Law states that the time it takes to make a decision increases with the number of options."
+                    ][Math.floor(Math.random() * 10)]
                   }
                 </Text>
               </Flex>
@@ -235,7 +297,9 @@ const FadeInChatComponent: React.FC = () => {
                     opacity: 1
                   }}
                   _focus={{
-                    opacity: 1
+                    opacity: 1,
+                    borderColor: 'purple.400',
+                    boxShadow: '0 0 0 2px purple.500'
                   }}
                 />
 
