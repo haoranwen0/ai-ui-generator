@@ -149,6 +149,27 @@ const Dashboard: React.FC = () => {
     }
   }
 
+  const defaultCode = `import { ChakraProvider, Box, Heading, Text, Stack, Input, Button } from '@chakra-ui/react'
+
+  function App() {
+    return (
+      <ChakraProvider>
+        <Box p={4}>
+          <Heading mb={4}>Hello, Chakra UI!</Heading>
+          <Text mb={2}>This is a sample component using Chakra UI.</Text>
+          <Stack spacing={3}>
+            <Input placeholder="Enter your name" />
+            <Button colorScheme="blue">
+              Click me
+            </Button>
+          </Stack>
+        </Box>
+      </ChakraProvider>
+    );
+  }
+
+  export default App;`
+
   const handleCreateProject = async () => {
     if (user === null || newProjectName.trim() === '') {
       return
@@ -157,7 +178,7 @@ const Dashboard: React.FC = () => {
       const idToken = await getIdToken(user)
       const response = await axios.post(
         'http://127.0.0.1:5001/ai-ui-generator/us-central1/main/projects',
-        { name: newProjectName },
+        { name: newProjectName, code: defaultCode },
         {
           headers: {
             Authorization: `Bearer ${idToken}`
