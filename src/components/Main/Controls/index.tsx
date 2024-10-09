@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   VStack,
@@ -24,40 +24,71 @@ import {
   FaComments
 } from 'react-icons/fa'
 
-import { useAppDispatch } from '../../../redux/hooks'
 import { setView } from '../../../redux/features/viewToggle/viewToggleSlice'
-import { signOut } from 'firebase/auth'
-import { auth } from '../../..'
+import { signOut, onAuthStateChanged, getAuth, User, getIdToken } from 'firebase/auth'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { setCount } from '../../../redux/features/counter/counterSlice'
+import axios from 'axios';
 
 const IconControls = () => {
-  const dispatch = useAppDispatch()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const dispatch = useAppDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const auth = getAuth();
+
+  const counter = useAppSelector((state) => state.counter.value)
 
   const { colorMode, toggleColorMode } = useColorMode()
-  const [usageRemaining] = useState(15)
+  // const [usageRemaining, setUsageRemaining] = useState(15)
 
-  const iconColor = { light: 'blue.600', dark: 'blue.200' }
-  const bgColor = { light: 'blue.50', dark: 'blue.900' }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        fetchUsage(currentUser);
+      } else {
+        console.log('No user signed in');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const fetchUsage = async (currentUser: User) => {
+    try {
+      const idToken = await getIdToken(currentUser);
+      const response = await axios.get('http://127.0.0.1:5001/ai-ui-generator/us-central1/main/usage', {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      console.log(response.data)
+      dispatch(setCount(response.data['count']));
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+    }
+  };
+
+  const iconColor = { light: 'purple.600', dark: 'purple.200' }
+  const bgColor = { light: 'gray.50', dark: 'gray.900' }
 
   const icons = [
-    {
-      name: 'Code Editor',
-      icon: FaCode,
-      onClick: () => dispatch(setView('Code'))
-    },
-    {
-      name: 'Preview',
-      icon: FaEye,
-      onClick: () => dispatch(setView('Preview'))
-    },
-    {
-      name: 'Chat',
-      icon: FaComments,
-      onClick: () => {
-        console.log('Chat button clicked')
-        // TODO: Implement chat toggle functionality
-      }
-    }
+    // {
+    //   name: 'Code Editor',
+    //   icon: FaCode,
+    //   onClick: () => dispatch(setView('Code'))
+    // },
+    // {
+    //   name: 'Preview',
+    //   icon: FaEye,
+    //   onClick: () => dispatch(setView('Preview'))
+    // },
+    // {
+    //   name: 'Chat',
+    //   icon: FaComments,
+    //   onClick: () => {
+    //     console.log('Chat button clicked')
+    //     // TODO: Implement chat toggle functionality
+    //   }
+    // }
   ]
 
   return (
@@ -69,16 +100,15 @@ const IconControls = () => {
       onMouseEnter={onOpen}
       onMouseLeave={onClose}
     >
-      <SlideFade in={isOpen} offsetX='-20px'>
+      <SlideFade in={true} offsetX='-20px'>
         <VStack
           spacing={1}
-          bg={bgColor[colorMode]}
           borderRadius='md'
-          p={2}
+          p={1}
           boxShadow='md'
           alignItems='flex-start'
         >
-          {icons.map((item) => (
+          {/* {icons.map((item) => (
             <Tooltip
               key={item.name}
               label={item.name}
@@ -96,16 +126,20 @@ const IconControls = () => {
                 transition='all 0.2s'
               />
             </Tooltip>
-          ))}
+          ))} */}
           <Popover placement='right-start'>
             <PopoverTrigger>
               <IconButton
                 aria-label='Settings'
-                icon={<FaCog />}
-                variant='ghost'
+                icon={<FaCog color='#B794F4' opacity={0.8} />}
+                variant='outline'
                 color={iconColor[colorMode]}
-                _hover={{ bg: 'blue.100', color: 'blue.600' }}
-                _active={{ bg: 'blue.200', color: 'blue.700' }}
+                _hover={{ bg: 'purple.700', color: 'purple.600', opacity: 0.8 }}
+                _active={{
+                  bg: 'purple.700',
+                  color: 'purple.700',
+                  opacity: 0.8
+                }}
                 transition='all 0.2s'
               />
             </PopoverTrigger>
@@ -120,29 +154,29 @@ const IconControls = () => {
                     <Text fontWeight='bold' fontSize='sm'>
                       Usage Remaining
                     </Text>
-                    <Text fontSize='sm'>{usageRemaining} credits</Text>
+                    <Text fontSize='sm'>{counter} credits</Text>
                   </Box>
-                  <Box>
+                  {/* <Box>
                     <Text fontWeight='bold' fontSize='sm' mb={1}>
                       Theme
                     </Text>
                     <Button
                       leftIcon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
                       onClick={toggleColorMode}
-                      colorScheme='blue'
+                      colorScheme='purple'
                       size='sm'
                       variant='outline'
                       width='100%'
                     >
                       {colorMode === 'light' ? 'Dark' : 'Light'} Mode
                     </Button>
-                  </Box>
+                  </Box> */}
                   <Button
                     leftIcon={<FaSignOutAlt />}
                     onClick={() => {
                       signOut(auth)
                     }}
-                    colorScheme='blue'
+                    colorScheme='purple'
                     size='sm'
                     variant='outline'
                   >

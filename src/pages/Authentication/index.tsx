@@ -95,7 +95,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
             placeholder='Enter your password'
           />
         </FormControl>
-        <Button type='submit' colorScheme='purple' width='full'>
+        <Button type='submit' colorScheme='purple' width='full' mt={4}>
           {mode === 'signin' ? 'Sign In' : 'Sign Up'}
         </Button>
         {mode === 'signin' && (
@@ -110,12 +110,12 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
 const AuthPage: React.FC = () => {
   useHasAccess({
-    validAccessRedirectLink: '/main-app-page'
+    validAccessRedirectLink: '/dashboard'
   })
 
   const [tabIndex, setTabIndex] = useState(0)
   const [authMode, setAuthMode] = useState<AuthMode>('signin')
-  const bgColor = useColorModeValue('purple.50', 'purple.900')
+  const bgColor = useColorModeValue('gray.50', 'gray.900')
   const textColor = useColorModeValue('purple.800', 'purple.100')
 
   const toast = useToast()
@@ -234,12 +234,21 @@ const AuthPage: React.FC = () => {
         maxWidth='400px'
         p={8}
         borderRadius='lg'
-        boxShadow='lg'
-        bg={useColorModeValue('white', 'gray.700')}
+        borderWidth='1px'
+        borderColor={useColorModeValue('gray.200', 'gray.700')}
+        bg={useColorModeValue('white', 'gray.800')}
       >
         <VStack spacing={6} align='stretch'>
-          <Heading as='h1' size='xl' textAlign='center' color={textColor}>
-            [Platform Name]
+          <Heading
+            as='h1'
+            size='xl'
+            textAlign='center'
+            color={textColor}
+            bgGradient='linear(to-r, purple.400, pink.400)'
+            bgClip='text'
+            fontWeight='bold'
+          >
+            Augment
           </Heading>
           <Text fontSize='md' textAlign='center' color={textColor}>
             Log in or sign up to get started!
@@ -282,7 +291,7 @@ const AuthPage: React.FC = () => {
               onForgotPassword={onForgotPassword}
             />
           )}
-          <Text fontSize='sm' textAlign='center' color={textColor}>
+          {/* <Text fontSize='sm' textAlign='center' color={textColor}>
             By using this service, you agree to our{' '}
             <Link color='purple.500' href='#'>
               Terms of Service
@@ -292,7 +301,7 @@ const AuthPage: React.FC = () => {
               Privacy Policy
             </Link>
             .
-          </Text>
+          </Text> */}
         </VStack>
       </Box>
     </Box>

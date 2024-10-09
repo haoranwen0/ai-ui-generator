@@ -9,10 +9,13 @@ import {
   useColorModeValue,
   keyframes,
   Container,
-  Flex
+  Flex,
+  Image
 } from '@chakra-ui/react'
 import { FaLock, FaHome, FaSignInAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+
+import Logo from '../../assets/images/logo.svg'
 
 // Animation keyframes
 const float = keyframes`
@@ -24,34 +27,34 @@ const float = keyframes`
 const NotAuthenticated = () => {
   const navigate = useNavigate()
 
-  const bgColor = useColorModeValue('purple.50', 'purple.900')
-  const textColor = useColorModeValue('purple.800', 'purple.100')
-  const buttonColor = useColorModeValue('purple.600', 'purple.300')
+  const bgColor = useColorModeValue('gray.50', 'gray.900')
+  const textColor = useColorModeValue('gray.800', 'gray.100')
 
   return (
-    <Box minHeight='100vh' bg={bgColor} color={textColor}>
+    <Flex
+      minHeight='100vh'
+      bg={bgColor}
+      color={textColor}
+      align='center'
+      justify='center'
+    >
       <Container maxW='container.xl' py={20}>
         <VStack spacing={8} textAlign='center'>
           {/* Logo placeholder */}
-          <Box
-            width='100px'
-            height='100px'
-            bg='purple.200'
-            borderRadius='full'
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
-            mb={8}
-          >
-            <Text fontSize='2xl' fontWeight='bold'>
-              LOGO
-            </Text>
-          </Box>
+          <Image
+            src={Logo}
+            alt='Augment Logo'
+            boxSize={24}
+            filter={useColorModeValue(
+              'brightness(0) saturate(100%) invert(14%) sepia(100%) saturate(5000%) hue-rotate(280deg) brightness(100%) contrast(100%)',
+              'brightness(0) saturate(100%) invert(80%) sepia(100%) saturate(500%) hue-rotate(280deg) brightness(100%) contrast(100%)'
+            )}
+          />
 
           {/* Animated lock icon */}
-          <Box animation={`${float} 3s ease-in-out infinite`} mb={8}>
+          {/* <Box animation={`${float} 3s ease-in-out infinite`} mb={8}>
             <Icon as={FaLock} w={20} h={20} color='purple.400' />
-          </Box>
+          </Box> */}
 
           <Heading size='2xl' mb={4}>
             Authentication Required
@@ -94,7 +97,7 @@ const NotAuthenticated = () => {
           </Flex>
         </VStack>
       </Container>
-    </Box>
+    </Flex>
   )
 }
 

@@ -33,3 +33,7 @@ secrets
 .firebase
 
 *.pyc
+
+*.log
+
+exported-dev-data

@@ -18,7 +18,6 @@ export default function useHasAccess({
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in
-        console.log('User has access', user)
         if (validAccessRedirectLink) {
           navigate(validAccessRedirectLink)
         }

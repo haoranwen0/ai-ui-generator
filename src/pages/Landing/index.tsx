@@ -8,10 +8,15 @@ import {
   Text,
   VStack,
   useColorModeValue,
-  keyframes
+  keyframes,
+  Image,
+  Link
 } from '@chakra-ui/react'
 import { FiCode, FiZap } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+
+import HeroBG from '../../assets/images/hero_bg.png'
+import Logo from '../../assets/images/logo.svg'
 
 // Animation keyframes
 const float = keyframes`
@@ -38,9 +43,18 @@ const Header = () => {
       right={0}
       zIndex={10}
     >
-      <Flex align='center' mr={5}>
+      <Flex align='center' gap={2}>
+        <Image
+          src={Logo}
+          alt='Augment Logo'
+          boxSize={8}
+          filter={useColorModeValue(
+            'brightness(0) saturate(100%) invert(14%) sepia(100%) saturate(5000%) hue-rotate(280deg) brightness(100%) contrast(100%)',
+            'brightness(0) saturate(100%) invert(80%) sepia(100%) saturate(500%) hue-rotate(280deg) brightness(100%) contrast(100%)'
+          )}
+        />
         <Heading as='h1' size='lg' letterSpacing={'tighter'}>
-          AI UI Framework
+          Augment
         </Heading>
       </Flex>
 
@@ -65,6 +79,8 @@ const Header = () => {
 }
 
 const Hero = () => {
+  const navigate = useNavigate()
+
   const floatAnimation = `${float} 3s ease-in-out infinite`
 
   return (
@@ -83,12 +99,14 @@ const Hero = () => {
           direction='column'
           textAlign='center'
         >
-          <VStack spacing={8} mb={16}>
+          <VStack spacing={8} my={16}>
             <Heading
               as='h2'
               size='4xl'
               color={useColorModeValue('gray.800', 'white')}
               fontWeight='bold'
+              bgGradient='linear(to-r, purple.400, pink.400)'
+              bgClip='text'
             >
               AI-Powered UI Generation
             </Heading>
@@ -103,7 +121,7 @@ const Hero = () => {
             <Button
               rightIcon={<FiZap />}
               onClick={() => {
-                console.log('Get early access!')
+                navigate('/auth')
               }}
               size='lg'
               fontSize='md'
@@ -115,25 +133,29 @@ const Hero = () => {
               }}
               px={8}
             >
-              Get Early Access
+              Get Started
             </Button>
           </VStack>
 
           {/* Placeholder for image */}
-          <Box
+          {/* <Box
             width='80%'
             maxW='800px'
             height='400px'
             bg='gray.200'
-            borderRadius='md'
+            rounded='md'
             display='flex'
             alignItems='center'
             justifyContent='center'
-          >
-            <Text color='gray.500' fontSize='lg'>
-              Placeholder for Image
-            </Text>
-          </Box>
+          > */}
+          <Image
+            src={HeroBG}
+            objectFit='contain'
+            h='100%'
+            w='80%'
+            rounded='lg'
+          />
+          {/* </Box> */}
 
           <Box
             as={FiCode}
@@ -148,11 +170,45 @@ const Hero = () => {
   )
 }
 
+const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear()
+
+  return (
+    <Box
+      as='footer'
+      bg={useColorModeValue('gray.100', 'gray.900')}
+      color={useColorModeValue('gray.600', 'gray.400')}
+      py={4}
+      px={4}
+    >
+      <Container maxW='container.xl'>
+        <Flex
+          direction={{ base: 'column', md: 'row' }}
+          justify='space-between'
+          align='center'
+        >
+          <Text fontSize='sm'>
+            © {currentYear} Augment. All rights reserved.
+          </Text>
+          <Link
+            href='mailto:contact@augment.com'
+            fontSize='sm'
+            mt={{ base: 2, md: 0 }}
+          >
+            contact@augment.com
+          </Link>
+        </Flex>
+      </Container>
+    </Box>
+  )
+}
+
 const Landing: React.FC = () => {
   return (
     <Box>
       <Header />
       <Hero />
+      <Footer />
     </Box>
   )
 }
