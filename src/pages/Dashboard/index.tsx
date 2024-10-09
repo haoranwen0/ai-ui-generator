@@ -103,6 +103,9 @@ const Dashboard: React.FC = () => {
   const floatAnimation = `${float} 3s ease-in-out infinite`
 
   useEffect(() => {
+    if (auth.currentUser) {
+      fetchProjects(auth.currentUser);
+    }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser)
       if (currentUser) {
