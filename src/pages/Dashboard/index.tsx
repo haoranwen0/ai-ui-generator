@@ -223,20 +223,14 @@ const Dashboard: React.FC = () => {
 
       <Box maxWidth='1200px' margin='auto' padding={8}>
         <VStack spacing={8} align='stretch'>
-          <StatGroup>
-            <Stat>
-              <StatLabel color={useColorModeValue('purple.600', 'purple.300')}>Total Projects</StatLabel>
-              <StatNumber>{projects.length}</StatNumber>
-            </Stat>
-            <Stat>
-              <StatLabel color={useColorModeValue('purple.600', 'purple.300')}>Last Updated</StatLabel>
-              <StatNumber>
-                {projects.length > 0
-                  ? new Date(Math.max(...projects.map(p => new Date(p.lastModified).getTime()))).toLocaleDateString()
-                  : 'N/A'}
-              </StatNumber>
-            </Stat>
-          </StatGroup>
+          {!isLoading && projects.length > 0 &&
+            <StatGroup>
+              <Stat>
+                <StatLabel color={useColorModeValue('purple.600', 'purple.300')}>Total Projects</StatLabel>
+                <StatNumber>{projects.length}</StatNumber>
+              </Stat>
+            </StatGroup>
+          }
 
           {isLoading ? (
             <Flex justify='center' align='center' height='50vh'>
