@@ -114,7 +114,7 @@ const IconControls = () => {
     //   }
     // }
     {
-      name: 'Feedback Forum',
+      name: 'Feedback Form',
       icon: FaCommentAlt,
       onClick: () => {
         window.open(

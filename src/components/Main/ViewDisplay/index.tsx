@@ -31,10 +31,8 @@ import {
   SandpackLayout
 } from '@codesandbox/sandpack-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import axios from 'axios'
 import { auth } from '../../..'
 import { onAuthStateChanged, User } from 'firebase/auth'
-import Logo from '../../../assets/images/logo.svg'
 import { useAppSelector, useAppDispatch } from '../../../redux/hooks'
 import {
   selectCode,
