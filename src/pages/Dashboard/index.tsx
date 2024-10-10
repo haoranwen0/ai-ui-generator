@@ -34,6 +34,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth'
 import { get, post } from '../../utils/api'
+import { useAppSelector } from '../../redux/hooks'
 
 interface Project {
   id: string
@@ -103,6 +104,8 @@ const Dashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newProjectName, setNewProjectName] = useState('')
+
+  const counter = useAppSelector((state) => state.counter.value)
 
   const floatAnimation = `${float} 3s ease-in-out infinite`
 

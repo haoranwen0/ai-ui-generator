@@ -56,10 +56,12 @@ const IconControls = () => {
 
   useEffect(() => {
     if (auth.currentUser) {
+      console.log('Fetching usage')
       fetchUsage(auth.currentUser)
     }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
+        console.log('Fetching usage')
         fetchUsage(currentUser)
       } else {
         // console.log('No user signed in')
@@ -71,13 +73,14 @@ const IconControls = () => {
 
   const fetchUsage = async (currentUser: User) => {
     try {
+      console.log('Fetching usage')
       const idToken = await getIdToken(currentUser)
       const response = await get<{ count: number }>(`/usage`, {
         headers: {
           Authorization: `Bearer ${idToken}`
         }
       })
-      // console.log(response.data)
+      console.log(response.data.count)
       dispatch(setCount(response.data.count))
     } catch (err) {
       toast({

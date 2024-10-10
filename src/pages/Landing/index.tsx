@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Box,
   Button,
@@ -17,6 +17,8 @@ import { useNavigate } from 'react-router-dom'
 
 import HeroBG from '../../assets/images/hero_bg.png'
 import Logo from '../../assets/images/logo.svg'
+import { setCount } from '../../redux/features/counter/counterSlice'
+import { useAppDispatch } from '../../redux/hooks'
 
 // Animation keyframes
 const float = keyframes`

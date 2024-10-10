@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   Box,
@@ -29,6 +29,7 @@ import { auth } from '../../index'
 import useHasAccess from '../../hooks/useHasAccess'
 import { setIsNewUser } from '../../redux/features/isNewUser/isNewUserSlice'
 import { useAppDispatch } from '../../redux/hooks'
+import { setCount } from '../../redux/features/counter/counterSlice'
 
 type AuthMode = 'signin' | 'signup' | 'forgot'
 
@@ -162,6 +163,7 @@ const AuthPage: React.FC = () => {
         isClosable: true
       })
       dispatch(setIsNewUser(true))
+      dispatch(setCount(15))
     } catch (error) {
       handleAuthError(error, 'signing up')
     }
