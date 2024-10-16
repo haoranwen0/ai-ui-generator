@@ -158,6 +158,7 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({
         await user.getIdToken(),
         designID as string
       )
+
       dispatch(addMessage({ content: JSON.stringify(data), role: 'assistant' }))
 
       if (data.code) {

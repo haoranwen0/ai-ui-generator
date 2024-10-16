@@ -172,6 +172,8 @@ const FadeInChatComponent: React.FC = () => {
           designID as string
         )
 
+        console.log('Data: ', data)
+
         dispatch(
           addMessage({ content: JSON.stringify(data), role: 'assistant' })
         )

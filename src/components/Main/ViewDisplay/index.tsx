@@ -28,7 +28,8 @@ import {
   SandpackPreview,
   SandpackProvider,
   useActiveCode,
-  SandpackLayout
+  SandpackLayout,
+  SandpackFileExplorer
 } from '@codesandbox/sandpack-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { auth } from '../../..'
@@ -222,8 +223,7 @@ const ViewDisplay = () => {
                 </ListItem>
                 <ListItem>
                   You&apos;ve got 15 magical credits to play with. Each time you
-                  chat, you use one credit. Use them wisely, or don&apos;t -
-                  we&apos;re not your mom!
+                  chat, you use one credit.
                 </ListItem>
                 <ListItem>
                   Right now, Augment is a Chakra UI enthusiast. We&apos;re
@@ -313,6 +313,8 @@ const ViewDisplay = () => {
               dependencies: {
                 '@chakra-ui/react': 'latest',
                 '@chakra-ui/icons': 'latest',
+                '@mui/material': 'latest',
+                '@mui/icons-material': 'latest',
                 '@emotion/react': 'latest',
                 '@emotion/styled': 'latest',
                 'framer-motion': 'latest',
@@ -332,7 +334,9 @@ const ViewDisplay = () => {
                 'react-reveal': 'latest',
                 'react-awesome-reveal': 'latest',
                 gsap: 'latest',
-                aos: 'latest'
+                aos: 'latest',
+                d3: 'latest',
+                'react-code-blocks': 'latest'
               },
               entry: '/index.js'
             }}
@@ -340,6 +344,10 @@ const ViewDisplay = () => {
               '/App.js': code
             }}
             options={{
+              externalResources: [
+                'https://cdn.tailwindcss.com',
+                'https://cdn.jsdelivr.net/npm/shadcdn/+esm'
+              ],
               classes: {
                 'sp-wrapper': 'custom-wrapper',
                 'sp-layout': 'custom-layout',
@@ -351,6 +359,7 @@ const ViewDisplay = () => {
             }}
           >
             <SandpackLayout>
+              <SandpackFileExplorer />
               <CodeEditor />
               <SandpackPreview />
             </SandpackLayout>

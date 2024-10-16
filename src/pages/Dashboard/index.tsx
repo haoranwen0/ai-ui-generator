@@ -27,11 +27,11 @@ import {
   StatGroup,
   Icon,
   keyframes,
-  Divider
+  Divider,
+  Select
 } from '@chakra-ui/react'
-import { FiPlus, FiCode, FiClock, FiLayers, FiEdit3 } from 'react-icons/fi'
+import { FiPlus, FiCode, FiLayers } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { getAuth, onAuthStateChanged, User, getIdToken } from 'firebase/auth'
 import { get, post } from '../../utils/api'
 import { useAppSelector } from '../../redux/hooks'
@@ -82,10 +82,6 @@ const ProjectTile: React.FC<{ project: Project }> = ({ project }) => {
         <Divider mb={4} />
         <Flex justify='space-between' align='center'>
           <Badge colorScheme='purple'>UI</Badge>
-          {/* <Text fontSize='sm' color={useColorModeValue('gray.600', 'gray.400')}>
-            <Icon as={FiClock} mr={1} />
-            {new Date(project.lastModified).toLocaleDateString()}
-          </Text> */}
         </Flex>
       </Flex>
     </Box>
@@ -104,8 +100,7 @@ const Dashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newProjectName, setNewProjectName] = useState('')
-
-  const counter = useAppSelector((state) => state.counter.value)
+  const [selectedFramework, setSelectedFramework] = useState('')
 
   const floatAnimation = `${float} 3s ease-in-out infinite`
 
@@ -145,7 +140,7 @@ const Dashboard: React.FC = () => {
         fetchProjects(currentUser)
       } else {
         setIsLoading(false)
-        setError('Please sign in to view your projects.')
+        navigate('/not-authenticated')
       }
     })
 
@@ -179,11 +174,16 @@ const Dashboard: React.FC = () => {
     if (user === null || newProjectName.trim() === '') {
       return
     }
+
     try {
       const idToken = await getIdToken(user)
       const response = await post<{ projectid: string }>(
         `/projects`,
-        { name: newProjectName, code: defaultCode },
+        {
+          name: newProjectName,
+          code: defaultCode,
+          framework: selectedFramework
+        },
         {
           headers: {
             Authorization: `Bearer ${idToken}`
@@ -277,7 +277,7 @@ const Dashboard: React.FC = () => {
           ) : projects.length === 0 ? (
             <VStack spacing={4} align='center'>
               <Text textAlign='center' fontSize='xl'>
-                You currently have no projects.
+                You currently have no designs.
               </Text>
               <Icon
                 as={FiCode}
@@ -292,7 +292,7 @@ const Dashboard: React.FC = () => {
                 fontWeight='bold'
                 _hover={{ bg: 'purple.500' }}
               >
-                Create Your First Project
+                Create Your First Design
               </Button>
             </VStack>
           ) : (
@@ -357,6 +357,44 @@ const Dashboard: React.FC = () => {
                     )}`
                   }}
                 />
+                <FormControl mt={4}>
+                  <FormLabel
+                    color={useColorModeValue('purple.600', 'purple.300')}
+                  >
+                    UI Framework
+                  </FormLabel>
+                  <Select
+                    placeholder='Select UI framework'
+                    value={selectedFramework}
+                    onChange={(e) => setSelectedFramework(e.target.value)}
+                    borderColor={useColorModeValue('purple.300', 'purple.500')}
+                    _hover={{
+                      borderColor: useColorModeValue(
+                        'purple.400',
+                        'purple.300'
+                      ),
+                      bg: useColorModeValue('purple.50', 'purple.700')
+                    }}
+                    _focus={{
+                      borderColor: useColorModeValue(
+                        'purple.500',
+                        'purple.300'
+                      ),
+                      boxShadow: `0 0 0 1px ${useColorModeValue(
+                        'purple.500',
+                        'purple.300'
+                      )}`
+                    }}
+                  >
+                    <option value='' disabled>
+                      Select UI framework
+                    </option>
+                    <option value='Shadcn UI'>Shadcn UI</option>
+                    <option value='Material UI'>Material UI</option>
+                    <option value='Chakra UI'>Chakra UI</option>
+                    <option value='Tailwind CSS'>Tailwind CSS</option>
+                  </Select>
+                </FormControl>
               </FormControl>
             </form>
           </ModalBody>

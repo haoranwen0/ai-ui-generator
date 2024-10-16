@@ -32,7 +32,11 @@ db = firestore.client()
 
 project_schema = {
     "type": "object",
-    "properties": {"name": {"type": "string"}, "code": {"type": "string"}},
+    "properties": {
+        "name": {"type": "string"},
+        "code": {"type": "string"},
+        "framework": {"type": "string"},
+    },
 }
 
 # def requires_auth(f):
@@ -78,7 +82,10 @@ def router(request):
             },
         },
         {"pattern": r"^/chat/(?P<projectid>[^/]+)$", "methods": {"POST": chat}},
-        {"pattern": r"^/history/(?P<projectid>[^/]+)$", "methods": {"GET": get_chat_history}},
+        {
+            "pattern": r"^/history/(?P<projectid>[^/]+)$",
+            "methods": {"GET": get_chat_history},
+        },
         {"pattern": r"^/usage$", "methods": {"GET": get_api_count}},
         {"pattern": r"^/test$", "methods": {"GET": get_test_user}},
         # {
@@ -264,10 +271,29 @@ def chat(req: https_fn.Request, projectid: str) -> https_fn.Response:
     if doc.to_dict()["api_count"] <= 0:
         return https_fn.Response("Out of API calls", status=405)
 
+    # Get the UI framework for the project
+    project_ref = (
+        db.collection("users").document(uid).collection("projects").document(projectid)
+    )
+
+    project = project_ref.get()
+    if not project.exists:
+        return https_fn.Response("Project not found", status=404)
+
+    framework = project.get("framework")
+    if framework is None:
+        framework = "Chakra UI"
+
+    # Get the chat history
     chat_history = req.json["chat_history"]
-    chat_history.insert(0, {"role": "user", "content": user_initial_prompt()})
-    chat_history.insert(1, {"role": "assistant", "content": assistant_initial_prompt()})
-    print("CHAT HISTORY", chat_history)
+
+    # Add the initial prompts
+    chat_history.insert(0, {"role": "user", "content": user_initial_prompt(framework)})
+    chat_history.insert(
+        1, {"role": "assistant", "content": assistant_initial_prompt(framework)}
+    )
+
+    print("chat_history: ", chat_history)
 
     completion = client.messages.create(
         model="claude-3-5-sonnet-20240620",
@@ -344,32 +370,22 @@ def chat(req: https_fn.Request, projectid: str) -> https_fn.Response:
     print(completion.content[0])
 
     # tool_name = completion.content[0].name
-    tool_inputs = completion.content[0].input
-
-    print(tool_inputs)
-
-    # print(chat_history)
-    # print(completion.content[0])
-
-    # Extract the text content from the completion
-    # response_content = completion.content[0]
-
-    # Parse the JSON string into a Python dictionary
-    # parsed_content = json.loads(response_content)
-
+    json_completion_output = completion.content[0].input
 
     # Now update chat history
-    new_history = chat_history[2:] + [{"content": json.dumps(tool_inputs), "role": "assistant"}]
-    project_ref = (
-        db.collection("users").document(uid).collection("projects").document(projectid)
-    )
-    project = project_ref.get()
-    if not project.exists or "chat_history" not in project.to_dict():
+    new_history = chat_history[2:] + [
+        {"content": json.dumps(json_completion_output), "role": "assistant"}
+    ]
+
+    if "chat_history" not in project.to_dict():
         project_ref.set({"chat_history": new_history}, merge=True)
+
     project_ref.update({"chat_history": new_history})
 
     return https_fn.Response(
-        json.dumps(tool_inputs),  # This will now be a properly formatted JSON
+        json.dumps(
+            json_completion_output
+        ),  # This will now be a properly formatted JSON
         status=200,
         headers=headers,
     )

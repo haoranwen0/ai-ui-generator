@@ -137,6 +137,19 @@ const Hero = () => {
             >
               Get Started
             </Button>
+            <Box mt={4}>
+              <Link
+                href='https://www.producthunt.com/posts/augment-ui?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-augment&#0045;ui'
+                isExternal
+              >
+                <Image
+                  src='https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=496624&theme=dark'
+                  alt='Augment&#0032;UI - Use&#0032;AI&#0032;to&#0032;prototype&#0032;frontend&#0032;designs | Product Hunt'
+                  width={250}
+                  height={54}
+                />
+              </Link>
+            </Box>
           </VStack>
 
           {/* Placeholder for image */}
