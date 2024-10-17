@@ -9,6 +9,7 @@ import requests
 from typing import Dict
 
 import anthropic
+import stripe
 from dotenv import load_dotenv
 from jsonschema import validate
 from firebase_admin import auth, credentials, firestore, initialize_app
@@ -19,6 +20,9 @@ from prompt import user_initial_prompt, assistant_initial_prompt
 
 load_dotenv()
 anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
+stripe_api_key = os.environ.get("STRIPE_API_KEY")
+
+IS_EMULATOR = os.environ.get('FUNCTIONS_EMULATOR') == 'true'
 
 # Initialize Firebase Admin SDK
 # cred = credentials.ApplicationDefault()
@@ -87,6 +91,8 @@ def router(request):
             "methods": {"GET": get_chat_history},
         },
         {"pattern": r"^/usage$", "methods": {"GET": get_api_count}},
+        {"pattern": r"^/checkout$", "methods": {"POST": create_checkout_session}},
+        {"pattern": r"^/webhook$", "methods": {"POST": stripe_webhook_handler}},
         {"pattern": r"^/test$", "methods": {"GET": get_test_user}},
         # {
         #   "pattern": r"^/api/products/(?P<product_id>\w+)$",
@@ -135,7 +141,6 @@ def main(req: https_fn.Request) -> https_fn.Response:
 
 
 def get_api_count(req: https_fn.Request) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
     doc_ref = db.collection("users").document(uid)
     doc = doc_ref.get()
@@ -145,12 +150,11 @@ def get_api_count(req: https_fn.Request) -> https_fn.Response:
     return https_fn.Response(
         json.dumps({"message": doc.to_dict(), "count": doc.get("api_count")}),
         status=200,
-        headers=headers,
+        headers=get_headers(),
     )
 
 
 def list_projects(req: https_fn.Request) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
     docs = db.collection("users").document(uid).collection("projects").stream()
     project_list = []
@@ -158,11 +162,10 @@ def list_projects(req: https_fn.Request) -> https_fn.Response:
         project_dict = {"id": doc.id, "name": doc.get("name")}
         project_list.append(project_dict)
         # print(f"{doc.id} => {doc.to_dict()}")
-    return https_fn.Response(json.dumps(project_list), status=200, headers=headers)
+    return https_fn.Response(json.dumps(project_list), status=200, headers=get_headers())
 
 
 def create_project(req: https_fn.Request) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
     project = req.json
     try:
@@ -182,12 +185,11 @@ def create_project(req: https_fn.Request) -> https_fn.Response:
     return https_fn.Response(
         json.dumps({"message": "Project created", "projectid": doc_ref.id}),
         status=200,
-        headers=headers,
+        headers=get_headers(),
     )
 
 
 def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
     project = (
         db.collection("users")
@@ -198,12 +200,11 @@ def get_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
     )
     if not project.exists:
         return https_fn.Response("Project not found", status=404)
-    return https_fn.Response(json.dumps(project.to_dict()), status=200, headers=headers)
+    return https_fn.Response(json.dumps(project.to_dict()), status=200, headers=get_headers())
 
 
 # TODO: Change so that project can't be renamed
 def update_code(req: https_fn.Request, projectid: str) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
     project_ref = (
         db.collection("users").document(uid).collection("projects").document(projectid)
@@ -214,13 +215,12 @@ def update_code(req: https_fn.Request, projectid: str) -> https_fn.Response:
     new_code = req.json["code"]
     project_ref.update({"code": new_code})
     return https_fn.Response(
-        json.dumps({"message": "Code updated"}), status=200, headers=headers
+        json.dumps({"message": "Code updated"}), status=200, headers=get_headers()
     )
 
 
 # TODO: Change so that project can't be renamed
 def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
     project_ref = (
         db.collection("users").document(uid).collection("projects").document(projectid)
@@ -235,28 +235,105 @@ def update_project(req: https_fn.Request, projectid: str) -> https_fn.Response:
         return https_fn.Response("Invalid project structure", status=405)
     project_ref.update(req.json)
     return https_fn.Response(
-        json.dumps({"message": "Project updated"}), status=200, headers=headers
+        json.dumps({"message": "Project updated"}), status=200, headers=get_headers()
     )
 
 
+stripe.api_key = stripe_api_key
+stripe.max_network_retries = 5
+FRONTEND_DOMAIN = "http://localhost:3000" if IS_EMULATOR else "https://augment-ui.com"
+
+def create_checkout_session(req: https_fn.Request) -> https_fn.Response:
+    uid = get_uid(req.headers)
+    email = get_email(req.headers)
+    project_id = req.json["project_id"]
+
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            client_reference_id=uid,
+            customer_email=email,
+            line_items=[
+                {
+                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                    'price': 'price_1QAzMzRrf8g03FvpxHIyqfxS',#'price_1QAomQRrf8g03Fvpwq4Kl89N',
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=f"{FRONTEND_DOMAIN}/design/{project_id}?success=true?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{FRONTEND_DOMAIN}/design/{project_id}?canceled=true?session_id={{CHECKOUT_SESSION_ID}}",
+            automatic_tax={'enabled': True},
+        )
+    except Exception as e:
+        print(e)
+        return https_fn.Response(str(e), status=400, headers=get_headers())
+
+    return https_fn.Response(json.dumps({"url": checkout_session.url}), status=200, headers=get_headers())
+
+def stripe_webhook_handler(req: https_fn.Request):
+    payload = req.data
+    sig_header = req.headers.get('stripe-signature')
+    stripe_webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET')
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, stripe_webhook_secret
+        )
+    except ValueError as e:
+        return https_fn.Response({'error': 'Invalid payload'}, status=400, headers=get_headers())
+    except stripe.error.SignatureVerificationError as e:
+        return https_fn.Response({'error': 'Invalid signature'}, status=400, headers=get_headers())
+
+    # Handle successful payment here
+    # e.g., fulfill the order, update database, etc.
+    if event['type'] == 'checkout.session.completed' or event['type'] == 'checkout.session.async_payment_succeeded':
+        session = event['data']['object']
+        session_id = session['id']
+
+        # Retrieve the session to get customer details
+        client_reference_id = session.get('client_reference_id')
+        print(client_reference_id)
+        if not client_reference_id:
+            return https_fn.Response({'error': 'No client_reference_id found'}, status=400, headers=get_headers())
+
+        # Check if this session has already been processed
+        session_ref = db.collection('processed_sessions').document(session_id)
+        if session_ref.get().exists:
+            print(f"Session {session_id} has already been processed. Ignoring.")
+            return https_fn.Response('Session already processed, ignoring', status=200)
+
+        user_ref = db.collection("users").document(client_reference_id)
+        user_ref.update({"api_count": firestore.Increment(100)})
+
+        session_ref.set({
+            'session_id': session_id,
+            'processed_at': firestore.SERVER_TIMESTAMP,
+            'event_type': event['type'],
+            'user_id': client_reference_id
+        })
+    # TODO: Handle other event types
+    else:
+        return https_fn.Response({'error': 'Invalid event type'}, status=400, headers=get_headers())
+
+    return https_fn.Response({'success': True}, status=200, headers=get_headers())
+
+
 def get_chat_history(req: https_fn.Request, projectid: str) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
     project_ref = (
         db.collection("users").document(uid).collection("projects").document(projectid)
     )
     project = project_ref.get()
     if not project.exists or "chat_history" not in project.to_dict():
-        return https_fn.Response(json.dumps([]), status=200, headers=headers)
+        return https_fn.Response(json.dumps([]), status=200, headers=get_headers())
     chat_history = project.get("chat_history")
-    return https_fn.Response(json.dumps(chat_history), status=200, headers=headers)
+    return https_fn.Response(json.dumps(chat_history), status=200, headers=get_headers())
 
 
 client = anthropic.Anthropic(api_key=anthropic_api_key)
 
 
 def chat(req: https_fn.Request, projectid: str) -> https_fn.Response:
-    headers = get_headers()
     uid = get_uid(req.headers)
 
     # Decrement the API count
@@ -387,7 +464,7 @@ def chat(req: https_fn.Request, projectid: str) -> https_fn.Response:
             json_completion_output
         ),  # This will now be a properly formatted JSON
         status=200,
-        headers=headers,
+        headers=get_headers(),
     )
 
 
@@ -405,6 +482,25 @@ def get_uid(header: Dict[str, str]) -> str:
     try:
         decoded_token = auth.verify_id_token(token)
         return decoded_token["uid"]
+    except auth.InvalidIdTokenError:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.UNAUTHENTICATED, "Unauthorized"
+        )
+
+def get_email(header: Dict[str, str]) -> str:
+    """
+    Gets the email from Firebase Auth.
+    """
+    if "Authorization" not in header:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            "No authorization token provided",
+        )
+
+    token = header["Authorization"].split(" ")[1]
+    try:
+        decoded_token = auth.verify_id_token(token)
+        return decoded_token.get("email", "")
     except auth.InvalidIdTokenError:
         raise https_fn.HttpsError(
             https_fn.FunctionsErrorCode.UNAUTHENTICATED, "Unauthorized"

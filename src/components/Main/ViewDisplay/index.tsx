@@ -31,7 +31,7 @@ import {
   SandpackLayout,
   SandpackFileExplorer
 } from '@codesandbox/sandpack-react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { auth } from '../../..'
 import { onAuthStateChanged, User } from 'firebase/auth'
 import { useAppSelector, useAppDispatch } from '../../../redux/hooks'
@@ -49,6 +49,8 @@ import { setCount } from '../../../redux/features/counter/counterSlice'
 const ViewDisplay = () => {
   const dispatch = useAppDispatch()
   const { designID } = useParams()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
   const navigate = useNavigate()
   const toast = useToast()
 
@@ -68,6 +70,32 @@ const ViewDisplay = () => {
         await fetchUsage(currentUser)
         await fetchCode(await currentUser.getIdToken())
         setIsLoading(false)
+
+        // Check for 'success' query parameter
+        const successParam = queryParams.get('success')
+        if (successParam) {
+          toast({
+            title: 'Success!',
+            description: 'Your payment was completed successfully. 100 credits have been added to your account.',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+            position: 'top'
+          })
+        }
+
+        // Check for 'success' query parameter
+        const canceledParam = queryParams.get('canceled')
+        if (canceledParam) {
+          toast({
+            title: 'Canceled!',
+            description: 'Your payment was canceled.',
+            status: 'info',
+            duration: 3000,
+            isClosable: true,
+            position: 'top'
+          })
+        }
       } else {
         setUser(null)
         setIsLoading(false)
@@ -128,7 +156,7 @@ const ViewDisplay = () => {
   useEffect(() => {
     const saveInterval = setInterval(() => {
       saveContent()
-    }, 5000) // Save every 30 seconds
+    }, 5000) // Save every 5 seconds
 
     return () => clearInterval(saveInterval)
   }, [user, designID, code])

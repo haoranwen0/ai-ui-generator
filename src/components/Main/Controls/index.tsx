@@ -38,13 +38,14 @@ import {
   User,
   getIdToken
 } from 'firebase/auth'
+import { useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { setCount } from '../../../redux/features/counter/counterSlice'
-import axios from 'axios'
-import { get } from '../../../utils/api'
+import { get, post } from '../../../utils/api'
 
 const IconControls = () => {
   const dispatch = useAppDispatch()
+  const { designID } = useParams()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
   const auth = getAuth()
@@ -129,6 +130,43 @@ const IconControls = () => {
     }
   ]
 
+  const handleCheckout = async () => {
+    try {
+      console.log('Fetching checkout url')
+      if (!auth.currentUser) {
+        toast({
+          title: 'Error',
+          description: 'User not signed in',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+      }
+      else {
+        const idToken = await getIdToken(auth.currentUser)
+        console.log('post requesting!')
+        const response = await post<{ url: string }>(`/checkout`,
+          { 'project_id': designID },
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`
+            }
+          })
+        console.log(response.data.url)
+        window.location.href = response.data.url
+      }
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: 'Error fetching checkout url',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      // console.error('Error fetching projects:', err)
+    }
+  }
+
   return (
     <Box
       position='fixed'
@@ -209,6 +247,16 @@ const IconControls = () => {
                       {colorMode === 'light' ? 'Dark' : 'Light'} Mode
                     </Button>
                   </Box> */}
+                  <Button
+                    onClick={() => {
+                      handleCheckout()
+                    }}
+                    colorScheme='purple'
+                    size='sm'
+                  // variant='outline'
+                  >
+                    Get Credits
+                  </Button>
                   <Button
                     leftIcon={<FaSignOutAlt />}
                     onClick={() => {
